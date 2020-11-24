@@ -6,7 +6,7 @@
 data <- readRDS("C:\\Users\\HP\\Documents\\weatherFrog\\StatistischesPraktikum\\data_reanalysis_20201109.rds")
 
 # Wenn man head(data) ausgibt, wird die Uhrzeit nicht mit angezeigt... find ich bisschen komisch..
-head(data)
+head(data, 200)
 str(data)
 
 wetterlagen <- read.csv("C:\\Users\\HP\\Documents\\weatherFrog\\StatistischesPraktikum\\GWL_1900-2010.csv", header = TRUE,
@@ -21,13 +21,36 @@ head(wetterSubset)
 # Ende am 31.12.10
 tail(wetterSubset)
 
+# 
 unique(unlist(apply(wetterSubset[2:32], 1, unique)))
-head(data)
+
 
 # Datensatz in Date und Time aufteilen
 data$date <- as.Date(data$time, tz = "CET")
 
-data$time <- format(data$time,"%H:%M:%S")
+data$time <- format(data$time, "%H:%M:%S")
 tail(data)
 head(data)
 table(data$time)
+
+
+str(data)
+library(dplyr)
+data06 <- data %>% filter(time == "06:00:00" | time == "07:00:00") 
+dim(data06)
+
+dataSubset <- data06[data06$date >= "2000-01-01" & data06$date <= "2010-12-31", ]
+head(dataSubset)
+dim(dataSubset)
+# so viele zeilen sollten es sein oder?
+11*365*160 + 3*160
+#  3* 160 wegen Schaltjahr 
+# -> passt! wird wohl an Zeitverscheibung liegen
+
+
+DTdataSubset <- as.data.table(dataSubset)
+dim(DTdataSubset)
+
+library(data.table)
+# save data
+fwrite(DTdataSubset,"C:\\Users\\HP\\Documents\\weatherFrog\\dataSubset2000-2010.csv", row.names = TRUE)
