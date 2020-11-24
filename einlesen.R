@@ -22,4 +22,12 @@ head(wetterSubset)
 tail(wetterSubset)
 
 unique(unlist(apply(wetterSubset[2:32], 1, unique)))
+head(data)
 
+# Datensatz in Date und Time aufteilen
+data$date <- as.Date(data$time, tz = "CET")
+
+data$time <- format(data$time,"%H:%M:%S")
+tail(data)
+head(data)
+table(data$time)
