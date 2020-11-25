@@ -26,46 +26,34 @@ setcolorder(gwl_data, c("date", "gwl"))
 cli_data <- readRDS("Data/data_reanalysis_20201109.rds")
 
 #splitting Date and Time
-cli_data$date <- as.Date(cli_data$time)
+cli_data$date <- as.Date(cli_data$time, tz = "CET")
 cli_data$time <- format(cli_data$time,"%H:%M:%S")
 
 #subsetting data 2000-2010
 cli_data_2k <- subset(cli_data, format(as.Date(date),"%Y") %in% 
               seq(2000, 2010))
 
-#shows that the timestamps are not always the same 6
-length(unique(cli_data_2k$time))
 
 #convert to data.table for further analysis
 cli_data_2k_dt <- as.data.table(cli_data_2k)
 
-#shows that there are not always 4 per day 
-table(cli_data_2k_dt[, .N, by = .(longitude, latitude, date)][, N])
-#but, all of the instances of only 3 are on the 31.12 - 
-#so there isnt any missing data, it just probably moved 
-#to the next year
 
-
-#but there isnt a year 2011
-#so use a different subset instead to fulfill 4 per day
-cli_data_1999to2009 <- as.data.table(subset(cli_data, format(as.Date(date),"%Y") %in% 
-                                seq(1999, 2009)))
 #check if all 29 gwl are present in this subset
-nrow(unique(gwl_data[format(as.Date(date),"%Y") %in% seq(1999, 2009), .(gwl)]))
+nrow(unique(gwl_data[format(as.Date(date),"%Y") %in% seq(2000, 2010), .(gwl)]))
 #this timeframe does include all 29+1 gwl
-table(gwl_data[format(as.Date(date),"%Y") %in% seq(1999, 2009), .(gwl)])
-#and there isnt one that is only represented just a few amount of times
+table(gwl_data[format(as.Date(date),"%Y") %in% seq(2000, 2010), .(gwl)])
+#and every single one is represented at least 13 times
 
-#here, there are always 4 per day:
-table(cli_data_1999to2009[, .N, by = .(longitude, latitude, date)][, N])
-#however the times are not the same either:
-table(cli_data_1999to2009[, time])
+#there are always 4 measurements per day:
+table(cli_data_2k_dt[, .N, by = .(longitude, latitude, date)][, N])
+#however the times are not the same:
+table(cli_data_2k_dt[, time])
 #but the difference is always an hour, so maybe
 #this is simply the difference between winter and summer
 #aka 00:00 is 01:00 in the other season
 #this is supportet by the fact, that the counts are always the same
 
-#so this timeframe (1999-2009) seems like a good first pick
+#so this timeframe (2000-2010) seems like a good first pick
 
 
 #TODO

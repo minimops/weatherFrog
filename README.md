@@ -1,7 +1,7 @@
 # weatherFrog
 LMU StatPrakt WS 20/21 - large-scale weather conditions in europe
 
-
+Dependencies: data.table, stringr
 
 Date of presentation:  
 Institut: Statistik, LMU Muenchen  
