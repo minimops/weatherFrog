@@ -3,10 +3,10 @@
 
 ## Daten einlesen 
 
-data <- readRDS("C:\\Users\\HP\\Documents\\weatherFrog\\StatistischesPraktikum\\data_reanalysis_20201109.rds")
+data <- readRDS("Data\\data_reanalysis_20201109.rds")
 
 # Wenn man head(data) ausgibt, wird die Uhrzeit nicht mit angezeigt... find ich bisschen komisch..
-head(data, 200)
+head(data, 20)
 str(data)
 
 wetterlagen <- read.csv("C:\\Users\\HP\\Documents\\weatherFrog\\StatistischesPraktikum\\GWL_1900-2010.csv", header = TRUE,
@@ -46,11 +46,11 @@ dim(dataSubset)
 11*365*160 + 3*160
 #  3* 160 wegen Schaltjahr 
 # -> passt! wird wohl an Zeitverscheibung liegen
-
+library(data.table)
 
 DTdataSubset <- as.data.table(dataSubset)
 dim(DTdataSubset)
 
-library(data.table)
+
 # save data
-fwrite(DTdataSubset,"C:\\Users\\HP\\Documents\\weatherFrog\\dataSubset2000-2010.csv", row.names = TRUE)
+# fwrite(DTdataSubset,"C:\\Users\\HP\\Documents\\weatherFrog\\dataSubset2000-2010.csv", row.names = TRUE)
