@@ -53,4 +53,27 @@ dim(DTdataSubset)
 
 
 # save data
-# fwrite(DTdataSubset,"C:\\Users\\HP\\Documents\\weatherFrog\\dataSubset2000-2010.csv", row.names = TRUE)
+saveRDS(DTdataSubset,"Data\\dataSubset2000-2010.rds")
+
+hist(DTdataSubset$mslp)
+# kann man evtl als normalverteilt annehmen? Wie weiß man sowas?
+hist(DTdataSubset$geopotential)
+# eher eine linksschiefe Verteilung
+
+
+# more effective way:
+plot(density(DTdataSubset$mslp))
+# -> auch ein wenig linksschief
+plot(density(DTdataSubset$geopotential))
+# -> puh, schwierig
+
+mean(DTdataSubset$mslp)
+# Mittelwert: 101356.9
+mean(DTdataSubset$geopotential)
+# Mittelwert 54075.83
+
+
+
+# plot(DTdataSubset$mslp, DTdataSubset$geopotential)
+
+head(DTdataSubset)
