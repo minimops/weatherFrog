@@ -12,23 +12,39 @@ wetterlagen <- wetterlagen[wetterlagen$JAHRMONAT >= 200001,]
 
 ## Datensatz in Date und Time aufteilen
 data$date <- as.Date(data$time, tz = "CET")
-
 data$time <- format(data$time, "%H:%M:%S")
- as.data.frame(table(data$time))
-# wegen Zeitverschiebung auch 1.00, 2.00....
+
+
+ # Zeitverschiebung anpassen
+ library(dplyr)
+ data00 <- data %>% filter(time == "00:00:00" | time == "01:00:00" | time == "02:00:00")
+ data06 <- data %>% filter(time == "06:00:00" | time == "07:00:00" | time == "08:00:00") 
+ data12 <- data %>% filter(time == "12:00:00" | time == "13:00:00" | time == "14:00:00")
+ data18 <- data %>% filter(time == "18:00:00" | time == "19:00:00" | time == "20:00:00")
  
+data00$time <- "00:00:00"
+data06$time <- "06:00:00"
+data12$time <- "12:00:00"
+data18$time <- "18:00:00"
+
+ 
+ data <- rbind(data00, data06, data12, data18)
+
  dataSubset <- data[data$date >= "2000-01-01" & data$date <= "2010-12-31", ]
- as.data.frame(table(dataSubset$time))
 
-# Zusammenfassen von = Uhr, 1 Uhr und 2 Uhr...?
+  # long to wide format pro Tag
+ dataLong <- reshape(dataSubset,
+                     idvar = c("longitude", "latitude", "date"),
+                     timevar = "time",
+                     direction = "wide")
  
-#library(dplyr)
-#data06 <- data %>% filter(time == "06:00:00" | time == "07:00:00") 
-#dim(data06)
+ dataLong <- dataLong[,c(3,1,2,4,6,8,10,5,7,9,11)]
+ names(dataLong) <- c("date", "longitude", "latitude","mslp.00","mslp.06","mslp.12", "mslp.18","geopotential.00", "geopotential.06","geopotential.12", "geopotential.18")
 
-#dataSubset <- data06[data06$date >= "2000-01-01" & data06$date <= "2010-12-31", ]
-
-saveRDS(dataSubset, "C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten/reanalysis.rds")
+ 
+saveRDS(data, "C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten/reanalysis.rds")
+saveRDS(dataSubset, "C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten/reanalysisSubset.rds")
+saveRDS(dataLong, "C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten/reanalysisLong.rds")
 
 #Verteilung
 
@@ -52,9 +68,6 @@ c <- as.data.frame(table(data$latitude))
 
 data20000 <- dataSubset[dataSubset$date == "2000-01-01",]
 #Pro Tag 4 Messungen für jeden Standort, also 640 Messungen an einem Tag 
-
-
-#Visualisierung der Messpunkte in einer Europakarte 
 
 
 #Prüfen auf Unabhängigkeit der Variablen geopotential und mslp
