@@ -6,7 +6,7 @@ library(stringr)
 #gwl data
 gwl_data <- as.data.table(read.table("Data/GWL_1900-2010.csv", header = TRUE, sep = ";",
                                      na.strings = " "))
-#long to wide:
+#wide to long:
 gwl_data <- melt(gwl_data, id.vars = c("JAHRMONAT"), measure.vars = patterns("^X"),
                  variable.name = "day", value.name = "gwl")
 #split year and month

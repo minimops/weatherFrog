@@ -1,0 +1,38 @@
+###This is to be used to document the different saved Datasets
+
+#Datasets
+
+* data_reanalysis_20201109.rds
+  + original Data provided. dataframe of sea
+    level presure and geopot at 4 times per day
+    over an 8x20 Grid for the years 1900-2010.
+    
+* cli_data.rds
+  + a data.table of the original Data with split
+    Date and time (as Hour only).
+    
+* cli_data_2k.rds
+  + data.table of cli_data.rds with only the 
+    years 2000-2010.
+    
+* cli_data_2k_avgDay.rds
+  + data.table of cli_data_2k.rds averaging the
+    values over the Day, crating one measurement
+    per Day.
+    
+* GWL_1900-2010.csv
+  + the original provided Dataset of GWL in the
+    years 1900-2010
+    
+* gwl.rds
+  + data.table of the GWL in long format with 
+    a Date format.
+    
+* gwl_split.rds
+  + data.table of the GWL in long format with 
+    split Date as Year, Month and Day.
+    
+* gwl_2000s_split.rds
+  + data.table of gwl_split.rds subsetting the
+    years 2000-2010
+    
