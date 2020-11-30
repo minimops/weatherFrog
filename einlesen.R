@@ -77,3 +77,31 @@ mean(DTdataSubset$geopotential)
 # plot(DTdataSubset$mslp, DTdataSubset$geopotential)
 
 head(DTdataSubset)
+
+
+### data table mit den Jahren 2000-2010, auf einen Ort und eine Uhrzeit beschränkt.
+DTdataSubsetLoc <- DTdataSubset[longitude < -63 & latitude > 73]
+DTdataSubsetLoc[, .(mslp, geopotential)]
+
+
+
+
+####### Clusterversuche vgl. Tutorium
+# erster Clusterversuch, klappt so aber nicht wirklich.
+
+cluster <- agnes(x = DTdataSubsetLoc[, .(mslp, geopotential)], diss = FALSE, method = "average", metric = "euclidean")
+plot(cluster,which.plots=2, main="Euklidische Metrik")
+rect.hclust(cluster, k = 8)
+
+cluster
+## weiß nicht, wie man das interpretieren soll..
+plot(DTdataSubsetLoc$mslp, DTdataSubsetLoc$geopotential)
+
+
+
+#### modellbasiertes Clusterverfahren
+modCluster <- Mclust(DTdataSubsetLoc[, .(mslp, geopotential)])
+summary(modCluster$BIC)
+summary(modCluster, parameters = TRUE)
+plot(modCluster)
+###check ich nicht
