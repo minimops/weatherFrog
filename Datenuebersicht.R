@@ -42,10 +42,6 @@ data18$time <- "18:00:00"
  names(dataLong) <- c("date", "longitude", "latitude","mslp.00","mslp.06","mslp.12", "mslp.18","geopotential.00", "geopotential.06","geopotential.12", "geopotential.18")
 
  
-saveRDS(data, "C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten/reanalysis.rds")
-saveRDS(dataSubset, "C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten/reanalysisSubset.rds")
-saveRDS(dataLong, "C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten/reanalysisLong.rds")
-
 #Verteilung
 
 hist(dataSubset$mslp)
