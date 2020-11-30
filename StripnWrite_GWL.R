@@ -26,6 +26,7 @@ gwl_2000s <- gwl_data_split[year %in% seq(2000, 2010), ]
 
 
 #saving datasets to Data folder
+
 saveRDS(gwl_data_split, "Data/gwl_split.rds")
 saveRDS(gwl_data, "Data/gwl.rds")
 saveRDS(gwl_2000s, "Data/gwl_2000s_split.rds")
