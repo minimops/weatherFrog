@@ -29,6 +29,19 @@
     values over the Day, creating one measurement
     per Day.
     
+* cli_data_05_mslp_wide.rds
+  + data.table only with average mslp and the years
+    2006-2010 in wide format 
+
+* cli_data_05_geo_wide.rds
+  + data.table only with average geopotential and 
+    the years 2006-2010 in wide format  
+    
+* cli_data_05_wide.rds
+  + data.table with both mslp and geopotential over 
+    the years 2006-2010 in wide format  
+    
+    
 * dataSubset2000-2010.rds
   + data.table of the original data with only 
     the years 2000-2010 and the time 6 o'clock.
@@ -52,5 +65,6 @@
 * gwl_5_years_split.rds
    + data.table of gwl_split.rds subsetting the
     years 2006-2010
+    
     
     
