@@ -67,3 +67,5 @@ names(cli_data_05_avgDay_both_all)[23:42] <- unlist(lapply(names(cli_data_05_avg
 # speichern
 saveRDS(cli_data_05_avgDay_both_all, "Data/cli_data_05_wide.rds")
 
+
+### weiß trotzdem noch nicht soooo genau wie man das dann beim clustern anwendet
