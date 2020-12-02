@@ -1,5 +1,5 @@
 library(ggplot2)
-
+library(data.table)
 
 ggplot(data = copy(cli_data_2k_avgDay)[format(date, "%Y-%m-%d") %in% c("2000-01-01")], 
        aes(x = longitude, y = latitude, color = avg_geopot)) +
@@ -46,4 +46,71 @@ ggplot(data = world) +
   labs( x = "Longitude", y = "Latitude") +
   ggtitle("World map", subtitle = paste0("(", length(unique(world$admin)), " countries)")) +
   geom_point(data = one_day, aes(x = longitude, y = latitude, color = avg_mslp))
+
+
+library(dplyr)
+library(tidyr)
+library(gstat)
+library(rgdal)
+library(raster)
+library(rgeos)
+library(scales)
+
+# create spatial points object
+oneday_mslp_sp <- as.data.frame(one_day)
+# convert the data into spatial coordinates
+coordinates(oneday_mslp_sp) <- ~longitude + latitude
+class(oneday_mslp_sp)
+
+plot(oneday_mslp_sp)
+
+summary(one_day$longitude)
+summary(one_day$latitude)
+
+x_range <- c(min(one_day$longitude), max(one_day$longitude))
+y_range <- c(min(one_day$latitude), max(one_day$latitude))
+
+
+grd <- expand.grid(x = seq(from = x_range[1],
+                           to = x_range[2], 
+                           by = 1),
+                   y = seq(from = y_range[1],
+                           to = y_range[2], 
+                           by = 1))  # expand points to grid  
+
+# Convert grd object to a matrix and then turn into a spatial
+# points object
+coordinates(grd) <- ~x + y
+# turn into a spatial pixels object
+gridded(grd) <- TRUE  
+
+plot(grd, cex = 1.5, col = "grey")
+plot(oneday_mslp_sp,
+     pch = 15,
+     col = "red",
+     cex = 1,
+     add = TRUE)
+
+# interpolate the data
+idw_pow1 <- idw(formula = avg_mslp ~ 1,
+                locations = oneday_mslp_sp,
+                newdata = grd,
+                idp = 3)
+
+plot(idw_pow1,
+     col = terrain.colors(55))
+
+gplot_oneDay <- as.data.frame(idw_pow1)
+
+ggplot(data = world) +
+  geom_sf(fill = "gray90") +
+  labs( x = "Longitude", y = "Latitude") +
+  ggtitle("mslp on 01-01-2000") +
+  coord_sf(xlim = c(-70.00, 50.00), ylim = c(30.00, 77.00), expand = FALSE) +
+  geom_raster(data = gplot_oneDay, aes(x = x, y = y, fill = var1.pred, alpha = 0.8)) +
+  scale_fill_gradientn(name = "mslp in Pa", colors = rainbow(100)) +
+  guides(fill = guide_colorbar()) +
+  scale_alpha(guide = "none") + 
+  theme_bw()
+
 
