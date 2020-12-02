@@ -23,12 +23,13 @@ setcolorder(gwl_data, c("date", "gwl"))
 
 #subset timeframe
 gwl_2000s <- gwl_data_split[year %in% seq(2000, 2010), ]
-
+gwl_5_years <- gwl_data_split[year %in% seq(2006, 2010), ]
 
 #saving datasets to Data folder
 
 saveRDS(gwl_data_split, "Data/gwl_split.rds")
 saveRDS(gwl_data, "Data/gwl.rds")
 saveRDS(gwl_2000s, "Data/gwl_2000s_split.rds")
-
+saveRDS(gwl_5_years, "Data/gwl_5_years_split.rds")
+dim(gwl_5_years)
 

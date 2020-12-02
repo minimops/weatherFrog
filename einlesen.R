@@ -55,6 +55,8 @@ dim(DTdataSubset)
 # save data
 saveRDS(DTdataSubset,"Data\\dataSubset2000-2010.rds")
 
+DTdataSubset <- readRDS("Data\\dataSubset2000-2010.rds")
+
 hist(DTdataSubset$mslp)
 # kann man evtl als normalverteilt annehmen? Wie weiß man sowas?
 hist(DTdataSubset$geopotential)
@@ -71,8 +73,8 @@ mean(DTdataSubset$mslp)
 # Mittelwert: 101356.9
 mean(DTdataSubset$geopotential)
 # Mittelwert 54075.83
-
-
+library(data.table)
+library(cluster)
 
 # plot(DTdataSubset$mslp, DTdataSubset$geopotential)
 
@@ -82,15 +84,20 @@ head(DTdataSubset)
 ### data table mit den Jahren 2000-2010, auf einen Ort und eine Uhrzeit beschränkt.
 DTdataSubsetLoc <- DTdataSubset[longitude < -63 & latitude > 73]
 DTdataSubsetLoc[, .(mslp, geopotential)]
+DTdataSubsetTime <- DTdataSubset[date < "2000-01-02"]
+DTdataSubsetTime[, .(mslp, geopotential)]
 
 
-
-
+DTdataSubset <- readRDS("Data\\DTdataSubset.rds")
 ####### Clusterversuche vgl. Tutorium
 # erster Clusterversuch, klappt so aber nicht wirklich.
-
+library(cluster)
+library(data.table)
 cluster <- agnes(x = DTdataSubsetLoc[, .(mslp, geopotential)], diss = FALSE, method = "average", metric = "euclidean")
 plot(cluster,which.plots=2, main="Euklidische Metrik")
+
+clusterTime <- agnes(x = DTdataSubsetTime[, .(mslp, geopotential)], diss = FALSE, method = "average", metric = "euclidean")
+plot(clusterTime, which.plots=2, main="Euklidische Metrik")
 rect.hclust(cluster, k = 8)
 
 cluster
@@ -100,8 +107,15 @@ plot(DTdataSubsetLoc$mslp, DTdataSubsetLoc$geopotential)
 
 
 #### modellbasiertes Clusterverfahren
+library(mclust)
 modCluster <- Mclust(DTdataSubsetLoc[, .(mslp, geopotential)])
 summary(modCluster$BIC)
 summary(modCluster, parameters = TRUE)
 plot(modCluster)
 ###check ich nicht
+
+
+cova <- cov(as.data.frame(DTdataSubsetLoc[, .(mslp, geopotential)]))
+
+maha <- mahalanobis(as.data.frame(DTdataSubsetLoc[, .(mslp, geopotential)]),c(101356.9, 54075.83), cov = cova)
+summary(maha)
