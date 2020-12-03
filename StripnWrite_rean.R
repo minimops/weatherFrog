@@ -44,3 +44,20 @@ cli_data_05_avgDay <- copy(cli_data_05)[, .(avg_mslp = mean(mslp),
 #save avg 2k dataset
 saveRDS(cli_data_2k_avgDay, "Data/cli_data_2k_avgDay.rds")
 saveRDS(cli_data_05_avgDay, "Data/cli_data_05_avgDay.rds")
+
+
+#replace longitude and latitude with indeciies
+cli_data_05_avgDay_index <- copy(cli_data_05_avgDay)
+setorder(cli_data_05_avgDay_index, date, longitude, latitude)
+
+cli_data_05_avgDay_index[, geoIndex := 1:.N, by = date][, ":=" (longitude = NULL,
+                                                                latitude = NULL)]
+saveRDS(cli_data_05_avgDay_index, "Data/cli_data_05_avgDay_index.rds")
+
+#create wide format dataset
+cli_data_05_avg_wide <- dcast(copy(cli_data_05_avgDay_index),
+                              date ~ geoIndex,
+                              value.var = c("avg_mslp", "avg_geopot"))
+
+saveRDS(cli_data_05_avg_wide, "Data/cli_data_05_avgDay_wide.rds")
+
