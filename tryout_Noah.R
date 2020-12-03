@@ -53,10 +53,10 @@ ggplot(data = world) +
   geom_point(data = one_day, aes(x = longitude, y = latitude, color = avg_mslp))
 
 
+
 library(dplyr)
 library(tidyr)
 library(gstat)
-library(rgdal)
 library(raster)
 library(rgeos)
 library(scales)
@@ -78,10 +78,10 @@ y_range <- c(min(one_day$latitude), max(one_day$latitude))
 
 grd <- expand.grid(x = seq(from = x_range[1],
                            to = x_range[2], 
-                           by = 1),
+                           by = 2),
                    y = seq(from = y_range[1],
                            to = y_range[2], 
-                           by = 1))  # expand points to grid  
+                           by = 2))  # expand points to grid  
 
 # Convert grd object to a matrix and then turn into a spatial
 # points object
@@ -91,7 +91,7 @@ gridded(grd) <- TRUE
 
 plot(grd, cex = 1.5, col = "grey")
 plot(oneday_mslp_sp,
-     pch = 15,
+     pch = 10,
      col = "red",
      cex = 1,
      add = TRUE)
@@ -117,4 +117,3 @@ ggplot(data = world) +
   guides(fill = guide_colorbar()) +
   scale_alpha(guide = "none") + 
   theme_bw()
-
