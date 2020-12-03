@@ -1,14 +1,17 @@
 library(ggplot2)
 library(data.table)
 
-ggplot(data = copy(cli_data_2k_avgDay)[format(date, "%Y-%m-%d") %in% c("2000-01-01")], 
-       aes(x = longitude, y = latitude, color = avg_geopot)) +
-  geom_point(size = 2)
+cli_data_2k_avgDay <- readRDS("Data/cli_data_2k_avgDay.rds")
 
 
 one_day <- copy(cli_data_2k_avgDay)[format(date, "%Y-%m-%d")
                                     %in% c("2000-01-01"), ][, 
                                     avg_geopot := NULL]
+
+ggplot(data = one_day, 
+       aes(x = longitude, y = latitude, color = avg_mslp)) +
+  geom_point(size = 2)
+
 
 cli_data_2k_avgDay_mslp <- dcast(copy(one_day),
                                  latitude ~ longitude,
@@ -17,11 +20,13 @@ cli_data_2k_avgDay_mslp <- dcast(copy(one_day),
 
 names(cli_data_2k_avgDay_mslp) <- as.character(seq(1, 20))
 
-# Ward Hierarchical Clustering
-d <- dist(mydata, method = "euclidean") # distance matrix
-fit <- hclust(d, method="ward")
-plot(fit) # display dendogram
-
+# 
+# 
+# # Ward Hierarchical Clustering
+# d <- dist(mydata, method = "euclidean") # distance matrix
+# fit <- hclust(d, method="ward")
+# plot(fit) # display dendogram
+# 
 
 
 #drawing into map
@@ -112,5 +117,4 @@ ggplot(data = world) +
   guides(fill = guide_colorbar()) +
   scale_alpha(guide = "none") + 
   theme_bw()
-
 
