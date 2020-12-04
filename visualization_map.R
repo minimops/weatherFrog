@@ -22,12 +22,12 @@ cli_data_2k_avgDay_mslp <- dcast(copy(one_day),
 names(cli_data_2k_avgDay_mslp) <- as.character(seq(1, 20))
 
 
-library(sf)
-library(rgeos)
+
 library(rnaturalearth)
-library(rnaturalearthdata)
 # load data
 world <- ne_countries(scale = "medium", returnclass = "sf")
+
+
 # world map
 world_map <- ggplot(data = world) +
   geom_sf() +
@@ -66,9 +66,7 @@ world_map +
 
 
 library(gstat)
-library(raster)
 library(rgeos)
-library(scales)
 
 # create spatial points object
 oneday_mslp_sp <- as.data.frame(one_day)
@@ -126,3 +124,4 @@ ggplot(data = world) +
   guides(fill = guide_colorbar()) +
   scale_alpha(guide = "none") + 
   theme_bw()
+
