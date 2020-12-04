@@ -2,6 +2,7 @@
 
 library(ggfortify)
 library(cluster)
+library(data.table)
 
 #import Datasets
 wide_05 <- readRDS("Data/cli_data_05_avgDay_wide.rds") 
@@ -28,7 +29,7 @@ pca.plot <- autoplot(pca_05, data = wide_05, colour = "gwl")
 pca.plot
 
 
-autoplot(clara(wide_05[3:162], 8), 
+autoplot(clara(wide_05[3:162], 4), 
          frame = TRUE, frame.type = "norm")
 
 
@@ -44,13 +45,14 @@ plot(1:15, wss, type="b", xlab="Number of Clusters",
      ylab="Within groups sum of squares")
 
 
-fit <- kmeans(comp, 4, nstart=25, iter.max=1000)
+fit <- kmeans(comp, 8, nstart=25, iter.max=1000)
 aggregate(comp,by=list(fit$cluster),FUN=mean)
 # append cluster assignment
 mydata <- data.frame(comp, fit$cluster)
 mydata <- data.frame(mydata, wide_05$gwl)
 
 
+#which proportion of GWL x is in which cluster
 (clust_table_1 <- round(
   prop.table(table(mydata$wide_05.gwl, mydata$fit.cluster), margin = 1), 2))
 
