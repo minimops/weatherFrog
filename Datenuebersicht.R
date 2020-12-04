@@ -1,10 +1,8 @@
-setwd("C:/Users/asus/Documents/StatistikBio/5.Semester/StatistischesPraktikum/Daten")
-
 library(dplyr)
 
-data <- readRDS(file = "data_reanalysis_20201109.rds")
+data <- readRDS("Data\\data_reanalysis_20201109.rds")
 data$time
-wetterlagen <- read.csv("GWL_1900-2010.csv",sep =";", na.strings = " ", header = T)
+wetterlagen <- read.csv("Data\\GWL_1900-2010.csv",sep =";", na.strings = " ", header = T)
 
 # Jahre 2000 bis 2010 audwählen
 
@@ -41,7 +39,10 @@ data18$time <- "18:00:00"
  dataLong <- dataLong[,c(3,1,2,4,6,8,10,5,7,9,11)]
  names(dataLong) <- c("date", "longitude", "latitude","mslp.00","mslp.06","mslp.12", "mslp.18","geopotential.00", "geopotential.06","geopotential.12", "geopotential.18")
 
- 
+
+saveRDS(dataLong,"Data\\dataLong") 
+saveRDS(dataSubset,"Data\\dataSubset") 
+
 #Verteilung
 
 hist(dataSubset$mslp)
