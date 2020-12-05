@@ -56,10 +56,13 @@ groesser2gwl <- na.omit(groesser2gwl)
 # Herausfiltern aller GWL, die 3 mal oderöfter an darauffolgenden Tagen vorkamen
 groesser3gwl <- as.data.frame(matrix(ncol = 4))
 
-for ( i in 1: 1825) {
-  if (gwl_data[i,4] == gwl_data[(i + 1), 4]) {
+for ( i in 1: 106) {
+  if (groesser2gwl[i,4] == groesser2gwl[(i + 1), 4]) {
     groesser3gwl[i,] <-  gwl_data[i,c(1:4)]
   }
 }
-na.omit(groesser3gwl)
+groesser3gwl <- na.omit(groesser3gwl)
 
+#ToDo: 
+#Laufindex noch schön schrieben und nicht als Zahl
+#Variablennamen
