@@ -72,6 +72,9 @@
 * dataLong.rds
   + data subset: wide format : mslp and geopotential combined with the four
     measurement per day as variable
+
+* gwl_5_years1.rds
+  + removed empty rows from data set gwl_5_years1.rds
     
     
     
