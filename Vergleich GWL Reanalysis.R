@@ -21,7 +21,7 @@ table(gwl_5_years$month,gwl_5_years$year)
 gwl_5_years1 <- gwl_5_years[!(apply(gwl_5_years, 1, function(y) any(y == ""))),]
 saveRDS(gwl_5_years1, file = "Data\\gwl_5_years1.rds")
 
-gwl_5_years <- gwl_5_years[-c()]
+
 
 #Merge data frames
 
@@ -43,7 +43,10 @@ gwl_data <- cbind(subdata,gwl_data)
 
 groesser2gwl <- as.data.frame(matrix(ncol = 4))
 
-for ( i in 1: 1825) {
+
+
+
+for ( i in seq_len(nrow(gwl_data)-1)) {
   if (gwl_data[i,4] == gwl_data[(i + 1), 4]) {
   groesser2gwl[i,] <-  gwl_data[i,c(1:4)]
   }
@@ -56,13 +59,15 @@ groesser2gwl <- na.omit(groesser2gwl)
 # Herausfiltern aller GWL, die 3 mal oderöfter an darauffolgenden Tagen vorkamen
 groesser3gwl <- as.data.frame(matrix(ncol = 4))
 
-for ( i in 1: 106) {
+for ( i in seq_len(nrow(groesser2gwl)-1)) {
   if (groesser2gwl[i,4] == groesser2gwl[(i + 1), 4]) {
-    groesser3gwl[i,] <-  gwl_data[i,c(1:4)]
+    groesser3gwl[i,] <-  groesser2gwl[i,c(1:4)]
   }
 }
 groesser3gwl <- na.omit(groesser3gwl)
 
-#ToDo: 
-#Laufindex noch schön schrieben und nicht als Zahl
-#Variablennamen
+colnames(groesser3gwl) <- colnames(gwl_data[,1:4])
+
+# 1 GWL in groesser3gwl : GWL kommt an drei aufeinanderfolgenden Tagen vor
+
+
