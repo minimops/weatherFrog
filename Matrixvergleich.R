@@ -70,4 +70,20 @@ for (j in 1:1826) {
 
 saveRDS(matrix.dist_2, "Data/matrix_dist_eukl.rds")
 
+class(as.dist(matrix.dist_2))
 
+clust <- hclust(as.dist(matrix.dist_2), method = "ward.D2")
+plot(clust)
+
+clusters <- cutree(clust, k = 9)
+
+library(sf)
+#install.packages("motif")
+library(motif)
+library(stars)
+
+# findet das paket motif nicht, muss erstmal R updaten
+
+climate_cove <-  lsp_signature(data.mslp, type = "cove",
+                               window = 100, normalization = "pdf")
+grid <- lsp_add_clusters()
