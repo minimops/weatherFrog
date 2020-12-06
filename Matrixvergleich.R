@@ -51,7 +51,7 @@ for (j in 1:1826) {
 
 saveRDS(matrix.dist, "Data/matrix_dist.rds")
 
-mat <- readRDS("data/matrix_dist.rds")
+
 
 
 ## und nochmal für die euklidische
@@ -69,21 +69,38 @@ for (j in 1:1826) {
 }
 
 saveRDS(matrix.dist_2, "Data/matrix_dist_eukl.rds")
+matrix.dist_2 <- readRDS("data/matrix_dist_eukl.rds")
 
+# mit as.dist() ist es eine richtige Distanzmatrix
 class(as.dist(matrix.dist_2))
 
-clust <- hclust(as.dist(matrix.dist_2), method = "ward.D2")
-plot(clust)
+# hclust mit clusterabstand ward 
+hclust <- hclust(as.dist(matrix.dist_2), method = "ward.D2")
+plot(hclust)
 
-clusters <- cutree(clust, k = 9)
+
+## hab einfahc mal 9 genommen, muss man da auch einen elbow plot machen ?
+clusters <- cutree(hclust, k = 9)
 
 library(sf)
-#install.packages("motif")
+install.packages("motif")
 library(motif)
+# es findet leider kein Paket motif... obwohl ich R geupdatet habe und das Paket installiert habe.
 library(stars)
-
+library(abind)
 # findet das paket motif nicht, muss erstmal R updaten
 
 climate_cove <-  lsp_signature(data.mslp, type = "cove",
                                window = 100, normalization = "pdf")
 grid <- lsp_add_clusters()
+
+
+install.packages("installr")
+library(installr)
+
+
+
+
+##### ich habe mich hierbei an der wesite spatial clustering orientiert, die Noa mal reingeschickt hat.
+# Aber das clustert zwar räumlic aber nur zu einem zeitpunkt... deshalb verstehe ich hier grade 
+# nicht ganz, inwiefern man sich an die website halten kann..
