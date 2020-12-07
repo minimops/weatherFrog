@@ -73,8 +73,8 @@
   + data subset: wide format : mslp and geopotential combined with the four
     measurement per day as variable
 
-* gwl_5_years1.rds
-  + removed empty rows from data set gwl_5_years1.rds
+* gwl_data1 
+  + GWL_1900-2010.csv ins long format ueberfuehrt mit kalendarischer     Datumsabfolge
     
     
     
