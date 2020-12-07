@@ -125,3 +125,11 @@ dist.eucl <- dist(distance.test, method = "euclidean")
 fviz_dist(dist.eucl)
 fviz_dist(as.dist(matrix_dist_eukl[1:500, 1:500]))
 
+
+
+# dist.mat500 <- as.matrix(dist(distance.test))[1:500, 1:500]
+# dist.over <- 1/dist.mat500 # one over, as qgraph takes similarity matrices as input
+# library(qgraph)
+# jpeg('example_forcedraw.jpg', width=1000, height=1000, unit='px')
+# qgraph(dist.over, layout='spring', vsize=3)
+# dev.off()
