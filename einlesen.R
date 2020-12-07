@@ -114,7 +114,7 @@ summary(modCluster, parameters = TRUE)
 plot(modCluster)
 ###check ich nicht
 
-
+sapply(DTdataSubset[, .(mslp, geopotential)], var)
 cova <- cov(as.data.frame(DTdataSubsetLoc[, .(mslp, geopotential)]))
 
 maha <- mahalanobis(as.data.frame(DTdataSubsetLoc[, .(mslp, geopotential)]),c(101356.9, 54075.83), cov = cova)
