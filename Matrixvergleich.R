@@ -11,7 +11,7 @@ data.mslp <- readRDS("Data/cli_data_05_mslp_wide.rds")
 data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
 # hier werden die Tage gespeichert.
 names <- data.wide$date
-
+class(as.character(names))
 dim(data.all)[[1]] / 8
 # es sind insgesamt 1826 Tage 
 
@@ -70,9 +70,23 @@ for (j in 1:1826) {
 
 saveRDS(matrix.dist_2, "Data/matrix_dist_eukl.rds")
 matrix.dist_2 <- readRDS("data/matrix_dist_eukl.rds")
+matrix.dist <- readRDS("data/matrix_dist.rds")
 
+# zeilen und spalten namen ändern
+colnames(matrix.dist_2) <- as.character(names)
+rownames(matrix.dist_2) <- as.character(names)
+colnames(matrix.dist) <- as.character(names)
+rownames(matrix.dist) <- as.character(names)
+
+?norm
 # mit as.dist() ist es eine richtige Distanzmatrix
 class(as.dist(matrix.dist_2))
+
+
+### einmal ohne distanzmatrix und clara versuchen
+?clara
+a <- clara(data.wide[, 2:321], k = 9,metric = "euclidean")
+plot(a)
 
 # hclust mit clusterabstand ward 
 hclust <- hclust(as.dist(matrix.dist_2), method = "ward.D2")
@@ -82,25 +96,20 @@ plot(hclust)
 ## hab einfahc mal 9 genommen, muss man da auch einen elbow plot machen ?
 clusters <- cutree(hclust, k = 9)
 
+plot(clusters, col = colorspace::diverge_hsv(9))
 library(sf)
-install.packages("motif")
+install.packages("motif", type = "source")
 library(motif)
-# es findet leider kein Paket motif... obwohl ich R geupdatet habe und das Paket installiert habe.
+# es findet leider kein Paket motif... obwohl ich R geupdatet habe..
 library(stars)
 library(abind)
-# findet das paket motif nicht, muss erstmal R updaten
+
 
 climate_cove <-  lsp_signature(data.mslp, type = "cove",
                                window = 100, normalization = "pdf")
 grid <- lsp_add_clusters()
 
 
-install.packages("installr")
-library(installr)
-
-
-
-
-##### ich habe mich hierbei an der wesite spatial clustering orientiert, die Noa mal reingeschickt hat.
+##### ich habe mich hierbei an der wesite spatial clustering orientiert, die Noah mal reingeschickt hat.
 # Aber das clustert zwar räumlic aber nur zu einem zeitpunkt... deshalb verstehe ich hier grade 
 # nicht ganz, inwiefern man sich an die website halten kann..
