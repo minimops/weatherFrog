@@ -28,11 +28,12 @@ dat <- data.mslp[, 3:22]
 colnames(dat) <- as.character(c(1:20))
 
 dat <- as.data.frame(dat)
-data_both <- dat
+
 
 
 ## das sind die tief und hochdruck gebiete... dadurch dass es eine 8x20 matrix ist, kann man gut sehen wo auf der karte sich
 # die gebiete ungefähr befinden
+data_both <- dat
 for (i in 1:20) {
   for (j in seq_len(14608)) {
     if (data_both[j, i] < 102000 && dat[j, i] > 100000) {
@@ -59,7 +60,8 @@ for (i in 1:20) {
   }
 }
 
-
+### hier werden die tief und hochdruck gebiete tageweise aufgesplittet
+# -> liste mit 1826 einträgen; einträge sind 8x20 matrizen
 tiefdruck <- as.data.table(tiefdruck)
 tiefdruck[, id := rep(1:1826, each = 8)]
 tiefdruck.split <- split(tiefdruck, tiefdruck[, id])
@@ -70,8 +72,10 @@ hochdruck.split <- split(hochdruck, hochdruck[, id])
 
 
 class(tiefdruck.split[[1]])
-which(tiefdruck.split[[992]] == min(tiefdruck.split[[992]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
-lapply(tiefdruck.split, function(x) min(tiefdruck.split[[x]][, 1:20], na.rm = TRUE))
+# immer noch data.table in den listen
+
+
+# minimum und maximum sind 2 vektoren, die an jedem tag das minimum bzw maximum an luftdruck festhalten
 minimum <- numeric(length = 1826)
 maximum <- numeric(length = 1826)
 for(i in seq_len(1826)) {
@@ -82,8 +86,6 @@ for(i in seq_len(1826)) {
   }
 }
 length(tiefdruck.split)
-?min
-all(is.na(tiefdruck.split[[177]][, 1:20]))
 
 for(i in seq_len(1826)) {
   if (all(is.na(hochdruck.split[[i]][, 1:20]))) {
@@ -93,6 +95,8 @@ for(i in seq_len(1826)) {
   }
 }
 
+
+## einmal max und min geplottet, man erkennt deutlich saisonale unterschiede
 plot(minimum)
 hist(minimum)
 plot(density(minimum, na.rm = TRUE))
@@ -100,6 +104,7 @@ plot(maximum)
 hist(maximum)
 plot(density(maximum))
 
+## hier kategorisiere ich die mins und maxs, aber ich glaube das brauchen wir am ende gar nicht..
 tiefpunkt <- numeric(length = 1826)
 hochpunkt <- numeric(length = 1826)
 
@@ -126,13 +131,18 @@ for (i in seq_len(1826)) {
     hochpunkt[i] <- 3
   }
 }
+
+# an 145 tagen gibt es kein tiefdruckgebiet
 sum(is.na(minimum))
 table(tiefpunkt)
 table(hochpunkt)
 # 0 entspricht also keinem Tiefpunkt falls wirs wirklich diskret machen,
 # ansonsten würde ich das minimum lassen
-## tief und hochpunkt entsprich nicht der anzahl der hoch oder tiefpunkte, sondern
+## tief und hochpunkt entspricht nicht der anzahl der hoch oder tiefpunkte, sondern
 # eine art faktor variable
+
+
+## intensität zeigt, wie groß die hochdruck bzw tiefdruckgebiete sind
 intensitaet.tief <- numeric(length = 1826)
 intensitaet.hoch <- numeric(length = 1826)
 for (i in seq_len(1826)) {
@@ -142,13 +152,123 @@ for (i in seq_len(1826)) {
 for (i in seq_len(1826)) {
   intensitaet.hoch[i] <- sum(sapply(hochdruck.split[[i]][, 1:20], function(x) sum(!is.na(x))))
 }
+
+
+
+coordinates.min <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
+coordinates.max <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
+
+for (i in seq_len(1826)) {
+  if (all(is.na(tiefdruck.split[[i]][, 1:20]))){
+    coordinates.min[i, ] <- NA
+  } else {
+  coordinates.min[i, ]<- which(tiefdruck.split[[i]] == min(tiefdruck.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
+  }
+}
+
+for (i in seq_len(1826)) {
+  if (all(is.na(hochdruck.split[[i]][, 1:20]))){
+    coordinates.max[i, ] <- NA
+  } else {
+    coordinates.max[i, ]<- which(hochdruck.split[[i]] == max(hochdruck.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
+  }
+}
+head(coordinates.min)
+head(coordinates.max)
+##   1 ...   5|6 ...  10|11 ... 15|16 ... 20
+##  ________________________________________
+## 1|1 1 1 1 1|2 2 2 2 2|3 3 3 3 3|4 4 4 4 4|
+## 2|1 1 1 1 1|2 2 2 2 2|3 3 3 3 3|4 4 4 4 4|
+## 3|1 1 1 1 1|2 2 2 2 2|3 3 3 3 3|4 4 4 4 4|
+## 4|1 1 1 1 1|2 2 2 2 2|3 3 3 3 3|4 4 4 4 4|
+## 5|5 5 5 5 5|6 6 6 6 6|7 7 7 7 7|8 8 8 8 8|
+## 6|5 5 5 5 5|6 6 6 6 6|7 7 7 7 7|8 8 8 8 8|
+## 7|5 5 5 5 5|6 6 6 6 6|7 7 7 7 7|8 8 8 8 8|
+## 8|5 5 5 5 5|6 6 6 6 6|7 7 7 7 7|8 8 8 8 8|
+
+# so teil ich das jetzt ein, falls euch was anderes einfällt, gerne bescheid sagen
+# 0 wenn kein minimum oder maximum besteht
+
+quadrant.min <- integer(length = 1826)
+for (i in 1:1826) {
+  if (coordinates.min[i, ][[1]] == 0) {
+    quadrant.min[i] <- 0
+  }
+  else if (coordinates.min[i, ][[1]] < 5) {
+    if (coordinates.min[i, ][[2]] < 6) {
+      quadrant.min[i] <- 1
+    }
+    else if (coordinates.min[i, ][[2]] < 11) {
+      quadrant.min[i] <- 2
+    }
+    else if (coordinates.min[i, ][[2]] < 16) {
+      quadrant.min[i] <- 3
+    }
+    else {
+      quadrant.min[i] <- 4
+    }
+  }
+  else {
+    if (coordinates.min[i, ][[2]] < 6) {
+      quadrant.min[i] <- 5
+    }
+    else if (coordinates.min[i, ][[2]] < 11) {
+      quadrant.min[i] <- 6
+    }
+    else if (coordinates.min[i, ][[2]] < 16) {
+      quadrant.min[i] <- 7
+    }
+    else {
+      quadrant.min[i] <- 8
+    }
+  }
+}
+
+
+quadrant.max <- integer(length = 1826)
+for (i in 1:1826) {
+  if (coordinates.max[i, ][[1]] == 0) {
+    quadrant.max[i] <- 0
+  }
+  else if (coordinates.max[i, ][[1]] < 5) {
+    if (coordinates.max[i, ][[2]] < 6) {
+      quadrant.max[i] <- 1
+    }
+    else if (coordinates.max[i, ][[2]] < 11) {
+      quadrant.max[i] <- 2
+    }
+    else if (coordinates.max[i, ][[2]] < 16) {
+      quadrant.max[i] <- 3
+    }
+    else {
+      quadrant.max[i] <- 4
+    }
+  }
+  else {
+    if (coordinates.max[i, ][[2]] < 6) {
+      quadrant.max[i] <- 5
+    }
+    else if (coordinates.min[i, ][[2]] < 11) {
+      quadrant.min[i] <- 6
+    }
+    else if (coordinates.max[i, ][[2]] < 16) {
+      quadrant.max[i] <- 7
+    }
+    else {
+      quadrant.max[i] <- 8
+    }
+  }
+}
+
+which(quadrant.max == quadrant.min)
+## nur an 40 Tagen liegen Hoch und Tiefdruckgebiet im gleichen Quadranten. Passt also denk ich ganz gut.
+
+
+# brauchen wir wahrscheinlich nicht, aber ich nehme mal das jahr, monat und tag als einzelne variablen mit 
+# in den datensatz
+
 year <- as.numeric(format(data.wide$date,"%Y"))
 month <- as.numeric(format(data.wide$date, "%m"))
 day <- as.numeric(format(data.wide$date, "%d"))
-discrete <- data.table(date, day, month, year, minimum, intensitaet.tief, tiefpunkt, intensitaet.hoch, maximum, hochpunkt)
-
-
-
-nonNA_counts <- sum(sapply(tiefdruck.split[[1]][, 1:20], function(x) sum(!is.na(x))))     
-
-
+discrete <- data.table(date, day, month, year, minimum, intensitaet.tief, quadrant.min, tiefpunkt, 
+                       maximum, intensitaet.hoch, quadrant.max, hochpunkt)
