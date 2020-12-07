@@ -48,7 +48,8 @@ for (j in 1:1826) {
   }
   
 }
-
+colnames(matrix.dist) <- as.character(names)
+rownames(matrix.dist) <- as.character(names)
 saveRDS(matrix.dist, "Data/matrix_dist.rds")
 
 
@@ -75,8 +76,7 @@ matrix.dist <- readRDS("data/matrix_dist.rds")
 # zeilen und spalten namen ändern
 colnames(matrix.dist_2) <- as.character(names)
 rownames(matrix.dist_2) <- as.character(names)
-colnames(matrix.dist) <- as.character(names)
-rownames(matrix.dist) <- as.character(names)
+
 
 ?norm
 # mit as.dist() ist es eine richtige Distanzmatrix
@@ -84,9 +84,11 @@ class(as.dist(matrix.dist_2))
 
 
 ### einmal ohne distanzmatrix und clara versuchen
+library(cluster)
 ?clara
 a <- clara(data.wide[, 2:321], k = 9,metric = "euclidean")
 plot(a)
+
 
 # hclust mit clusterabstand ward 
 hclust <- hclust(as.dist(matrix.dist_2), method = "ward.D2")
