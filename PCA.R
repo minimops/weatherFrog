@@ -73,3 +73,58 @@ ecb = function(x,y){ plot(x,t='n'); text(x,labels=wide_05$gwl, col=colors[wide_0
 tsne_iris = tsne(wide_05[,-c(1,2)], epoch_callback = ecb, perplexity=50)
 
 
+
+
+##Attempt #2
+#at PCA
+
+library(ggplot2)
+
+#load appropriate dataset
+#use long format to normalize values first
+cli_data_pca <- readRDS("Data/cli_data_05_avgDay_index.rds")
+gwl <- readRDS("Data/gwl.rds")
+#TODO wrong scaling?
+cli_data_pca[, ":=" (avg_mslp = scale(avg_mslp), avg_geopot = scale(avg_geopot))]
+#to wide
+cli_data_pca <- dcast(cli_data_pca,
+                date ~ geoIndex,
+                value.var = c("avg_mslp", "avg_geopot"))
+
+#attach gwl per Day and transform to df
+cli_data_pca <- as.data.frame(gwl[cli_data_pca, on = .(date)])
+
+#pca
+cli_pca_2 <- prcomp(as.data.frame(cli_data_pca)[3:322])
+
+#plotting first two pca
+cli_pca_2Scores <- data.frame(cli_pca_2$x[, 1:2])
+ggplot(cli_pca_2Scores, aes(y = PC1, x = PC2)) + 
+  geom_point(alpha = 0.3)
+
+#clustering
+plot(cli_pca_2) #elbow point at 4
+
+cumvar <- cumsum(cli_pca_2$sdev^2 / sum(cli_pca_2$sdev^2))
+(pc.index<-min(which(cumvar>0.85)))
+#but 85percent of variance with 10 components
+
+#continuing with 4 for now
+pca2_cluster <- cli_pca_2$x[, 1:4]
+
+library(factoextra)
+#optimal number of clusters
+fviz_nbclust(pca2_cluster, kmeans, method = "wss") +
+  geom_vline(xintercept = 4, linetype = 2)
+#clustering
+k2 <- kmeans(pca2_cluster, centers = 4, nstart = 25)
+
+
+fviz_cluster(k2, data = cli_data_pca[, - c(1, 2)])
+
+k2_clustered <- data.frame(cli_data_pca, k2$cluster)
+
+(clust_table_pca <- round(
+  prop.table(table(k2_clustered$gwl, k2_clustered$k2.cluster), margin = 1), 2))
+plot(clust_table_pca)
+

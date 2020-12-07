@@ -1,7 +1,7 @@
 # weatherFrog
 LMU StatPrakt WS 20/21 - large-scale weather conditions in europe
 
-Dependencies: data.table, stringr, ggplot2, rgeos, gstat, rnaturalearth, cluster, fortify, tsne
+Dependencies: data.table, stringr, ggplot2, rgeos, gstat, rnaturalearth, cluster, ggfortify, tsne
 
 Date of presentation:  
 Institut: Statistik, LMU Muenchen  

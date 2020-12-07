@@ -64,6 +64,11 @@ world_map +
                         fill = avg_mslp), alpha=0.5) +
   scale_fill_gradient(name = "mslp in Pa", low = "blue", high = "red")
 
+require(gridExtra)
+plot1 <- qplot(1)
+plot2 <- qplot(1)
+grid.arrange(plot1, plot2, ncol=2)
+
 
 library(gstat)
 library(rgeos)
