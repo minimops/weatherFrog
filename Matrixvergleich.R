@@ -115,3 +115,13 @@ grid <- lsp_add_clusters()
 ##### ich habe mich hierbei an der wesite spatial clustering orientiert, die Noah mal reingeschickt hat.
 # Aber das clustert zwar räumlic aber nur zu einem zeitpunkt... deshalb verstehe ich hier grade 
 # nicht ganz, inwiefern man sich an die website halten kann..
+
+
+library(factoextra)
+
+distance.test <- readRDS("Data/cli_data_05_avgDay_wide.rds")
+distance.test <- scale(data.frame(distance.test)[, -1])[1:500, ]
+dist.eucl <- dist(distance.test, method = "euclidean")
+fviz_dist(dist.eucl)
+fviz_dist(as.dist(matrix_dist_eukl[1:500, 1:500]))
+
