@@ -102,6 +102,9 @@ cli_pca_2Scores <- data.frame(cli_pca_2$x[, 1:2])
 ggplot(cli_pca_2Scores, aes(y = PC1, x = PC2)) + 
   geom_point(alpha = 0.3)
 
+autoplot(clara(as.data.frame(cli_data_pca)[3:322], 4), 
+         frame = TRUE, frame.type = "norm")
+
 #clustering
 plot(cli_pca_2) #elbow point at 4
 
@@ -110,14 +113,14 @@ cumvar <- cumsum(cli_pca_2$sdev^2 / sum(cli_pca_2$sdev^2))
 #but 85percent of variance with 10 components
 
 #continuing with 4 for now
-pca2_cluster <- cli_pca_2$x[, 1:4]
+pca2_cluster <- cli_pca_2$x[, 1:10]
 
 library(factoextra)
 #optimal number of clusters
 fviz_nbclust(pca2_cluster, kmeans, method = "wss") +
   geom_vline(xintercept = 4, linetype = 2)
 #clustering
-k2 <- kmeans(pca2_cluster, centers = 4, nstart = 25)
+k2 <- kmeans(pca2_cluster, centers = 10, nstart = 25)
 
 
 fviz_cluster(k2, data = cli_data_pca[, - c(1, 2)])
