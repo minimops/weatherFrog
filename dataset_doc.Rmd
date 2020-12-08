@@ -75,6 +75,9 @@
 
 * gwl_data1 
   + GWL_1900-2010.csv ins long format ueberfuehrt mit kalendarischer     Datumsabfolge
+  
+* cli_gwl_1971
+  +reanalysis und gwl data gemerged: eine Zeile = ein Tag
     
     
     
