@@ -49,6 +49,12 @@ gwl1971 <- gwl_data1[year %in% seq(1971, 2010), ]
 saveRDS(gwl1971, file ="Data\\gwl1971.rds")
 
 
+##############reanalysis data 
+cli_data <- as.data.table(readRDS("Data/data_reanalysis_20201109.rds"))
+
+#splitting Date and Time (takes a while)
+cli_data[, date := as.Date(cli_data$time, tz = "CET")]
+cli_data[, time := as.numeric(format(cli_data$time,"%H"))]
 
 
 
