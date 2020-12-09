@@ -3,6 +3,7 @@ library(ggplot2)
 library(data.table)
 library(stringr)
 library(tidyverse)
+library(dplyr)
 
 
 
@@ -113,37 +114,111 @@ saveRDS(cli_gwl_1971,"Data\\cli_gwl_1971.rds")
 
 
 # Hntereinadner folgende GWLs auflisten
+cli_gwl_1971 <- readRDS("Data\\cli_gwl_1971.rds")
+cli_gw_1971 <- readRDS("Data\\cli_gwl_1971.rds")
 
+index_length_gwl <-  rleid(cli_gwl_1971$gwl)
 
+cli_gwl_1971 <- cbind(index_length_gwl,cli_gwl_1971)
 
-b <- with(rle(cli_gwl_1971$gwl), lengths[values == "TRM"])
- table(b)  
 
 a <- rle(cli_gwl_1971$gwl)
-b <-a[["lengths"]]
-c <- a[["values"]]
 
 # gibt aus, wie viele Tage eine einzelne GWL andauert
-lengthGWL <-as.data.frame(cbind(c,b))
+lengthGWL <-as.data.frame(cbind(a[["values"]],a[["lengths"]]))
 colnames(lengthGWL) <- c("gwl","length")
+crosstable <- table(lengthGWL$gwl,lengthGWL$length)
+# Die meisten GWL dauern 3 bis 7 Tage an 
 
-sum(as.numeric(lengthGWL$length))
+
 
 # gibt aus, wie oft eine GWL im Zeitraum 1971 - 2010 vorkommt
 GWLAnzahl <- as.data.frame(table(lengthGWL$gwl))
 GWLAnzahl <-GWLAnzahl[order(GWLAnzahl$Freq),]
+# GWL WZ kommt am haufigsten vor 
 
 
 # Anzahl der GWLs je Laenge
-table(lengthGWL$length)
-AnzahlLaenge <- as.data.frame(table(lengthGWL$length))
-colnames(AnzahlLaenge) <- c("duration", "frequency")
-#### nicht numeric auf duration anwenden!!!! Verschiebt den data frame
+table(as.numeric(lengthGWL$length))
+
+################################
+# Gibt es saisonale Unterschiede im Aufkommen der Wetterlagen?
+
+#Meterologische Jahreszeiten: 
+#Winter: 1. 12. - 28./29. 2.
+#Frühling: 1. 3. bis 31. 5. 
+#Sommer: 1. 6. bis 31. 8.
+#Herbst: 1.9 bis 20.11
+
+#Spalte Jahreszeit cli_gwl_1971 hinzufügen
+
+cli_gwl_1971 <- cli_gwl_1971 %>%
+  mutate(Jahreszeit = case_when(month %in% c("12", "01", "02") ~ "Winter",
+                             month %in% c("03", "04", "05") ~ "Fruehling",
+                             month %in% c("06", "07", "08") ~ "Sommer",
+                             month %in% c("09", "10", "11") ~ "Herbst"))
+setcolorder(cli_gwl_1971,c("index_length_gwl","id","Jahreszeit"))
+
+#Laenge der GWLs nach Jahreszeit gruppiert berechnen
+
+cli_gwl_1971 <- as.data.table(cli_gwl_1971)
+gwlNachJahreszeit <- cli_gwl_1971[,(rle(gwl)), by = Jahreszeit]
 
 
+# Anzahl der GWLs gruppiert nach Jahreszeit
+
+table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)
 
 
+#####################################
+#Unterscheidet sich der erste und letzte Tag einer GWL?
+
+# Alle GWLs, die weniger als 4 Tage andauern, löschen
+clii <- cli_gwl_1971[,.(.N), by = index_length_gwl]
+cli_gwl_1971 <- merge(clii, cli_gwl_1971,by = "index_length_gwl")
+
+ cli_gwl_groesser3 <- cli_gwl_1971 %>%
+  group_by(index_length_gwl) %>%
+  filter(N >3)
+cli_gwl_groesser3 <- as.data.table(cli_gwl_groesser3)
 
 
+ # Mittelwert über alle Messpunkte der verschiedenen Standorte
+ cli_gwl_mean <- cli_gwl_groesser3 %>%
+   select(index_length_gwl,id, Jahreszeit,date, year, month,day,gwl) %>%
+       mutate(mslp_mean = rowMeans(cli_gwl_groesser3[,9 : 168]),
+             geo_mean = rowMeans(cli_gwl_groesser3[,169 : 328])) 
+ # sinnvoll, das so runterzukuerzen? Geht ja schon viel info verloren?
+
+
+ 
+cli_gwl_mean1 <- cli_gwl_mean %>%
+  select(index_length_gwl,mslp_mean)
+
+
+for( gwl_number in 1 : 20){
+ plot(cli_gwl_mean1$mslp_mean[cli_gwl_mean1$index_length_gwl == gwl_number])
+}
+######Viel zu viele Plots, nicht praktikabel
+
+
+# Differenzen bestimmen über gemittelte Standorte
+ cli_gwl_mean <- cli_gwl_mean %>%
+   group_by(index_length_gwl) %>%
+   mutate(mslp_diff = mslp_mean - lag(mslp_mean),
+          geo_diff = geo_mean - lag(geo_mean))
+ 
+ 
+ #Differenzen bestimmen über alle Standorte und dann einen Filtern setzen, wenn Differenz 
+ # bestimmten wert übersteigt
+ 
+
+ 
+
+ 
+ 
+
+ 
+ 
 
 
