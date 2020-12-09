@@ -4,6 +4,7 @@ library(data.table)
 library(stringr)
 library(tidyverse)
 library(dplyr)
+library(plyr)
 
 
 
@@ -115,7 +116,7 @@ saveRDS(cli_gwl_1971,"Data\\cli_gwl_1971.rds")
 
 # Hntereinadner folgende GWLs auflisten
 cli_gwl_1971 <- readRDS("Data\\cli_gwl_1971.rds")
-cli_gw_1971 <- readRDS("Data\\cli_gwl_1971.rds")
+
 
 index_length_gwl <-  rleid(cli_gwl_1971$gwl)
 
@@ -185,10 +186,17 @@ cli_gwl_groesser3 <- as.data.table(cli_gwl_groesser3)
 
  # Mittelwert über alle Messpunkte der verschiedenen Standorte
  cli_gwl_mean <- cli_gwl_groesser3 %>%
-   select(index_length_gwl,id, Jahreszeit,date, year, month,day,gwl) %>%
-       mutate(mslp_mean = rowMeans(cli_gwl_groesser3[,9 : 168]),
-             geo_mean = rowMeans(cli_gwl_groesser3[,169 : 328])) 
+   select(index_length_gwl,N,id, Jahreszeit,date, year, month,day,gwl) %>%
+       mutate(mslp_mean = rowMeans(cli_gwl_groesser3[,10 : 169]),
+             geo_mean = rowMeans(cli_gwl_groesser3[,170 : 329])) 
  # sinnvoll, das so runterzukuerzen? Geht ja schon viel info verloren?
+ 
+ # Differenzen berechnen
+ cli_gwl_mean <- cli_gwl_mean %>%
+   group_by(index_length_gwl) %>%
+   mutate(mslp_diff = mslp_mean - lag(mslp_mean),
+          geo_diff = geo_mean - lag(geo_mean))
+ 
 
 
  
@@ -202,20 +210,39 @@ for( gwl_number in 1 : 20){
 ######Viel zu viele Plots, nicht praktikabel
 
 
-# Differenzen bestimmen über gemittelte Standorte
- cli_gwl_mean <- cli_gwl_mean %>%
-   group_by(index_length_gwl) %>%
-   mutate(mslp_diff = mslp_mean - lag(mslp_mean),
-          geo_diff = geo_mean - lag(geo_mean))
+
+
  
  
  #Differenzen bestimmen über alle Standorte und dann einen Filtern setzen, wenn Differenz 
- # bestimmten wert übersteigt
+ # bestimmten wert übersteigt und mit dann diese GWLs ausgeben lassen 
  
+# Differenzen berechnen
+cli_gwl_mean <- cli_gwl_mean %>%
+  group_by(index_length_gwl) %>%
+  mutate(mslp_diff = mslp_mean - lag(mslp_mean),
+         geo_diff = geo_mean - lag(geo_mean))
 
- 
+#cli_gwl_diff <- cli_gwl_groesser3 %>%
+ # group_by(index_length_gwl) %>%
 
- 
+
+cli_gwl_diff <- cli_gwl_groesser3[, lapply(.SD, function(x) x - lag(x)), by = index_length_gwl, .SDcols = 10:329] 
+
+# Mittelwerte berechnen außer erstem und letztem Tag innerhalb eines GWLs
+
+cli_gwl_first_last <- ddply(cli_gwl_groesser3, .(index_length_gwl), function(x) x[c(1, nrow(x)), ])
+cli_gwl_first <- ddply(cli_gwl_groesser3, .(index_length_gwl), function(x) x[1, ]) 
+cli_gwl_last <- ddply(cli_gwl_groesser3, .(index_length_gwl), function(x) x[nrow(x) ]) 
+
+cli_gwl_mean <- cli_gwl_groesser3 %>%
+  group_by(index_length_gwl) %>%
+  select(- id, - Jahreszeit, -year,-month,-day) %>%
+  slice(c(2,n() - 1)) %>%
+  summarise_all(mean) 
+
+# gwl wieder anzeigen lassen über den index
+# mean, first and last day zusammnefuegen 
  
 
  
