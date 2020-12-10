@@ -264,6 +264,9 @@ which(quadrant.max == quadrant.min)
 ## nur an 40 Tagen liegen Hoch und Tiefdruckgebiet im gleichen Quadranten. Passt also denk ich ganz gut.
 
 
+
+
+
 # brauchen wir wahrscheinlich nicht, aber ich nehme mal das jahr, monat und tag als einzelne variablen mit 
 # in den datensatz
 
@@ -296,12 +299,80 @@ colnames(dat.geo) <- as.character(c(1:20))
 
 library(cluster)
 ?daisy
-dissimilarity <- daisy(discrete[, .(month, minimum, intensitaet.tief, quadrant.min, 
-                   maximum, intensitaet.hoch, quadrant.max)], metric = "gower")
+dissimilarity <- daisy(as.data.frame(discrete[, .(minimum, intensitaet.tief, quadrant.min, 
+                   maximum, intensitaet.hoch, quadrant.max)]), metric = "gower")
 summary(dissimilarity)
 
-as.dist(dissimilarity)
-clust_gower <- agnes(dissimilarity, method = "complete")
+# dissimilarity als matrix speichern
+gower_mat <- as.matrix(dissimilarity)
+
+# output most similar pair
+discrete[
+  which(gower_mat == min(gower_mat[gower_mat != min(gower_mat)]),
+        arr.ind = TRUE)[1, ], ]
+# output most dissimilar pair
+discrete[
+  which(gower_mat == max(gower_mat[gower_mat != max(gower_mat)]),
+        arr.ind = TRUE)[1, ], ]
+
+# Calculate silhouette width for many k using PAM
+
+sil_width <- c(NA)
+
+for(i in 2:10){
+  
+  pam_fit <- pam(dissimilarity,
+                 diss = TRUE,
+                 k = i)
+  
+  sil_width[i] <- pam_fit$silinfo$avg.width
+  
+}
+
+# Plot sihouette width (higher is better)
+
+plot(1:10, sil_width,
+     xlab = "Number of clusters",
+     ylab = "Silhouette Width")
+lines(1:10, sil_width)
+# 9 Cluster scheinen hier am besten zu sein, je höher, desto besser
+
+# hier wird das clustering angewandt
+?pam
+pam_fit <- pam(dissimilarity, diss = TRUE, k = 9)
+cluster_vector <- pam_fit$clustering
+
+library(dplyr)
+# für eine summary über die cluster
+pam_results <- discrete[, .(minimum, intensitaet.tief, quadrant.min, 
+                            maximum, intensitaet.hoch, quadrant.max)] %>%
+  mutate(cluster = pam_fit$clustering) %>%
+  group_by(cluster) %>%
+  do(the_summary = summary(.))
+
+pam_results$the_summary
+
+discrete[pam_fit$medoids, ]
+
+## visualization
+install.packages("Rtsne")
+library(Rtsne)
+tsne_obj <- Rtsne(dissimilarity, is_distance = TRUE)
+
+tsne_data <- tsne_obj$Y %>%
+  data.frame() %>%
+  setNames(c("X", "Y")) %>%
+  mutate(cluster = factor(pam_fit$clustering),
+         date = discrete$date)
+
+ggplot(aes(x = X, y = Y), data = tsne_data) +
+  geom_point(aes(color = cluster))
+### okay, da muss ich nochmal genauer schauen, was da wirklich gemacht wird, hab das von dieser website
+# https://www.r-bloggers.com/2016/06/clustering-mixed-data-types-in-r/
+
+
+
+clust_gower <- agnes(gower_mat, method = "complete")
 clust_gower$diss
 clust_try <- agnes(as.data.frame(discrete[, .(minimum, intensitaet.tief, quadrant.min, 
                                 maximum, intensitaet.hoch, quadrant.max)]), diss = FALSE,
@@ -310,4 +381,6 @@ clust_try$diss
 # ist NULL, da hat wohl was nicht geklappt
 clust_gower$method
 summary(clust_try)
+summary(clust_gower)$ac
 plot(clust_try)
+fviz_dist(dissimilarity)
