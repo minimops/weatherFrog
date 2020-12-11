@@ -5,7 +5,7 @@ cli_data_2k_avgDay <- readRDS("Data/cli_data_2k_avgDay.rds")
 
 #subsetting just one day
 one_day <- copy(cli_data_2k_avgDay)[format(date, "%Y-%m-%d")
-                                    %in% c("2005-07-07"), ]
+                                    %in% c("2006-01-01"), ]
 #plot on coords
 ggplot(data = one_day, 
        aes(x = longitude, y = latitude, color = avg_mslp)) +
