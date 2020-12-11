@@ -79,6 +79,8 @@ tsne_iris = tsne(wide_05[,-c(1,2)], epoch_callback = ecb, perplexity=50)
 #at PCA
 
 library(ggplot2)
+library(data.table)
+
 
 #load appropriate dataset
 #use long format to normalize values first
@@ -100,10 +102,15 @@ cli_pca_2 <- prcomp(as.data.frame(cli_data_pca)[3:322])
 #plotting first two pca
 cli_pca_2Scores <- data.frame(cli_pca_2$x[, 1:2])
 ggplot(cli_pca_2Scores, aes(y = PC1, x = PC2)) + 
-  geom_point(alpha = 0.3)
+  geom_point(alpha = 0.3) +
+  ggtitle("first two PCA with scaled parameters")
 
+library(cluster)
+library(ggfortify)
 autoplot(clara(as.data.frame(cli_data_pca)[3:322], 4), 
-         frame = TRUE, frame.type = "norm")
+         frame = TRUE, frame.type = "norm", 
+         title = "clara with 4 clusters")
+
 
 #clustering
 plot(cli_pca_2) #elbow point at 4
@@ -112,7 +119,7 @@ cumvar <- cumsum(cli_pca_2$sdev^2 / sum(cli_pca_2$sdev^2))
 (pc.index<-min(which(cumvar>0.85)))
 #but 85percent of variance with 10 components
 
-#continuing with 4 for now
+#continuing with 10 for now
 pca2_cluster <- cli_pca_2$x[, 1:10]
 
 library(factoextra)
@@ -120,14 +127,109 @@ library(factoextra)
 fviz_nbclust(pca2_cluster, kmeans, method = "wss") +
   geom_vline(xintercept = 4, linetype = 2)
 #clustering
-k2 <- kmeans(pca2_cluster, centers = 10, nstart = 25)
+k2 <- kmeans(pca2_cluster, centers = 4, nstart = 25)
 
-
+#cluster plot
 fviz_cluster(k2, data = cli_data_pca[, - c(1, 2)])
+#cant add labels and this plot is a mess so:
+library(ggalt)
+clustervis <- data.frame(gwl = cli_data_pca$gwl, cluster = factor(k2$cluster), cli_pca_2$x)
+
+ggplot(data = clustervis, aes(x = PC1, y = PC2)) +
+  geom_point(aes(color = gwl)) +
+  geom_encircle(aes(group = cluster))
+#still a bit too messy, so lets splitt gwls into two
+cl_vis <- as.data.table(clustervis)
+#subsetting most often occuring
+cl_vis_mp <- cl_vis[gwl %in%
+                      names(which(table(cl_vis$gwl) > median(table(cl_vis$gwl)))), ]
+#and least often
+cl_vis_lp <- cl_vis[gwl %in% names(which(table(cl_vis$gwl) <= median(table(cl_vis$gwl)))), ]
+
+
+#plot lp
+#color as cluster
+ggplot(data = data.frame(cl_vis_lp), aes(x = PC1, y = PC2)) +
+  geom_point(aes(color = cluster)) +
+  geom_text(aes(label = gwl), size = 3, hjust = 0, vjust = 0)
+#color as gwl
+ggplot(data = data.frame(cl_vis_lp), aes(x = PC1, y = PC2)) +
+  geom_point(aes(color = gwl)) +
+  geom_text(aes(label = cluster), size = 3, hjust = 0, vjust = 0) +
+  geom_encircle(aes(group = cluster))
+
+
+#only labeling one gwl without subsetting
+ggplot(data = data.frame(cl_vis), aes(x = PC1, y = PC2)) +
+  geom_point(aes(color = cluster)) +
+  geom_text(data = cl_vis[gwl == unique(cl_vis$gwl)[[5]]], 
+            aes(label = gwl), size = 3, hjust = 0, vjust = 0) +
+  ggtitle("kmeans(8) of first 10 pca's with single highlighted gwl")
+
+
+
 
 k2_clustered <- data.frame(cli_data_pca, k2$cluster)
 
-(clust_table_pca <- round(
+#table
+(clust_table_pca <- 
+  table(k2_clustered$gwl, k2_clustered$k2.cluster))
+#prop table
+(clust_proptable_pca <- round(
   prop.table(table(k2_clustered$gwl, k2_clustered$k2.cluster), margin = 1), 2))
+#Moaik of table
 plot(clust_table_pca)
+#mosaik of prop table
+plot(clust_proptable_pca)
 
+
+#with pam
+k3 <- pam(pca2_cluster, 8)
+clustervis2 <- data.frame(gwl = cli_data_pca$gwl, cluster = factor(k3$cluster), cli_pca_2$x)
+(clust_table_pca_pam <- 
+    table(clustervis2$gwl, clustervis2$cluster))
+plot(clust_table_pca_pam)
+#doesnt look better...
+
+
+
+
+#kurz westlich von spanien abschneiden
+pca_noWest <- readRDS("Data/cli_data_05_avgDay.rds")
+gwl <- readRDS("Data/gwl.rds")
+#eliminate longitude smaller than -30, latitude greater than 70
+pca_noWest <- pca_noWest[longitude >= -30, ][latitude <= 70]
+#to wide
+pca_noWest <- dcast(pca_noWest,
+                      date ~ longitude + latitude,
+                      value.var = c("avg_mslp", "avg_geopot"))
+#so we are down to 196 dimensions
+
+#attach gwl per Day and transform to df
+pca_noWest <- as.data.frame(gwl[pca_noWest, on = .(date)])
+names(pca_noWest) <- c("date", "gwl", seq(1:196))
+#pca
+cli_pca_noWest <- prcomp(as.data.frame(pca_noWest)[, -c(1, 2)], scale. = TRUE)
+plot(cli_pca_noWest)
+#screeplot looks a lot better
+#plotting first two pca
+cli_pca_noWest_Scores <- data.frame(cli_pca_noWest$x[, 1:2])
+ggplot(cli_pca_2Scores, aes(y = PC1, x = PC2)) + 
+  geom_point(alpha = 0.3) +
+  ggtitle("first two PCA with scaled parameters")
+#nuber of clust
+fviz_nbclust(cli_pca_noWest$x, kmeans, method = "wss") +
+  geom_vline(xintercept = 8, linetype = 2)
+#clustering
+k3 <- kmeans(cli_pca_noWest$x, centers = 8, nstart = 25)
+
+clusterdata_noWest <- data.frame(cluster = k3$cluster, gwl = pca_noWest$gwl)
+
+#table
+(clust_table_pca_noWest <- 
+    table(clusterdata_noWest$gwl, clusterdata_noWest$cluster))
+plot(clust_table_pca_noWest)
+
+
+autoplot(clara(as.data.frame(pca_noWest)[, -c(1, 2)], 8), 
+         frame = TRUE, frame.type = "norm")
