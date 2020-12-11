@@ -2,7 +2,7 @@ library(data.table)
 data.mslp <- readRDS("Data/cli_data_05_mslp_wide.rds")
 data.geopot <- readRDS("Data/cli_data_05_geo_wide.rds")
 data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
-
+gwl <- readRDS("Data/gwl.rds")
 date <- data.wide[, .(date)]
 
 # Der Luftdruck hat am Erdboden einen Normalwert von 1013,25 hPa = 101325 Pa. Ein Hochdruckgebiet besitzt damit 
@@ -107,6 +107,7 @@ plot(density(maximum))
 ## hier kategorisiere ich die mins und maxs, aber ich glaube das brauchen wir am ende gar nicht..
 tiefpunkt <- numeric(length = 1826)
 hochpunkt <- numeric(length = 1826)
+
 
 for (i in seq_len(1826)) {
   if (is.na(minimum[i])) {
@@ -355,7 +356,7 @@ pam_results$the_summary
 discrete[pam_fit$medoids, ]
 
 ## visualization
-install.packages("Rtsne")
+#install.packages("Rtsne")
 library(Rtsne)
 tsne_obj <- Rtsne(dissimilarity, is_distance = TRUE)
 
@@ -365,10 +366,38 @@ tsne_data <- tsne_obj$Y %>%
   mutate(cluster = factor(pam_fit$clustering),
          date = discrete$date)
 
+library(ggplot2)
 ggplot(aes(x = X, y = Y), data = tsne_data) +
   geom_point(aes(color = cluster))
 ### okay, da muss ich nochmal genauer schauen, was da wirklich gemacht wird, hab das von dieser website
 # https://www.r-bloggers.com/2016/06/clustering-mixed-data-types-in-r/
+
+### Mosaikplot
+
+discrete_gwl <- gwl[discrete, on = .(date)]
+discrete_gwl_cluster <- discrete_gwl[, cluster := cluster_vector]
+
+(clust_table_pam <- round(
+  prop.table(table(discrete_gwl_cluster$gwl, discrete_gwl_cluster$cluster), margin = 1), 2))
+plot(clust_table_pam)
+
+(clust_table_pam2 <- round(
+  prop.table(table(discrete_gwl_cluster$cluster, discrete_gwl_cluster$gwl), margin = 1), 2))
+plot(clust_table_pam2)
+
+library(ggmosaic)
+mosaic_cluster <- ggplot(data = discrete_gwl_cluster) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
+                                                                    na.rm = TRUE) +
+  labs(x = " Cluster", y = "GWL")
+  
+mosaic_gwl <- ggplot(data = discrete_gwl_cluster) + geom_mosaic(aes(x = product(cluster, gwl), fill = as.factor(cluster)), 
+                                                                  na.rm = TRUE) 
+
+
+mosaicplot(table(discrete_gwl_cluster$gwl, discrete_gwl_cluster$cluster), color = TRUE)
+mosaicplot(table(discrete_gwl_cluster$cluster, discrete_gwl_cluster$gwl), color = TRUE)
+?mosaicplot
+
 
 
 
