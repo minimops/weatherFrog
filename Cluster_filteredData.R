@@ -99,3 +99,12 @@ mosaicplot(table(discrete_gwl_cluster$gwl, discrete_gwl_cluster$cluster), color 
 mosaicplot(table(discrete_gwl_cluster$cluster, discrete_gwl_cluster$gwl), color = TRUE)
 ?mosaicplot
 
+library(factoextra)
+clust_gower <- agnes(gower_mat, method = "complete")
+summary(clust_gower)
+clust_gower$method
+summary(clust_gower)$ac
+plot(clust_gower)
+fviz_dist(dissimilarity)
+a <- 1
+a
