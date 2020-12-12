@@ -133,3 +133,4 @@ fviz_dist(as.dist(matrix_dist_eukl[1:500, 1:500]))
 # jpeg('example_forcedraw.jpg', width=1000, height=1000, unit='px')
 # qgraph(dist.over, layout='spring', vsize=3)
 # dev.off()
+?dist

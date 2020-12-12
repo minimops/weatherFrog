@@ -2,7 +2,7 @@ library(data.table)
 data.mslp <- readRDS("Data/cli_data_05_mslp_wide.rds")
 data.geopot <- readRDS("Data/cli_data_05_geo_wide.rds")
 data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
-
+gwl <- readRDS("Data/gwl.rds")
 date <- data.wide[, .(date)]
 
 # Der Luftdruck hat am Erdboden einen Normalwert von 1013,25 hPa = 101325 Pa. Ein Hochdruckgebiet besitzt damit 
@@ -107,6 +107,7 @@ plot(density(maximum))
 ## hier kategorisiere ich die mins und maxs, aber ich glaube das brauchen wir am ende gar nicht..
 tiefpunkt <- numeric(length = 1826)
 hochpunkt <- numeric(length = 1826)
+
 
 for (i in seq_len(1826)) {
   if (is.na(minimum[i])) {
@@ -264,6 +265,9 @@ which(quadrant.max == quadrant.min)
 ## nur an 40 Tagen liegen Hoch und Tiefdruckgebiet im gleichen Quadranten. Passt also denk ich ganz gut.
 
 
+
+
+
 # brauchen wir wahrscheinlich nicht, aber ich nehme mal das jahr, monat und tag als einzelne variablen mit 
 # in den datensatz
 
@@ -294,20 +298,3 @@ colnames(dat.geo) <- as.character(c(1:20))
 
 
 
-library(cluster)
-?daisy
-dissimilarity <- daisy(discrete[, .(month, minimum, intensitaet.tief, quadrant.min, 
-                   maximum, intensitaet.hoch, quadrant.max)], metric = "gower")
-summary(dissimilarity)
-
-as.dist(dissimilarity)
-clust_gower <- agnes(dissimilarity, method = "complete")
-clust_gower$diss
-clust_try <- agnes(as.data.frame(discrete[, .(minimum, intensitaet.tief, quadrant.min, 
-                                maximum, intensitaet.hoch, quadrant.max)]), diss = FALSE,
-                   metric = "gower")
-clust_try$diss
-# ist NULL, da hat wohl was nicht geklappt
-clust_gower$method
-summary(clust_try)
-plot(clust_try)
