@@ -244,32 +244,48 @@ cli_gwl_last1 <- cli_gwl_last[ ,-c(2:9)]
 # einer GWL ohne ersten und letzten Tag vergleicht.
 
 
-#Vergleich der ersten Tage mit dem mean
+
+# Ist 1. Tag im intervall [mean - sd, mean + sd] enthalten?
+
+
 unterschied_first <- matrix(ncol = ncol(cli_gwl_first1), nrow = nrow(cli_gwl_first1))
 
 for (i in seq_len(ncol(cli_gwl_mean) -1)){
   for ( j in seq_len(nrow(cli_gwl_first1))){
-    if(cli_gwl_first1 [j, (1 + i)] > (cli_gwl_mean[j,(1 + i)]) + (cli_gwl_SD[j,(1 + i)])){
+    if(cli_gwl_first1 [j, (1 + i)] < (cli_gwl_mean[j,(1 + i)]) - (cli_gwl_SD[j,(1 + i)])){
       unterschied_first [j,(1 + i)] <- cli_gwl_first1[j, (1 + i)]
     }
+    else if(cli_gwl_first1 [j, (1 + i)] > (cli_gwl_mean[j,(1 + i)]) + (cli_gwl_SD[j,(1 + i)])){
+      unterschied_first [j,(1 + i)] <- cli_gwl_first1[j, (1 + i)]
+    }  
   }
   print("Spalte durchlaufen")
 }
 unterschied_first <- as.data.table(unterschied_first)
+unterschied_first <- cbind(cli_gwl_first[,1:9], unterschied_first)
 
- 
-#Vergleich des letzten Tag mit dem mean
+# Ist 1. Tag im intervall [mean - sd, mean + sd] enthalten?
+
+
 unterschied_last <- matrix(ncol = ncol(cli_gwl_last1), nrow = nrow(cli_gwl_last1))
 
 for (i in seq_len(ncol(cli_gwl_mean) -1)){
   for ( j in seq_len(nrow(cli_gwl_last1))){
-    if(cli_gwl_last1 [j, (1 + i)] > (cli_gwl_mean[j,(1 + i)]) + (cli_gwl_SD[j,(1 + i)])){
+    if(cli_gwl_last1 [j, (1 + i)] < (cli_gwl_mean[j,(1 + i)]) - (cli_gwl_SD[j,(1 + i)])){
       unterschied_last [j,(1 + i)] <- cli_gwl_last1[j, (1 + i)]
     }
+    else if (cli_gwl_last1 [j, (1 + i)] < (cli_gwl_mean[j,(1 + i)]) - (cli_gwl_SD[j,(1 + i)])){
+      unterschied_last [j,(1 + i)] <- cli_gwl_last1[j, (1 + i)]
   }
   print("Spalte durchlaufen")
 }
 unterschied_last <- as.data.table(unterschied_last)
+unterschied_last <- cbind(cli_gwl_last[,1:9], unterschied_last)
 
+#mean + sd lieber als intervall, also [mean -SD, mean + SD] und schauen, ob
+# 1. und letzter Tag in diesem Intervall ist
 
+#Eventuell statt 1 mal Standardabweicung 2 Standardabweichungen hinzunehmen?
+#Differenzen vergleichen: also Differenz 1. Tag zu Mitte und letzter Tag zur Mitte 
+#größer als Differenzen innterhalb der Mitte?
 
