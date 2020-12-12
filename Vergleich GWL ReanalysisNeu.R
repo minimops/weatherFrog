@@ -136,7 +136,7 @@ crosstable <- table(lengthGWL$gwl,lengthGWL$length)
 # gibt aus, wie oft eine GWL im Zeitraum 1971 - 2010 vorkommt
 GWLAnzahl <- as.data.frame(table(lengthGWL$gwl))
 GWLAnzahl <-GWLAnzahl[order(GWLAnzahl$Freq),]
-# GWL WZ kommt am haufigsten vor 
+# GWL WZ kommt am haufigsten vor: 345 mal
 
 
 # Anzahl der GWLs je Laenge
@@ -157,19 +157,27 @@ cli_gwl_1971 <- cli_gwl_1971 %>%
   mutate(Jahreszeit = case_when(month %in% c("12", "01", "02") ~ "Winter",
                              month %in% c("03", "04", "05") ~ "Fruehling",
                              month %in% c("06", "07", "08") ~ "Sommer",
-                             month %in% c("09", "10", "11") ~ "Herbst"))
-setcolorder(cli_gwl_1971,c("index_length_gwl","id","Jahreszeit"))
+                             month %in% c("09", "10", "11") ~ "Herbst") )
+setcolorder(cli_gwl_1971,c("index_length_gwl","id","Jahreszeit")) 
 
 #Laenge der GWLs nach Jahreszeit gruppiert berechnen
 
 cli_gwl_1971 <- as.data.table(cli_gwl_1971)
 gwlNachJahreszeit <- cli_gwl_1971[,(rle(gwl)), by = Jahreszeit]
-
+table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)
+colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit))
 
 # Anzahl der GWLs gruppiert nach Jahreszeit
 
-table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)
+GWLJahreszeiten <- as.data.table(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit))
+barplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(4))
+mosaicplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(31), las = 1)
+mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 1)
 
+barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4))
+
+# Im Frühling gibt am meisten GWL, abnehmende Anzahl der GWLs: Herbst, Sommer, Winter
+# Zusammensetzung der GWLs in den Jahreszeiten unterschiedlich
 
 #####################################
 #Unterscheidet sich der erste und letzte Tag einer GWL?
@@ -216,16 +224,6 @@ for( gwl_number in 1 : 20){
  
  #Differenzen bestimmen über alle Standorte und dann einen Filtern setzen, wenn Differenz 
  # bestimmten wert übersteigt und mit dann diese GWLs ausgeben lassen 
- 
-# Differenzen berechnen
-cli_gwl_mean <- cli_gwl_mean %>%
-  group_by(index_length_gwl) %>%
-  mutate(mslp_diff = mslp_mean - lag(mslp_mean),
-         geo_diff = geo_mean - lag(geo_mean))
-
-#cli_gwl_diff <- cli_gwl_groesser3 %>%
- # group_by(index_length_gwl) %>%
-
 
 cli_gwl_diff <- cli_gwl_groesser3[, lapply(.SD, function(x) x - lag(x)), by = index_length_gwl, .SDcols = 10:329] 
 
@@ -233,19 +231,45 @@ cli_gwl_diff <- cli_gwl_groesser3[, lapply(.SD, function(x) x - lag(x)), by = in
 
 cli_gwl_first_last <- ddply(cli_gwl_groesser3, .(index_length_gwl), function(x) x[c(1, nrow(x)), ])
 cli_gwl_first <- ddply(cli_gwl_groesser3, .(index_length_gwl), function(x) x[1, ]) 
-cli_gwl_last <- ddply(cli_gwl_groesser3, .(index_length_gwl), function(x) x[nrow(x) ]) 
+cli_gwl_last <- ddply(cli_gwl_groesser3, .(index_length_gwl), function(x) x[nrow(x), ]) 
+cli_gwl_inner <- ddply(cli_gwl_groesser3, .(index_length_gwl),function(x) x[c(2 : (nrow(x) -1)), ])
+cli_gwl_inner <- as.data.table(cli_gwl_inner)
+cli_gwl_mean <- cli_gwl_inner[, lapply(.SD, mean), .SDcols = 10 : 329, by = index_length_gwl]
+cli_gwl_SD <- cli_gwl_inner[, lapply(.SD, sd), .SDcols = 10 : 329, by = index_length_gwl]
 
-cli_gwl_mean <- cli_gwl_groesser3 %>%
-  group_by(index_length_gwl) %>%
-  select(- id, - Jahreszeit, -year,-month,-day) %>%
-  slice(c(2,n() - 1)) %>%
-  summarise_all(mean) 
+cli_gwl_first1 <- cli_gwl_first[,-c(2:9)]
+cli_gwl_last1 <- cli_gwl_last[ ,-c(2:9)]
 
-# gwl wieder anzeigen lassen über den index
-# mean, first and last day zusammnefuegen 
- 
+#Funktion schreiben, die ersten und letzten Tag mit Mittelwert + Standardabweichung
+# einer GWL ohne ersten und letzten Tag vergleicht.
+
+
+#Vergleich der ersten Tage mit dem mean
+unterschied_first <- matrix(ncol = ncol(cli_gwl_first1), nrow = nrow(cli_gwl_first1))
+
+for (i in seq_len(ncol(cli_gwl_mean) -1)){
+  for ( j in seq_len(nrow(cli_gwl_first1))){
+    if(cli_gwl_first1 [j, (1 + i)] > (cli_gwl_mean[j,(1 + i)]) + (cli_gwl_SD[j,(1 + i)])){
+      unterschied_first [j,(1 + i)] <- cli_gwl_first1[j, (1 + i)]
+    }
+  }
+  print("Spalte durchlaufen")
+}
+unterschied_first <- as.data.table(unterschied_first)
 
  
- 
+#Vergleich des letzten Tag mit dem mean
+unterschied_last <- matrix(ncol = ncol(cli_gwl_last1), nrow = nrow(cli_gwl_last1))
+
+for (i in seq_len(ncol(cli_gwl_mean) -1)){
+  for ( j in seq_len(nrow(cli_gwl_last1))){
+    if(cli_gwl_last1 [j, (1 + i)] > (cli_gwl_mean[j,(1 + i)]) + (cli_gwl_SD[j,(1 + i)])){
+      unterschied_last [j,(1 + i)] <- cli_gwl_last1[j, (1 + i)]
+    }
+  }
+  print("Spalte durchlaufen")
+}
+unterschied_last <- as.data.table(unterschied_last)
+
 
 
