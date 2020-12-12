@@ -5,8 +5,7 @@ cli_data_2k_avgDay <- readRDS("Data/cli_data_2k_avgDay.rds")
 
 #subsetting just one day
 one_day <- copy(cli_data_2k_avgDay)[format(date, "%Y-%m-%d")
-                                    %in% c("2005-07-07"), ][, 
-                                                            avg_geopot := NULL]
+                                    %in% c("2006-01-01"), ]
 #plot on coords
 ggplot(data = one_day, 
        aes(x = longitude, y = latitude, color = avg_mslp)) +
@@ -61,13 +60,13 @@ world_map +
   geom_rect(data=one_day, 
             mapping=aes(xmin=longitude - 2.812519, xmax=longitude + 2.812519,
                         ymin=latitude - 2.812519, ymax=latitude + 2.812519, 
-                        fill = avg_mslp), alpha=0.5) +
+                        fill = avg_geopot), alpha=0.5) +
   scale_fill_gradient(name = "mslp in Pa", low = "blue", high = "red")
 
-require(gridExtra)
-plot1 <- qplot(1)
-plot2 <- qplot(1)
-grid.arrange(plot1, plot2, ncol=2)
+# require(gridExtra)
+# plot1 <- qplot(1)
+# plot2 <- qplot(1)
+# grid.arrange(plot1, plot2, ncol=2)
 
 
 library(gstat)

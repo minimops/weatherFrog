@@ -2,7 +2,7 @@ library(data.table)
 data.mslp <- readRDS("Data/cli_data_05_mslp_wide.rds")
 data.geopot <- readRDS("Data/cli_data_05_geo_wide.rds")
 data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
-
+gwl <- readRDS("Data/gwl.rds")
 date <- data.wide[, .(date)]
 
 # Der Luftdruck hat am Erdboden einen Normalwert von 1013,25 hPa = 101325 Pa. Ein Hochdruckgebiet besitzt damit 
@@ -20,10 +20,10 @@ data.mslp <- data.mslp[order(id, -latitude, decreasing = FALSE)]
 data.mslp[, hochdruck := apply(data.mslp[, 3:22], 1, max)]
 data.mslp[, tiefdruck := apply(data.mslp[, 3:22], 1, min)]
 
-data.mslp[tiefdruck > 100000, tiefdruck := 0]
-data.mslp[hochdruck < 101400, hochdruck := 0]
+# data.mslp[tiefdruck > 100000, tiefdruck := 0]
+# data.mslp[hochdruck < 101400, hochdruck := 0]
 
-druck <- data.mslp[, .(id, hochdruck, tiefdruck)]
+# druck <- data.mslp[, .(id, hochdruck, tiefdruck)]
 dat <- data.mslp[, 3:22]
 colnames(dat) <- as.character(c(1:20))
 
@@ -108,6 +108,7 @@ plot(density(maximum))
 tiefpunkt <- numeric(length = 1826)
 hochpunkt <- numeric(length = 1826)
 
+
 for (i in seq_len(1826)) {
   if (is.na(minimum[i])) {
     minimum[i] <- NA
@@ -191,7 +192,7 @@ head(coordinates.max)
 
 quadrant.min <- integer(length = 1826)
 for (i in 1:1826) {
-  if (coordinates.min[i, ][[1]] == 0) {
+  if (is.na(coordinates.min[i, ][[1]])) {
     quadrant.min[i] <- 0
   }
   else if (coordinates.min[i, ][[1]] < 5) {
@@ -208,7 +209,7 @@ for (i in 1:1826) {
       quadrant.min[i] <- 4
     }
   }
-  else {
+  else if (coordinates.min[i, ][[1]] > 4) {
     if (coordinates.min[i, ][[2]] < 6) {
       quadrant.min[i] <- 5
     }
@@ -227,7 +228,7 @@ for (i in 1:1826) {
 
 quadrant.max <- integer(length = 1826)
 for (i in 1:1826) {
-  if (coordinates.max[i, ][[1]] == 0) {
+  if (is.na(coordinates.max[i, ][[1]])) {
     quadrant.max[i] <- 0
   }
   else if (coordinates.max[i, ][[1]] < 5) {
@@ -244,11 +245,11 @@ for (i in 1:1826) {
       quadrant.max[i] <- 4
     }
   }
-  else {
+  else if (coordinates.max[i, ][[1]] > 4){
     if (coordinates.max[i, ][[2]] < 6) {
       quadrant.max[i] <- 5
     }
-    else if (coordinates.min[i, ][[2]] < 11) {
+    else if (coordinates.max[i, ][[2]] < 11) {
       quadrant.min[i] <- 6
     }
     else if (coordinates.max[i, ][[2]] < 16) {
@@ -264,6 +265,9 @@ which(quadrant.max == quadrant.min)
 ## nur an 40 Tagen liegen Hoch und Tiefdruckgebiet im gleichen Quadranten. Passt also denk ich ganz gut.
 
 
+
+
+
 # brauchen wir wahrscheinlich nicht, aber ich nehme mal das jahr, monat und tag als einzelne variablen mit 
 # in den datensatz
 
@@ -272,3 +276,25 @@ month <- as.numeric(format(data.wide$date, "%m"))
 day <- as.numeric(format(data.wide$date, "%d"))
 discrete <- data.table(date, day, month, year, minimum, intensitaet.tief, quadrant.min, tiefpunkt, 
                        maximum, intensitaet.hoch, quadrant.max, hochpunkt)
+?as.factor
+# quadrant als factor variable
+discrete$quadrant.min <- as.factor(as.character(discrete$quadrant.min))
+discrete$quadrant.max <- as.factor(as.character(discrete$quadrant.max))
+discrete$month <- as.factor(as.character(discrete$month))
+discrete
+class(discrete$quadrant.min)
+class(discrete$quadrant.max)
+class(discrete$month)
+
+data.geopot[, id := rep(1:1826, each = 8)]
+# hier werden die reihen nach sinkenden latitude Werten geordnet, damit man selber besser das Grid in Nord, Süd, Ost und West-
+# Ausrichtung vor Augen hat.
+data.geopot <- data.geopot[order(id, -latitude, decreasing = FALSE)]
+
+# druck <- data.mslp[, .(id, hochdruck, tiefdruck)]
+dat.geo <- data.geopot[, 3:22]
+colnames(dat.geo) <- as.character(c(1:20))
+
+
+
+

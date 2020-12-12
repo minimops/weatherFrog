@@ -28,7 +28,7 @@ normmat <- function(mat1, mat2) {
   norm(as.matrix(distance), type = "O")
 }
 
-
+?norm
 
 ## datensatz teilen, ist jetzt also eine Liste mit 1826 Einträgen, also eine Matrix pro Tag
 mslp.split <- split(data.mslp, data.mslp[, id])
@@ -70,7 +70,7 @@ for (j in 1:1826) {
 }
 
 saveRDS(matrix.dist_2, "Data/matrix_dist_eukl.rds")
-matrix.dist_2 <- readRDS("data/matrix_dist_eukl.rds")
+matrix_dist_eukl <- readRDS("data/matrix_dist_eukl.rds")
 matrix.dist <- readRDS("data/matrix_dist.rds")
 
 # zeilen und spalten namen ändern
@@ -86,14 +86,14 @@ class(as.dist(matrix.dist_2))
 ### einmal ohne distanzmatrix und clara versuchen
 library(cluster)
 ?clara
-a <- clara(data.wide[, 2:321], k = 9,metric = "euclidean")
+a <- clara(data.wide[, 2:321], k = 9, metric = "euclidean")
 plot(a)
 
 
 # hclust mit clusterabstand ward 
 hclust <- hclust(as.dist(matrix.dist_2), method = "ward.D2")
 plot(hclust)
-
+mahalanobis
 
 ## hab einfahc mal 9 genommen, muss man da auch einen elbow plot machen ?
 clusters <- cutree(hclust, k = 9)
@@ -133,3 +133,4 @@ fviz_dist(as.dist(matrix_dist_eukl[1:500, 1:500]))
 # jpeg('example_forcedraw.jpg', width=1000, height=1000, unit='px')
 # qgraph(dist.over, layout='spring', vsize=3)
 # dev.off()
+?dist
