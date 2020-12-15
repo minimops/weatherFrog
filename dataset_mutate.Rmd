@@ -99,10 +99,10 @@ gwl_data <- melt(gwl_data, id.vars = c("JAHRMONAT"), measure.vars = patterns("^X
 #split year and month
 gwl_data[, ":=" (year = substr(JAHRMONAT, 1, 4), 
                  month = substr(JAHRMONAT, 5, 6))][, JAHRMONAT := NULL]
+#remove empty rows (months have differing lengths)
+gwl_data <- gwl_data[gwl != "", ]
 #rename and pad day
 gwl_data_split <- copy(gwl_data[, day := str_pad(sub("X", "", day), 2, "left", "0")])
-#remove empty rows (months have differing lengths)
-gwl_data_split <- gwl_data_split[gwl != "", ]
 #save split dataset
 saveRDS(gwl_data_split, "Data/gwl_split.rds")
 
