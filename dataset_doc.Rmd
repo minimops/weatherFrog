@@ -29,6 +29,10 @@
     values over the Day, creating one measurement
     per Day.
     
+* cli_data_05_avgDay_wide.rds
+  + data.table with avg Day values in wide format 
+    (320 parameter columns) of the years 2006-2010
+    
 * cli_data_05_mslp_wide.rds
   + data.table only with average mslp and the years
     2006-2010 in wide format 
