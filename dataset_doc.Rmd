@@ -73,11 +73,11 @@
   + data subset: wide format : mslp and geopotential combined with the four
     measurement per day as variable
 
-* gwl_data1 
-  + GWL_1900-2010.csv ins long format ueberfuehrt mit kalendarischer     Datumsabfolge
+* gwl_data_long 
+  + long format of GWL_1900-2010.csv with calendaric order if the date
   
 * cli_gwl_1971
-  +reanalysis und gwl data gemerged: eine Zeile = ein Tag
+  +reanalysis und gwl data merged: one row = one day
     
     
     
