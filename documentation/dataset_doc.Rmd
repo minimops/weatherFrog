@@ -70,12 +70,6 @@
    + data.table of gwl_split.rds subsetting the
     years 2006-2010
 
-* dataSubset.rd
-  +data frame of data_reanalysis_20201109.rds, years 2000 bis 2010 
-
-* dataLong.rds
-  + data subset: wide format : mslp and geopotential combined with the four
-    measurement per day as variable
 
 * gwl_data_long 
   + long format of GWL_1900-2010.csv with calendaric order if the date
