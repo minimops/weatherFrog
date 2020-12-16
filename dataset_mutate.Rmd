@@ -54,17 +54,15 @@ toGeoIndex <- function(data) {
 }
 
 #take cli_data from long to wide format
-longToWide <- function(data) {
+longToWide <- function(data, id = "date", col = "geoIndex", vars = c("avg_mslp", "avg_geopot")) {
   assertDataTable(data)
-  
-  tryCatch(out <- dcast(data, 
-                        date ~ geoIndex, 
-                        value.var = c("avg_mslp", "avg_geopot")), 
-           error = function(cond) {
-             conditionMessage("not yet implemented")
-           }
-             )
-  out
+  assertCharacter(id)
+  assertCharacter(col, len = 1)
+  assertCharacter(vars)
+
+  dcast(data, 
+        paste(paste(id, collapse = "+"), "~", col), 
+        value.var = vars)
 }
 ```
 
@@ -152,6 +150,7 @@ this subsets the years 2006 to 2010
   - unifies the measure time
   - saves the avg over the day
   - create a wide format of the dataset
+  - create wide formats in 8x20 format
 ```{r 3 last5years}
 ###requires 0 (and initially 1)
 
@@ -175,6 +174,32 @@ saveRDS(cli_data_05_avgDay, "Data/cli_data_05_avgDay.rds")
 cli_data_05_avg_wide <- longToWide(toGeoIndex(cli_data_05_avgDay))
 #save wide dataset
 saveRDS(cli_data_05_avg_wide, "Data/cli_data_05_avgDay_wide.rds")
+
+#8x20 wide format mslp
+cli_data_05_avgDay <- readRDS("Data/cli_data_05_avgDay.rds")
+#remove geopot
+all_days <- copy(cli_data_05_avgDay)[, avg_geopot := NULL]
+#to wide
+cli_data_05_avgDay_mslp_all <- longToWide(all_days,  id = c("date", "latitude"), col = "longitude", vars = "avg_mslp")
+# change col names to shorten
+names(cli_data_05_avgDay_mslp_all) <- c("date", "latitude", unlist(lapply(as.numeric(names(cli_data_05_avgDay_mslp_all)[3:22]), function(x) round(x, 2))))
+# save
+saveRDS(cli_data_05_avgDay_mslp_all, "Data/cli_data_05_mslp_wide.rds")
+
+#same for geopot
+all_days_geo <- copy(cli_data_05_avgDay)[, avg_mslp := NULL]
+cli_data_05_avgDay_geo_all <- longToWide(all_days_geo,  id = c("date", "latitude"), col = "longitude", vars = "avg_geopot")
+names(cli_data_05_avgDay_geo_all) <- c("date", "latitude", unlist(lapply(as.numeric(names(cli_data_05_avgDay_geo_all)[3:22]), function(x) round(x, 2))))
+#save
+saveRDS(cli_data_05_avgDay_geo_all, "Data/cli_data_05_geo_wide.rds")
+
+#same for both
+cli_data_05_avgDay_both_all <- longToWide(copy(cli_data_05_avgDay),  id = c("date", "latitude"), col = "longitude")
+names(cli_data_05_avgDay_both_all)[1:22] <- c("date", "latitude", unlist(lapply(names(cli_data_05_avgDay_both_all)[3:22], function(x) paste0(str_sub(x, start = 10, end = 15), "_avg.mslp"))))
+names(cli_data_05_avgDay_both_all)[23:42] <- unlist(lapply(names(cli_data_05_avgDay_both_all)[23:42], function(x) paste0(str_sub(x, start = 12, end = 17), "_avg.geo")))
+#save
+saveRDS(cli_data_05_avgDay_both_all, "Data/cli_data_05_wide.rds")
+
 
 
 ##gwl##
