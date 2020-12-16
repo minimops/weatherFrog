@@ -1,0 +1,192 @@
+---
+title: "dataset_mutate"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+require(data.table)
+require(checkmate)
+require(stringr)
+```
+
+```{r 0 functions}
+
+#subsets certain yearspan
+subsetYears <- function(data, years) {
+  assertDataTable(data)
+  assert_vector(years)
+  tryCatch(assertSubset(years, seq(1900, 2010)),
+           error = function(cond) {
+             assertSubset(years, as.character(seq(1900, 2010)))
+             })
+  
+  tryCatch(data[format(as.Date(date),"%Y") %in% years, ],
+           error = function(cond) {
+             data[year %in% years, ]
+           })
+}
+
+#sets all measuretimes to winter time
+timeToWinter <- function(data) {
+  assertDataTable(data)
+  
+  warning("WARNING: This function only subtracts 1 from odd measuring times. This is not okay for the entire dataset, as we have heard that the times are irregular!!!")
+  data[time %in% seq(1, 23, by = 2), time := time - 1]
+}
+
+#averages mslp and geopot for each day
+toDailyAverage <- function(data) {
+  assertDataTable(data)
+  
+  data[, .(avg_mslp = mean(mslp), 
+           avg_geopot = mean(geopotential)), 
+       by = .(date, longitude, latitude)]
+}
+
+#removes longitude and latitude data for and replaces with index (1 to 160)
+toGeoIndex <- function(data) {
+  assertDataTable(data)
+  
+  setorder(data, date, longitude, latitude)
+  data[, geoIndex := 1:.N, by = date][, ":=" (longitude = NULL, latitude = NULL)]
+}
+
+#take cli_data from long to wide format
+longToWide <- function(data) {
+  assertDataTable(data)
+  
+  tryCatch(out <- dcast(data, 
+                        date ~ geoIndex, 
+                        value.var = c("avg_mslp", "avg_geopot")), 
+           error = function(cond) {
+             conditionMessage("not yet implemented")
+           }
+             )
+  out
+}
+```
+
+
+takes raw datasets
+  - saves them as dt
+  - splits date and time
+```{r 1 maindataset}
+###caution!
+#this does take quite a while
+#for some reason format() is quite inefficient
+
+##rean##
+
+#import and convert to data.table
+cli_data <- as.data.table(readRDS("Data/data_reanalysis_20201109.rds"))
+#splitting Date and Time (takes a while)
+cli_data[, date := as.Date(cli_data$time, tz = "CET")]
+cli_data[, time := as.numeric(format(cli_data$time,"%H"))]
+#saving dataset with split Date and time
+saveRDS(cli_data, "Data/cli_data.rds")
+
+
+##gwl##
+
+#import and convert to dt
+gwl_data <- as.data.table(read.table("Data/GWL_1900-2010.csv", header = TRUE, sep = ";",
+                                     na.strings = " "))
+#wide to long:
+gwl_data <- melt(gwl_data, id.vars = c("JAHRMONAT"), measure.vars = patterns("^X"),
+                 variable.name = "day", value.name = "gwl")
+#split year and month
+gwl_data[, ":=" (year = substr(JAHRMONAT, 1, 4), 
+                 month = substr(JAHRMONAT, 5, 6))][, JAHRMONAT := NULL]
+#remove empty rows (months have differing lengths)
+gwl_data <- gwl_data[gwl != "", ]
+#rename and pad day
+gwl_data_split <- copy(gwl_data[, day := str_pad(sub("X", "", day), 2, "left", "0")])
+#save split dataset
+saveRDS(gwl_data_split, "Data/gwl_split.rds")
+
+#fuse to date
+gwl_data[, date := as.Date(paste(year, month, day, sep = "-"))]
+#delete columns
+gwl_data[, ":=" (year = NULL, month = NULL, day = NULL)]
+#reorder cols
+setcolorder(gwl_data, c("date", "gwl"))
+#save dataset with date format
+saveRDS(gwl_data, "Data/gwl.rds")
+
+```
+
+this subsets the years 2000 to 2010
+  - unifies the measure time
+  - saves the avg over the day
+```{r 2 last11years}
+###requires 0 (and initially 1)
+
+
+##rean##
+
+#subset 2000-2010
+cli_data_2k <- subsetYears(readRDS("Data/cli_data.rds"), seq(2000, 2010))
+#change to winter time
+cli_data_2k <- timeToWinter(cli_data_2k)
+#save subset 2k dataset
+saveRDS(cli_data_2k, "Data/cli_data_2k.rds")
+
+#create an average over the day
+cli_data_2k_avgDay <- toDailyAverage(cli_data_2k)
+#save avg 2k dataset
+saveRDS(cli_data_2k_avgDay, "Data/cli_data_2k_avgDay.rds")
+
+
+##gwl##
+
+#subset years 2000-2010
+gwl_2000s <- subsetYears(readRDS("Data/gwl_split.rds"), seq(2000, 2010))
+#save subset
+saveRDS(gwl_2000s, "Data/gwl_2000s_split.rds")
+
+```
+
+this subsets the years 2006 to 2010
+  - unifies the measure time
+  - saves the avg over the day
+  - create a wide format of the dataset
+```{r 3 last5years}
+###requires 0 (and initially 1)
+
+
+##rean##
+
+#subset 2000-2010
+cli_data_05 <- subsetYears(readRDS("Data/cli_data.rds"), seq(2006, 2010))
+
+#change to winter time
+cli_data_05 <- timeToWinter(cli_data_05)
+#save subset 2k dataset
+saveRDS(cli_data_05, "Data/cli_data_05.rds")
+
+#create avg over day
+cli_data_05_avgDay <- toDailyAverage(cli_data_05)
+#save avg
+saveRDS(cli_data_05_avgDay, "Data/cli_data_05_avgDay.rds")
+
+#replace longitude and latitude with index and make wide (320 columns)
+cli_data_05_avg_wide <- longToWide(toGeoIndex(cli_data_05_avgDay))
+#save wide dataset
+saveRDS(cli_data_05_avg_wide, "Data/cli_data_05_avgDay_wide.rds")
+
+
+##gwl##
+
+#subset years 2006-2010
+gwl_5_years <- subsetYears(readRDS("Data/gwl_split.rds"), seq(2006, 2010))
+#save subset
+saveRDS(gwl_5_years, "Data/gwl_5_years_split.rds")
+
+```
+
+
+```{r 4}
+
+```

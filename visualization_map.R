@@ -23,6 +23,7 @@ names(cli_data_2k_avgDay_mslp) <- as.character(seq(1, 20))
 
 
 library(rnaturalearth)
+library(rnaturalearthdata)
 # load data
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
