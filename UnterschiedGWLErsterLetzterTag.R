@@ -395,9 +395,24 @@ t.test(rangesGWL$Geo, rangesGWL$GeoInner, alternative = "two.sided" ,
 
 ks.test(rangesGWL$Mslp,"pnorm", mean = mean(rangesGWL$Mslp), sd = sd(rangesGWL$Mslp))
 var.test(rangesGWL$Mslp,rangesGWL$MslpInner)
-t.test(rangesGWL$Mslp, rangesGWL$MslpInner, alternative = "two.sided" , 
+t.test(rangesGWL$Mslp, rangesGWL$MslpInner, alternatlive = "two.sided" , 
        paired = T, var.equal = T)
 
 # Mittelwerte mit und ohne ersten und letzten Tag bei Luftdruck sind signifiaknnt 
 #unterschiedlich
+
+#Gibt es bestimmte Tage, wo die range besonders groß ist? Alle Werte herausfiltern,
+# die nicht im IQR liegen
+
+IQR(rangesGWL$Mslp)
+IQR(rangesGWL$MslpInner)
+
+IQR(rangesGWL$Geo)
+IQR(rangesGWL$GeoInner)
+quantile(rangesGWL$Mslp, 0.25)
+
+# IQR der ranges sind sehr gleich
+# schauen, wie viele ranges der GWL im IQR derranges der GWL ohne ersten und letzten Tag drin ist   
+a <- rangesGWL$Mslp[rangesGWL$Mslp  %inrange% c(quantile(rangesGWL$MslpInner, 0.25), quantile(rangesGWL$MslpInner, 0.75))]
+a <- rangesGWL$Geo[rangesGWL$Geo  %inrange% c(quantile(rangesGWL$GeoInner, 0.25), quantile(rangesGWL$GeoInner, 0.75))]
 
