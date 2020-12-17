@@ -289,5 +289,130 @@ unterschied_last <- cbind(cli_gwl_last[,1:9], unterschied_last)
 #größer als Differenzen innterhalb der Mitte?
 
 
-# Range pro Tag ueber alle Standorte berechnen 
+# #########Range pro Tag ueber alle Standorte berechnen 
+
+rangeProTag <- as.data.table(t(apply(cli_gwl_groesser3[,10:169], 1, range)))
+colnames(rangeProTag) <- c("minMslp", "maxMslp")
+rangeProTag <- cbind(cli_gwl_groesser3[,1:9],rangeProTag)
+
+rangeProTagGeo <- as.data.table(t(apply(cli_gwl_groesser3[,170 : 329], 1, range)))
+colnames(rangeProTagGeo) <- c("minGeo", "maxGeo")
+
+rangeProTag <- cbind(rangeProTag,rangeProTagGeo)
+
+
+######Range pro GWL üeber alle Standorte pro GWL 
+#Datenvorbereitung
+rangeProTagMslp <- as.data.table(t(apply(cli_gwl_groesser3[,10:169], 1, range)))
+colnames(rangeProTagMslp) <- c("minMslp", "maxMslp")
+rangeProTagMslp <- cbind(cli_gwl_groesser3[,1:9],rangeProTagMslp)
+rangeProTagMslpLong <- melt(rangeProTagMslp, id.vars = c("index_length_gwl","id","Jahreszeit",
+                                                         "date","year","month","day","gwl"), measure.vars = c("minMslp","maxMslp"))
+rangeProTagMslppLong <- rangeProTagMslpLong[order(rangeProTagMslpLong$date),]
+
+colnames(rangeProTagMslpLong)[colnames(rangeProTagMslpLong) == "variable"] <- "MinMaxMslp"
+colnames(rangeProTagMslpLong)[colnames(rangeProTagMslpLong) == "value"] <- "Mslp"
+
+
+
+rangeProTagGeo <- cbind(cli_gwl_groesser3[,1:9], rangeProTagGeo)
+rangeProTagGeoLong <- melt(rangeProTagGeo, id.vars = c("index_length_gwl","id","Jahreszeit","date",
+                                                         "year","month","day","gwl"), measure.vars = c("minGeo","maxGeo"))
+
+rangeProTagGeoLong <- rangeProTagGeoLong[order(rangeProTagGeoLong$date),]
+colnames(rangeProTagGeoLong)[colnames(rangeProTagGeoLong) == "variable"] <- "MinMaxGeo"
+colnames(rangeProTagGeoLong)[colnames(rangeProTagGeoLong) == "value"] <- "Geo"
+
+ranges <- cbind(rangeProTagMslpLong, rangeProTagGeoLong[,9 : 10])
+
+#Berechnung
+
+rangesProGwl <- ranges[, lapply(.SD, function(x) range(x)), by = index_length_gwl, .SDcols = c(10,12)] 
+rangesDiff <- rangesProGwl[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
+rangesDiff <- na.omit(rangesDiff)
+
+#######Berechung der ranges über alle Standorte pro GWL ohne den ersten und letzten Tag
+
+
+#Datenvorbereitung
+rangeProTagMslpinner <- as.data.table(t(apply(cli_gwl_inner[,10:169], 1, range)))
+colnames(rangeProTagMslpinner) <- c("minMslp", "maxMslp")
+rangeProTagMslpinner <- cbind(cli_gwl_inner[,1:9],rangeProTagMslpinner)
+rangeProTagMslpLonginner <- melt(rangeProTagMslpinner, id.vars = c("index_length_gwl","id","Jahreszeit",
+                                                         "date","year","month","day","gwl"), measure.vars = c("minMslp","maxMslp"))
+rangeProTagMslppLonginnerinner <- rangeProTagMslpLonginner[order(rangeProTagMslpLonginner$date),]
+
+colnames(rangeProTagMslpLonginner)[colnames(rangeProTagMslpLonginner) == "variable"] <- "MinMaxMslp"
+colnames(rangeProTagMslpLonginner)[colnames(rangeProTagMslpLonginner) == "value"] <- "Mslp"
+
+rangeProTagGeoinner <- as.data.table(t(apply(cli_gwl_inner[,170 : 329], 1, range)))
+colnames(rangeProTagGeoinner) <- c("minGeo", "maxGeo")
+
+rangeProTagGeoinner <- cbind(cli_gwl_inner[,1:9], rangeProTagGeoinner)
+rangeProTagGeoLonginner <- melt(rangeProTagGeoinner, id.vars = c("index_length_gwl","id","Jahreszeit","date",
+                                                       "year","month","day","gwl"), measure.vars = c("minGeo","maxGeo"))
+
+
+rangeProTagGeoLonginner <- rangeProTagGeoLonginner[order(rangeProTagGeoLonginner$date),]
+colnames(rangeProTagGeoLonginner)[colnames(rangeProTagGeoLonginner) == "variable"] <- "MinMaxGeo"
+colnames(rangeProTagGeoLonginner)[colnames(rangeProTagGeoLonginner) == "value"] <- "Geo"
+
+rangesinner <- cbind(rangeProTagMslpLonginner, rangeProTagGeoLonginner[,9 : 10])
+
+#Berechnung
+
+rangesProGwlinner <- rangesinner[, lapply(.SD, function(x) range(x)), by = index_length_gwl, .SDcols = c(10,12)] 
+rangesDiffinner <- rangesProGwlinner[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
+rangesDiffinner <- na.omit(rangesDiffinner)
+colnames(rangesDiffinner) <- c("index_length_gwl","MslpInner","GeoInner")
+rangesGWL <- merge(rangesDiff, rangesDiffinner, by = "index_length_gwl")
+
+##### Vergleich von ranges und ranges ohne ersten und letzten Tag
+
+
+boxplot(rangesGWL[,c(2,4,3,5)])
+# range des luftdrucks mit und ohne ersten und letzten Tag eines GWL scheinen
+#gleich zu sein, im Geopotential gibt es Unterschiede
+
+###########Durchführen eines Signifikanztest, ob Unterschiede signifikannt sind
+
+# Prüfen auf Testvoraussetzungen
+#Normalverteilung?
+
+ks.test(rangesGWL$Geo,"pnorm", mean = mean(rangesGWL$Geo), sd = sd(rangesGWL$Geo))
+
+# keine Normalverteilung
+
+#Varianzen gleich?
+var.test(rangesGWL$Geo,rangesGWL$GeoInner)
+# keine Varianzgleichheit
+
+# Wech Test
+t.test(rangesGWL$Geo, rangesGWL$GeoInner, alternative = "two.sided" , 
+       paired = T, var.equal = F)
+# Die Mittelwerte der ranges mit und ohne die ersten und letzten Tage bei 
+# Geopotential sind signifikannt unterschiedlich
+
+ks.test(rangesGWL$Mslp,"pnorm", mean = mean(rangesGWL$Mslp), sd = sd(rangesGWL$Mslp))
+var.test(rangesGWL$Mslp,rangesGWL$MslpInner)
+t.test(rangesGWL$Mslp, rangesGWL$MslpInner, alternatlive = "two.sided" , 
+       paired = T, var.equal = T)
+
+# Mittelwerte mit und ohne ersten und letzten Tag bei Luftdruck sind signifiaknnt 
+#unterschiedlich
+
+#Gibt es bestimmte Tage, wo die range besonders groß ist? Alle Werte herausfiltern,
+# die nicht im IQR liegen
+
+IQR(rangesGWL$Mslp)
+IQR(rangesGWL$MslpInner)
+
+IQR(rangesGWL$Geo)
+IQR(rangesGWL$GeoInner)
+quantile(rangesGWL$Mslp, 0.25)
+
+# IQR der ranges sind sehr gleich
+# schauen, wie viele ranges der GWL im IQR derranges der GWL ohne ersten und letzten Tag drin ist   
+a <- rangesGWL$Mslp[rangesGWL$Mslp  %inrange% c(quantile(rangesGWL$MslpInner, 0.25), quantile(rangesGWL$MslpInner, 0.75))]
+a <- rangesGWL$Geo[rangesGWL$Geo  %inrange% c(quantile(rangesGWL$GeoInner, 0.25), quantile(rangesGWL$GeoInner, 0.75))]
 
