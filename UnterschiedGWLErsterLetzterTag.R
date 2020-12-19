@@ -172,6 +172,33 @@ mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = t
 
 barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4))
 
+
+
+# gibt es Unterschiede in den Messwerten gruppiert nch Jahreszeit?
+
+cli_jahreszeitMslp <- as.data.table(t(apply(cli_gwl_1971[,10:169], 1, range)))
+cli_jahreszeitMslp$Jahreszeit <- cli_gwl_1971$Jahreszeit
+cli_jahreszeitMslp$date <- cli_gwl_1971$date
+colnames(cli_jahreszeitMslp) <- c("minMslp", "maxMslp", "Jahreszeit","date")
+setcolorder(cli_jahreszeitMslp,c(4,3,1,2))
+cli_jahreszeitMslp <- melt(cli_jahreszeitMslp,id.vars = c("Jahreszeit","date"), measure.vars = c("minMslp","maxMslp"))
+cli_jahreszeitMslp <- cli_jahreszeitMslp[,lapply(.SD, function(x) x - lag(x)),by = c("date", "Jahreszeit"), .SDcols = 4]
+cli_jahreszeitMslp <- na.omit(cli_jahreszeitMslp)
+
+cli_jahreszeitGeo <- as.data.table(t(apply(cli_gwl_1971[,170:329], 1, range)))
+cli_jahreszeitGeo$Jahreszeit <- cli_gwl_1971$Jahreszeit
+cli_jahreszeitGeo$date <- cli_gwl_1971$date
+colnames(cli_jahreszeitGeo) <- c("minGeo", "maxGeo","Jahreszeit", "date")
+setcolorder(cli_jahreszeitGeo,c(4,3,1,2))
+cli_jahreszeitGeo <- melt(cli_jahreszeitGeo,id.vars = c("Jahreszeit","date"), measure.vars = c("minGeo","maxGeo"))
+cli_jahreszeitGeo <- cli_jahreszeitGeo[,lapply(.SD, function(x) x - lag(x)),by = c("date","Jahreszeit"), .SDcols = 4]
+cli_jahreszeitGeo <- na.omit(cli_jahreszeitGeo)
+
+
+boxplot(cli_jahreszeitMslp$value ~ cli_jahreszeitMslp$Jahreszeit)
+boxplot(cli_jahreszeitGeo$value ~ cli_jahreszeitGeo$Jahreszeit)
+
+
 # Im Frühling gibt am meisten GWL, abnehmende Anzahl der GWLs: Herbst, Sommer, Winter
 # Zusammensetzung der GWLs in den Jahreszeiten unterschiedlich
 
