@@ -134,19 +134,19 @@ GWLAnzahl <- as.data.frame(table(lengthGWL$gwl))
 GWLAnzahl <-GWLAnzahl[order(GWLAnzahl$Freq),]
 # GWL WZ kommt am haufigsten vor: 345 mal
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/anzahlGWLs.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/anzahlGWLs.jpeg")
 
-anzahlGWLs <- barplot(table(lengthGWL$gwl), main = "Anzahl der GWLs 1971 - 2010", ylab = "Anzahl der GWLs"
-                      ,cex.names = 0.8, las = 2, ylim = c(0,350))
+barplot(table(lengthGWL$gwl), main = "Anzahl der GWLs 1971 - 2010", ylab = "Anzahl der GWLs"
+                      ,cex.names = 1.5, las = 2, ylim = c(0,350),cex.axis = 1.5,cex.main = 1.5, cex.lab = 1.5)
 dev.off()
 
 
 # Anzahl der GWLs je Laenge
 
 table(as.numeric(lengthGWL$length))
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/anzahlLängeGWLs.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/anzahlLängeGWLs.jpeg")
 barplot(table(as.numeric(lengthGWL$length)), main = "Anzahl der Länge der GWLs",
-        xlab = "Länge der GWLs", ylab = "Häufigkeit", ylim = c(0,700))
+        xlab = "Länge der GWLs", ylab = "Häufigkeit", ylim = c(0,700),cex.axis = 1.5,cex.names = 1.5,cex.main = 1.5, cex.lab = 1.5)
 dev.off()
 ################################
 # Gibt es saisonale Unterschiede im Aufkommen der Wetterlagen?
@@ -180,12 +180,13 @@ barplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = t
 mosaicplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(31), las = 1)
 
 jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/GWLsJahreszeiten.jpeg")
-mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der Jahreszeiten")
+mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der Jahreszeiten",
+           cex.axis = 1.0)
 dev.off()
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/gesamtanzahlGWLs.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/gesamtanzahlGWLs.jpeg")
 barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der Jhreszeiten",
-        ylab = "Anzahl", ylim = c(0,800))
+        ylab = "Anzahl", ylim = c(0,800),cex.main = 1.5,cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
 
 
@@ -388,14 +389,14 @@ colnames(rangesDiffInner) <- c("index_length_gwl","MslpInner","GeoInner")
 rangesGWL <- merge(rangesDiff, rangesDiffInner, by = "index_length_gwl")
 
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/rangeGWLMslp.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/rangeGWLMslp.jpeg")
 boxplot(rangesGWL[,c(2,4)], main = "Vergleich ranges pro GWL ohne und mit ersten und letzen Tag einer GWL",
-        ylab = "Luftdruck in Pa")
+        ylab = "Luftdruck in Pa",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/rangeGWLGeo.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/rangeGWLGeo.jpeg")
 boxplot(rangesGWL[,c(3,5)], main = "Vergleich ranges pro GWL ohne und mit ersten und letzen Tag einer GWL",
-        ylab = "Geopotential in m²/s²")
+        ylab = "Geopotential in m²/s²",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
 
 

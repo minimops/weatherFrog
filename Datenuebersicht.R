@@ -63,7 +63,9 @@ a <- as.data.frame(table(dataSubset$longitude,dataSubset$latitude))
 b <- as.data.frame(table(data$longitude))
 c <- as.data.frame(table(data$latitude))
 
-data20000 <- dataSubset[dataSubset$date == "2000-01-01",]
+data2000 <- data[data$date >= "2000-01-01" & data$date <= "2000-12-31", ]
+
+
 #Pro Tag 4 Messungen für jeden Standort, also 640 Messungen an einem Tag 
 
 
@@ -76,7 +78,12 @@ cov(dataSubset$mslp,dataSubset$geopotential)
 cor(dataSubset$mslp,dataSubset$geopotential)
 jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/corPlotMslpGeo.jpeg")
 plot(dataSubset$mslp,dataSubset$geopotential, main = "Korrelation zwischen Luftdruck und Geopotential (2006 bis 2010)",
-     xlab = "Geopotential in Pa", ylab = "Geopotential in m²/s²")
+     xlab = "Geopotential in Pa", ylab = "Geopotential in m²/s²",cex.axis = 1.5, cex.main = 1.5, cex.axis = 1.5)
+dev.off()
+
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/corPlotMslpGeoJahr2000.jpeg")
+plot(data2000$mslp,data2000$geopotential, main = "Korrelation zwischen Luftdruck und Geopotential (2006 bis 2010)",
+     xlab = "Geopotential in Pa", ylab = "Geopotential in m²/s²", cex.axis = 1.5, cex.main = 1.5, cex.lab = 1.5)
 dev.off()
 
 d <- as.data.frame(cbind(dataSubset$mslp,dataSubset$geopotential))
@@ -87,12 +94,12 @@ cov(d)
 ### Keine Unabhängigkeit zwischen beiden Variablen 
 
 ###Tageswertevergleich
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/VergleichTageswerteMslp.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/VergleichTageswerteMslp.jpeg")
 boxplot(dataSubset$mslp ~ dataSubset$time, main = "Tageswertvergleiche der Jahre 2006 bis 2010",
-        xlab = "Messzeitpunkt", ylab = "Luftdruck in Pa")
+        xlab = "Messzeitpunkt", ylab = "Luftdruck in Pa", cex.lab = 1.5, cex.main = 1.5, cex.axis = 1.5)
 dev.off()
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/VergleichTageswerteGeo.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/VergleichTageswerteGeo.jpeg")
 boxplot(dataSubset$geopotential ~ dataSubset$time, main = "Tageswertvergleiche der Jahre 2006 bis 2010",
-        xlab = "Messzeitpunkt", ylab = "Geopotential im m²/s²")
+        xlab = "Messzeitpunkt", ylab = "Geopotential im m²/s²", cex.lab = 1.5,cex.main = 1.5, cex.axis = 1.5)
 dev.off()
