@@ -134,10 +134,20 @@ GWLAnzahl <- as.data.frame(table(lengthGWL$gwl))
 GWLAnzahl <-GWLAnzahl[order(GWLAnzahl$Freq),]
 # GWL WZ kommt am haufigsten vor: 345 mal
 
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/anzahlGWLs.jpeg")
+
+anzahlGWLs <- barplot(table(lengthGWL$gwl), main = "Anzahl der GWLs 1971 - 2010", ylab = "Anzahl der GWLs"
+                      ,cex.names = 0.8, las = 2, ylim = c(0,350))
+dev.off()
+
 
 # Anzahl der GWLs je Laenge
-table(as.numeric(lengthGWL$length))
 
+table(as.numeric(lengthGWL$length))
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/anzahlLängeGWLs.jpeg")
+barplot(table(as.numeric(lengthGWL$length)), main = "Anzahl der Länge der GWLs",
+        xlab = "Länge der GWLs", ylab = "Häufigkeit", ylim = c(0,700))
+dev.off()
 ################################
 # Gibt es saisonale Unterschiede im Aufkommen der Wetterlagen?
 
@@ -168,10 +178,15 @@ colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit))
 GWLJahreszeiten <- as.data.table(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit))
 barplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(4))
 mosaicplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(31), las = 1)
-mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 1)
 
-barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4))
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/GWLsJahreszeiten.jpeg")
+mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der Jahreszeiten")
+dev.off()
 
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/gesamtanzahlGWLs.jpeg")
+barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der Jhreszeiten",
+        ylab = "Anzahl", ylim = c(0,800))
+dev.off()
 
 
 # gibt es Unterschiede in den Messwerten gruppiert nch Jahreszeit?
@@ -194,10 +209,14 @@ cli_jahreszeitGeo <- melt(cli_jahreszeitGeo,id.vars = c("Jahreszeit","date"), me
 cli_jahreszeitGeo <- cli_jahreszeitGeo[,lapply(.SD, function(x) x - lag(x)),by = c("date","Jahreszeit"), .SDcols = 4]
 cli_jahreszeitGeo <- na.omit(cli_jahreszeitGeo)
 
-
-boxplot(cli_jahreszeitMslp$value ~ cli_jahreszeitMslp$Jahreszeit)
-boxplot(cli_jahreszeitGeo$value ~ cli_jahreszeitGeo$Jahreszeit)
-
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/MslpRangeJahreszeiten.jpeg")
+boxplot(cli_jahreszeitMslp$value ~ cli_jahreszeitMslp$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der Jahreszeiten",
+        xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa")
+dev.off()
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/GeopotentailRangeJahreszeiten.jpeg")
+boxplot(cli_jahreszeitGeo$value ~ cli_jahreszeitGeo$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der Jahreszeiten",
+        xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²")
+dev.off()
 
 # Im Frühling gibt am meisten GWL, abnehmende Anzahl der GWLs: Herbst, Sommer, Winter
 # Zusammensetzung der GWLs in den Jahreszeiten unterschiedlich
@@ -205,7 +224,6 @@ boxplot(cli_jahreszeitGeo$value ~ cli_jahreszeitGeo$Jahreszeit)
 #####################################
 #Unterscheidet sich der erste und letzte Tag einer GWL?
 
-dbinom(2, size = 8, prob = 1/8)
 
 # Alle GWLs, die weniger als 4 Tage andauern, löschen
 clii <- cli_gwl_1971[,.(.N), by = index_length_gwl]
@@ -229,19 +247,6 @@ cli_gwl_groesser3 <- as.data.table(cli_gwl_groesser3)
    group_by(index_length_gwl) %>%
    mutate(mslp_diff = mslp_mean - lag(mslp_mean),
           geo_diff = geo_mean - lag(geo_mean))
- 
-
-
- 
-cli_gwl_mean1 <- cli_gwl_mean %>%
-  select(index_length_gwl,mslp_mean)
-
-
-for( gwl_number in 1 : 20){
- plot(cli_gwl_mean1$mslp_mean[cli_gwl_mean1$index_length_gwl == gwl_number])
-}
-######Viel zu viele Plots, nicht praktikabel
-
 
 
 
@@ -316,90 +321,83 @@ unterschied_last <- cbind(cli_gwl_last[,1:9], unterschied_last)
 #größer als Differenzen innterhalb der Mitte?
 
 
-# #########Range pro Tag ueber alle Standorte berechnen 
+# #########Range pro Tag ueber alle Standorte berechnen je GWL
 
-rangeProTag <- as.data.table(t(apply(cli_gwl_groesser3[,10:169], 1, range)))
-colnames(rangeProTag) <- c("minMslp", "maxMslp")
-rangeProTag <- cbind(cli_gwl_groesser3[,1:9],rangeProTag)
-
-rangeProTagGeo <- as.data.table(t(apply(cli_gwl_groesser3[,170 : 329], 1, range)))
-colnames(rangeProTagGeo) <- c("minGeo", "maxGeo")
-
-rangeProTag <- cbind(rangeProTag,rangeProTagGeo)
-
-
-######Range pro GWL üeber alle Standorte pro GWL 
-#Datenvorbereitung
 rangeProTagMslp <- as.data.table(t(apply(cli_gwl_groesser3[,10:169], 1, range)))
 colnames(rangeProTagMslp) <- c("minMslp", "maxMslp")
 rangeProTagMslp <- cbind(cli_gwl_groesser3[,1:9],rangeProTagMslp)
-rangeProTagMslpLong <- melt(rangeProTagMslp, id.vars = c("index_length_gwl","id","Jahreszeit",
-                                                         "date","year","month","day","gwl"), measure.vars = c("minMslp","maxMslp"))
-rangeProTagMslppLong <- rangeProTagMslpLong[order(rangeProTagMslpLong$date),]
 
-colnames(rangeProTagMslpLong)[colnames(rangeProTagMslpLong) == "variable"] <- "MinMaxMslp"
-colnames(rangeProTagMslpLong)[colnames(rangeProTagMslpLong) == "value"] <- "Mslp"
+rangeProTagGeo <- as.data.table(t(apply(cli_gwl_groesser3[,170 : 329], 1, range)))
+colnames(rangeProTagGeo) <- c("minGeo", "maxGeo")
+rangeProTagGeo <- cbind(cli_gwl_groesser3[,1:9],rangeProTagGeo)
+
+rangeProTagMslp <- melt(rangeProTagMslp, id.vars = c("index_length_gwl", "N", "id", "Jahreszeit","date",
+                                             "year", "month", "day", "gwl"),
+                    measure.vars = c("minMslp","maxMslp"))
+
+rangeProTagGeo <- melt(rangeProTagGeo, id.vars = c("index_length_gwl", "N", "id", "Jahreszeit","date",
+                                                     "year", "month", "day", "gwl"),
+                        measure.vars = c("minGeo","maxGeo"))
+colnames(rangeProTagMslp)[colnames(rangeProTagMslp) == "variable"] <- "MinMaxMslp"
+colnames(rangeProTagMslp)[colnames(rangeProTagMslp) == "value"] <- "Mslp"
+
+colnames(rangeProTagGeo)[colnames(rangeProTagGeo) == "variable"] <- "MinMaxGeo"
+colnames(rangeProTagGeo)[colnames(rangeProTagGeo) == "value"] <- "Geo"
+
+ranges <- cbind(rangeProTagMslp, rangeProTagGeo[,10 : 11])
 
 
-
-rangeProTagGeo <- cbind(cli_gwl_groesser3[,1:9], rangeProTagGeo)
-rangeProTagGeoLong <- melt(rangeProTagGeo, id.vars = c("index_length_gwl","id","Jahreszeit","date",
-                                                         "year","month","day","gwl"), measure.vars = c("minGeo","maxGeo"))
-
-rangeProTagGeoLong <- rangeProTagGeoLong[order(rangeProTagGeoLong$date),]
-colnames(rangeProTagGeoLong)[colnames(rangeProTagGeoLong) == "variable"] <- "MinMaxGeo"
-colnames(rangeProTagGeoLong)[colnames(rangeProTagGeoLong) == "value"] <- "Geo"
-
-ranges <- cbind(rangeProTagMslpLong, rangeProTagGeoLong[,9 : 10])
 
 #Berechnung
 
-rangesProGwl <- ranges[, lapply(.SD, function(x) range(x)), by = index_length_gwl, .SDcols = c(10,12)] 
+rangesProGwl <- ranges[, lapply(.SD, function(x) range(x)), by = index_length_gwl, .SDcols = c(11,13)] 
 rangesDiff <- rangesProGwl[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
 rangesDiff <- na.omit(rangesDiff)
 
 #######Berechung der ranges über alle Standorte pro GWL ohne den ersten und letzten Tag
 
+rangeProTagMslpInner <- as.data.table(t(apply(cli_gwl_inner[,10:169], 1, range)))
+colnames(rangeProTagMslpInner) <- c("minMslp", "maxMslp")
+rangeProTagMslpInner <- cbind(cli_gwl_inner[,1:9],rangeProTagMslpInner)
 
-#Datenvorbereitung
-rangeProTagMslpinner <- as.data.table(t(apply(cli_gwl_inner[,10:169], 1, range)))
-colnames(rangeProTagMslpinner) <- c("minMslp", "maxMslp")
-rangeProTagMslpinner <- cbind(cli_gwl_inner[,1:9],rangeProTagMslpinner)
-rangeProTagMslpLonginner <- melt(rangeProTagMslpinner, id.vars = c("index_length_gwl","id","Jahreszeit",
-                                                         "date","year","month","day","gwl"), measure.vars = c("minMslp","maxMslp"))
-rangeProTagMslppLonginnerinner <- rangeProTagMslpLonginner[order(rangeProTagMslpLonginner$date),]
+rangeProTagGeoInner <- as.data.table(t(apply(cli_gwl_inner[,170 : 329], 1, range)))
+colnames(rangeProTagGeoInner) <- c("minGeo", "maxGeo")
+rangeProTagGeoInner <- cbind(cli_gwl_inner[,1:9],rangeProTagGeoInner)
 
-colnames(rangeProTagMslpLonginner)[colnames(rangeProTagMslpLonginner) == "variable"] <- "MinMaxMslp"
-colnames(rangeProTagMslpLonginner)[colnames(rangeProTagMslpLonginner) == "value"] <- "Mslp"
+rangeProTagMslpInner <- melt(rangeProTagMslpInner, id.vars = c("index_length_gwl", "N", "id", "Jahreszeit","date",
+                                                     "year", "month", "day", "gwl"),
+                        measure.vars = c("minMslp","maxMslp"))
 
-rangeProTagGeoinner <- as.data.table(t(apply(cli_gwl_inner[,170 : 329], 1, range)))
-colnames(rangeProTagGeoinner) <- c("minGeo", "maxGeo")
+rangeProTagGeoInner <- melt(rangeProTagGeoInner, id.vars = c("index_length_gwl", "N", "id", "Jahreszeit","date",
+                                                   "year", "month", "day", "gwl"),
+                       measure.vars = c("minGeo","maxGeo"))
+colnames(rangeProTagMslpInner)[colnames(rangeProTagMslpInner) == "variable"] <- "MinMaxMslp"
+colnames(rangeProTagMslpInner)[colnames(rangeProTagMslpInner) == "value"] <- "Mslp"
 
-rangeProTagGeoinner <- cbind(cli_gwl_inner[,1:9], rangeProTagGeoinner)
-rangeProTagGeoLonginner <- melt(rangeProTagGeoinner, id.vars = c("index_length_gwl","id","Jahreszeit","date",
-                                                       "year","month","day","gwl"), measure.vars = c("minGeo","maxGeo"))
+colnames(rangeProTagGeoInner)[colnames(rangeProTagGeoInner) == "variable"] <- "MinMaxGeo"
+colnames(rangeProTagGeoInner)[colnames(rangeProTagGeoInner) == "value"] <- "Geo"
 
-
-rangeProTagGeoLonginner <- rangeProTagGeoLonginner[order(rangeProTagGeoLonginner$date),]
-colnames(rangeProTagGeoLonginner)[colnames(rangeProTagGeoLonginner) == "variable"] <- "MinMaxGeo"
-colnames(rangeProTagGeoLonginner)[colnames(rangeProTagGeoLonginner) == "value"] <- "Geo"
-
-rangesinner <- cbind(rangeProTagMslpLonginner, rangeProTagGeoLonginner[,9 : 10])
-
-#Berechnung
-
-rangesProGwlinner <- rangesinner[, lapply(.SD, function(x) range(x)), by = index_length_gwl, .SDcols = c(10,12)] 
-rangesDiffinner <- rangesProGwlinner[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
-rangesDiffinner <- na.omit(rangesDiffinner)
-colnames(rangesDiffinner) <- c("index_length_gwl","MslpInner","GeoInner")
-rangesGWL <- merge(rangesDiff, rangesDiffinner, by = "index_length_gwl")
-
-##### Vergleich von ranges und ranges ohne ersten und letzten Tag
+rangesInner <- cbind(rangeProTagMslpInner, rangeProTagGeoInner[,10 : 11])
 
 
-boxplot(rangesGWL[,c(2,4,3,5)])
-# range des luftdrucks mit und ohne ersten und letzten Tag eines GWL scheinen
-#gleich zu sein, im Geopotential gibt es Unterschiede
+rangesProGwlInner <- rangesInner[, lapply(.SD, function(x) range(x)), by = index_length_gwl, .SDcols = c(11,13)] 
+rangesDiffInner <- rangesProGwlInner[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
+rangesDiffInner <- na.omit(rangesDiffInner)
+
+colnames(rangesDiffInner) <- c("index_length_gwl","MslpInner","GeoInner")
+rangesGWL <- merge(rangesDiff, rangesDiffInner, by = "index_length_gwl")
+
+
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/rangeGWLMslp.jpeg")
+boxplot(rangesGWL[,c(2,4)], main = "Vergleich ranges pro GWL ohne und mit ersten und letzen Tag einer GWL",
+        ylab = "Luftdruck in Pa")
+dev.off()
+
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/rangeGWLGeo.jpeg")
+boxplot(rangesGWL[,c(3,5)], main = "Vergleich ranges pro GWL ohne und mit ersten und letzen Tag einer GWL",
+        ylab = "Geopotential in m²/s²")
+dev.off()
+
 
 ###########Durchführen eines Signifikanztest, ob Unterschiede signifikannt sind
 
@@ -412,11 +410,11 @@ ks.test(rangesGWL$Geo,"pnorm", mean = mean(rangesGWL$Geo), sd = sd(rangesGWL$Geo
 
 #Varianzen gleich?
 var.test(rangesGWL$Geo,rangesGWL$GeoInner)
-# keine Varianzgleichheit
+# Varianzen sind gleich
 
 # Wech Test
 t.test(rangesGWL$Geo, rangesGWL$GeoInner, alternative = "two.sided" , 
-       paired = T, var.equal = F)
+       paired = T, var.equal = T)
 # Die Mittelwerte der ranges mit und ohne die ersten und letzten Tage bei 
 # Geopotential sind signifikannt unterschiedlich
 

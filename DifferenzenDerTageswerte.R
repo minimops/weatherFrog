@@ -32,7 +32,7 @@ data18$time <- "18:00:00"
 
 data <- rbind(data00, data06, data12, data18)
 
-dataSubset <- data[data$date >= "2000-01-01" & data$date <= "2010-12-31", ]
+dataSubset <- data[data$date >= "2006-01-01" & data$date <= "2010-12-31", ]
 
 # long to wide format pro Tag
 dataLong <- reshape(dataSubset,
