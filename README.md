@@ -18,7 +18,7 @@ Authors: Anne Gritto, Katja Gutmair, Stella Akouete, Noah Hurmer
 ### Setup
 
 In order to run any analysis code, it is necessary to run *dataset_mutate.Rmd* to create and save the required datasets. Beforehand, create a folder "Data" in the project file and insert the following two raw datasets into it : *"GWL_1900-2010.csv", "data_reanalysis_20201109.rds"*. These are not included for size and protection reasons. Contact authors listed above for access if required.  
-  Reference the *dataset_doc.Rmd* file in the folder *documentation* for information on the created datsets.
+  Reference the *dataset_doc.Rmd* file in the folder *documentation* for information on the created datasets.
 
 
 ### Dependencies
