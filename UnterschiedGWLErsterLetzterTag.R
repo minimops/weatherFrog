@@ -210,13 +210,13 @@ cli_jahreszeitGeo <- melt(cli_jahreszeitGeo,id.vars = c("Jahreszeit","date"), me
 cli_jahreszeitGeo <- cli_jahreszeitGeo[,lapply(.SD, function(x) x - lag(x)),by = c("date","Jahreszeit"), .SDcols = 4]
 cli_jahreszeitGeo <- na.omit(cli_jahreszeitGeo)
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/MslpRangeJahreszeiten.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/MslpRangeJahreszeiten.jpeg")
 boxplot(cli_jahreszeitMslp$value ~ cli_jahreszeitMslp$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der Jahreszeiten",
-        xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa")
+        xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/GeopotentailRangeJahreszeiten.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/GeopotentailRangeJahreszeiten.jpeg")
 boxplot(cli_jahreszeitGeo$value ~ cli_jahreszeitGeo$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der Jahreszeiten",
-        xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²")
+        xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
 
 # Im Frühling gibt am meisten GWL, abnehmende Anzahl der GWLs: Herbst, Sommer, Winter
