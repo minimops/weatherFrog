@@ -36,33 +36,55 @@ world_map <- ggplot(data = world) +
 
 #world map with measure points
 world_map +
-  geom_point(data = one_day, aes(x = longitude, y = latitude)) +
-  ggtitle("Measure-points on World Map")
+  geom_point(data = one_day, aes(x = longitude, y = latitude), size = .6) +
+  ggtitle("Messpunkte auf einer Weltkarte")
 
 #Region Map with measure points
 #TODO change borders to min-5 etc
 world_map +
   geom_point(data = one_day, aes(x = longitude, y = latitude)) +
   ggtitle("Measure-points on Local Map") +
-  coord_sf(xlim = c(-70.00, 50.00), ylim = c(30.00, 77.00), expand = FALSE)
+  coord_sf(xlim = c(min(one_day$longitude) - 5, 
+                    max(one_day$longitude) + 5), 
+          ylim = c(min(one_day$latitude) - 5, 
+                    max(one_day$latitude) + 5), expand = FALSE)
+
+#world map in range
+world_map_local <- world_map +
+  coord_sf(xlim = c(min(one_day$longitude) - 5, 
+                    max(one_day$longitude) + 5), 
+           ylim = c(min(one_day$latitude) - 5, 
+                    max(one_day$latitude) + 5), expand = FALSE)
+
+diff_lon <- abs(unique(one_day$longitude)[[1]] - unique(one_day$longitude)[[2]]) / 2
+diff_lat <- abs(unique(one_day$latitude)[[1]] - unique(one_day$latitude)[[2]]) / 2
 
 #rectangles over points
-world_map +
-  coord_sf(xlim = c(-70.00, 50.00), ylim = c(30.00, 77.00), expand = FALSE) +
-  ggtitle("Measure-points on Local Map") +
+world_map_local +
+  ggtitle("Messpunkte") +
   geom_rect(data=one_day, 
-            mapping=aes(xmin=longitude - 2.812519, xmax=longitude + 2.812519,
-                        ymin=latitude - 2.812519, ymax=latitude + 2.812519),
+            mapping=aes(xmin=longitude - diff_lon, xmax=longitude + diff_lon,
+                        ymin=latitude - diff_lat, ymax=latitude + diff_lat),
             color="black", alpha=0.5)
+
 #mslpon one day
-world_map +
-  coord_sf(xlim = c(-70.00, 50.00), ylim = c(30.00, 77.00), expand = FALSE) +
-  ggtitle("mslp on 07-07-2005") +
+world_map_local +
+  ggtitle("mslp am 01-01-2006") +
   geom_rect(data=one_day, 
-            mapping=aes(xmin=longitude - 2.812519, xmax=longitude + 2.812519,
-                        ymin=latitude - 2.812519, ymax=latitude + 2.812519, 
-                        fill = avg_geopot), alpha=0.5) +
+            mapping=aes(xmin=longitude - diff_lon, xmax=longitude + diff_lon,
+                        ymin=latitude - diff_lat, ymax=latitude + diff_lat, 
+                        fill = avg_mslp), alpha=0.5) +
   scale_fill_gradient(name = "mslp in Pa", low = "blue", high = "red")
+
+#mslpon one day
+world_map_local +
+  ggtitle("Geopotential am 01-01-2006") +
+  geom_rect(data=one_day, 
+            mapping=aes(xmin=longitude - diff_lon, xmax=longitude + diff_lon,
+                        ymin=latitude - diff_lat, ymax=latitude + diff_lat, 
+                        fill = avg_geopot), alpha=0.5) +
+  scale_fill_gradient(name = "geopot in m²/s²", low = "blue", high = "red")
+
 
 # require(gridExtra)
 # plot1 <- qplot(1)

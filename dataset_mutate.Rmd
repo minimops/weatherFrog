@@ -171,6 +171,7 @@ cli_data_05_avgDay <- toDailyAverage(cli_data_05)
 saveRDS(cli_data_05_avgDay, "Data/cli_data_05_avgDay.rds")
 
 #replace longitude and latitude with index and make wide (320 columns)
+saveRDS(toGeoIndex(cli_data_05_avgDay),"Data/cli_data_05_avgDay_index.rds")
 cli_data_05_avg_wide <- longToWide(toGeoIndex(cli_data_05_avgDay))
 #save wide dataset
 saveRDS(cli_data_05_avg_wide, "Data/cli_data_05_avgDay_wide.rds")

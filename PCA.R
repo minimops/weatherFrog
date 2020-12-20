@@ -100,10 +100,13 @@ cli_data_pca <- as.data.frame(gwl[cli_data_pca, on = .(date)])
 cli_pca_2 <- prcomp(as.data.frame(cli_data_pca)[3:322])
 
 #plotting first two pca
+autoplot(cli_pca_2, alpha = 0.3)
+#plotting first two pca
 cli_pca_2Scores <- data.frame(cli_pca_2$x[, 1:2])
 ggplot(cli_pca_2Scores, aes(y = PC1, x = PC2)) + 
   geom_point(alpha = 0.3) +
-  ggtitle("first two PCA with scaled parameters")
+  labs(x = "PC1 (28.31%)", y = "PC2 (16.05%)") +
+  ggtitle("Ersten zwei PC (skaliert)")
 
 library(cluster)
 library(ggfortify)
@@ -113,7 +116,7 @@ autoplot(clara(as.data.frame(cli_data_pca)[3:322], 4),
 
 
 #clustering
-plot(cli_pca_2) #elbow point at 4
+plot(cli_pca_2, main = "Screeplot PCA") #elbow point at 4
 
 cumvar <- cumsum(cli_pca_2$sdev^2 / sum(cli_pca_2$sdev^2))
 (pc.index<-min(which(cumvar>0.85)))
@@ -130,7 +133,7 @@ fviz_nbclust(pca2_cluster, kmeans, method = "wss") +
 k2 <- kmeans(pca2_cluster, centers = 4, nstart = 25)
 
 #cluster plot
-fviz_cluster(k2, data = cli_data_pca[, - c(1, 2)])
+fviz_cluster(k2, data = cli_data_pca[, - c(1, 2)], labelsize = 0)
 #cant add labels and this plot is a mess so:
 library(ggalt)
 clustervis <- data.frame(gwl = cli_data_pca$gwl, cluster = factor(k2$cluster), cli_pca_2$x)
@@ -162,9 +165,9 @@ ggplot(data = data.frame(cl_vis_lp), aes(x = PC1, y = PC2)) +
 #only labeling one gwl without subsetting
 ggplot(data = data.frame(cl_vis), aes(x = PC1, y = PC2)) +
   geom_point(aes(color = cluster)) +
-  geom_text(data = cl_vis[gwl == unique(cl_vis$gwl)[[5]]], 
+  geom_text(data = cl_vis[gwl == unique(cl_vis$gwl)[[4]]], 
             aes(label = gwl), size = 3, hjust = 0, vjust = 0) +
-  ggtitle("kmeans(8) of first 10 pca's with single highlighted gwl")
+  ggtitle("kmeans 10pc")
 
 
 
@@ -178,13 +181,13 @@ k2_clustered <- data.frame(cli_data_pca, k2$cluster)
 (clust_proptable_pca <- round(
   prop.table(table(k2_clustered$gwl, k2_clustered$k2.cluster), margin = 1), 2))
 #Moaik of table
-plot(clust_table_pca)
+plot(clust_table_pca, main = "Mosaikplot GWL zu Cluster durch PCA&kmeans")
 #mosaik of prop table
 plot(clust_proptable_pca)
 
 
 #with pam
-k3 <- pam(pca2_cluster, 8)
+k3 <- pam(pca2_cluster, 4)
 clustervis2 <- data.frame(gwl = cli_data_pca$gwl, cluster = factor(k3$cluster), cli_pca_2$x)
 (clust_table_pca_pam <- 
     table(clustervis2$gwl, clustervis2$cluster))
