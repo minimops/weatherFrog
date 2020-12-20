@@ -37,6 +37,7 @@ rownames(dist_mahal_scaled) <- colnames(dist_mahal_scaled) <- rn <- 1:1826
 ??mahalanobis.dist
 saveRDS(dist_mahal_scaled, "Data/dist_mahal_scaled.rds")
 
+dist_mahal_scaled <- readRDS("Data/dist_mahal_scaled.rds")
 # erster Clusterversuch, hierarchisch
 complete_linkage <- hclust(as.dist(dist_mahal_scaled), method="complete")
 summary(complete_linkage)
@@ -69,14 +70,25 @@ mosaicplot(table(data.wide.cluster.gwl.fanny$cluster, data.wide.cluster.gwl.fann
 
 ### k -means clustering 
 # kmeans-Clustering mit allen Kovariablen, 100 zufaellige Startpartitionen
+km_list <- list()
+wss <- numeric()
 
+for (k in 1:10){
+  km_list[[k]] <- kmeans(x=as.dist(dist_mahal_scaled), centers=k, iter.max=1000)
+  wss[k] <- sum(km_list[[k]]$withinss)
+}
+
+par(mfrow = c(1,1))
+plot(1:10, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
 clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers=9, iter.max=1000)
 
-data.wide.cluster.kmeans <- data.wide[, cluster := clusterkmeans$cluster]
+data.scaled <- as.data.table(data.scaled)
+data.scaled <- data.scaled[, date := data.wide[, .(date)]]
+data.wide.cluster.kmeans <- data.scaled[, cluster := clusterkmeans$cluster]
 data.wide.cluster.gwl.kmeans <- gwl[data.wide.cluster.kmeans, on = .(date)]
-kmeans.plot <- autoplot(clusterkmeans, frame = TRUE, frame.type = "norm")                                                         
-kmeans.plot
+kmeans.plot9 <- autoplot(clusterkmeans, as.dist(dist_mahal_scaled), colour = "cluster")                                                         
+kmeans.plot9
 
 
 mosaic_cluster_kmeans <- ggplot(data = data.wide.cluster.gwl.kmeans) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
@@ -89,7 +101,11 @@ mosaicplot(table(data.wide.cluster.gwl.kmeans$gwl, data.wide.cluster.gwl.kmeans$
 mosaicplot(table(data.wide.cluster.gwl.kmeans$cluster, data.wide.cluster.gwl.kmeans$gwl), color = TRUE)
 
 
-
+fviz_cluster(clusterkmeans, data = as.dist(dist_mahal_scaled),
+             geom = "point",
+             ellipse.type = "convex", 
+             ggtheme = theme_bw()
+)
 
 
 #### einmal alles ohne Skalierung #################################################################################
@@ -97,82 +113,18 @@ mosaicplot(table(data.wide.cluster.gwl.kmeans$cluster, data.wide.cluster.gwl.kme
 
 mean2 <- colMeans(data.wide[, 1:320])
 variance2 <- cov(data.wide[, 2:321])
-
-n <- nrow(data.wide[2:321])
+var(data.col)
+n <- nrow(data.wide)
 ?mahalanobis
 dist_mahal2 <- matrix(NA, nrow=n, ncol=n)
 data.col <- data.wide[, date := NULL]
+
 for(i in 1:n){
-  dist_mahal2[i,] <- mahalanobis(data.wide, data.wide[i, ], variance2)
+  dist_mahal2[i,] <- mahalanobis(data.col, data.col[i, ], variance2)
 }
 
 dim(data.wide)
 rownames(dist_mahal2) <- colnames(dist_mahal2) <- rownames(dist_mahal2_cov) <- colnames(dist_mahal2_cov) <- rn <- 1:1826
 # dist_mahal <- as.dist(dist_mahal)
-
-??mahalanobis.dist
-
-complete_linkage <- hclust(dist_mahal, method="complete")
-summary(complete_linkage)
-plot(complete_linkage)
-fviz_dend(complete_linkage) + ggtitle("Complete Linkage - Dendrogramm")
-complete_linkage$order
-
-
-clust <- hcut(dist_mahal, k = 9, hc_func = "hclust", hc_method = "complete")
-clust$height
-## mean für center Argument bei mahalanobis
-mean <- sapply(data.wide[, 2:321], mean)
-## kovarianzmatrix für Argument cov in mahalanobis
-covariance <- cov(as.data.frame(data.wide[, 2:321]))
-dim(covariance)
-# cov2cor(covariance)
-
-
-### Fuzzy analysis
-# teilt nicht in ein festes cluster ein, sondern erlaubt acu mehrdeutigkeit
-# hält mehr detaillierte informationen von den daten
-
-?fanny
-clusterfanny <- fanny(as.dist(dist_mahal_cov), k = 9, diss = TRUE, memb.exp = 1)
-
-data.wide.cluster.fanny <- data.wide[, cluster := clusterfanny$clustering]
-data.wide.cluster.gwl.fanny <- gwl[data.wide.cluster.fanny, on = .(date)]
-fanny.plot <- autoplot(clusterfanny, frame = TRUE, frame.type = "norm")                                                         
-clara.plot
-plot(clusterfanny)
-
-
-### k -means
-# kmeans-Clustering mit allen Kovariablen, 100 zufaellige Startpartitionen
-set.seed(356)
-
-clusterkmeans <- kmeans(x=dist_mahal, centers=9, iter.max=100, nstart=100)
-
-data.wide.cluster.kmeans <- data.wide[, cluster := clusterkmeans$cluster]
-data.wide.cluster.gwl.kmeans <- gwl[data.wide.cluster.kmeans, on = .(date)]
-kmeans.plot <- autoplot(clusterkmeans, frame = TRUE, frame.type = "norm")                                                         
-kmeans.plot
-plot(clusterkmeans)
-
-
-
-
-mosaic_cluster_kmeans <- ggplot(data = data.wide.cluster.gwl.kmeans) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
-                                                                                   na.rm = TRUE) +
-  labs(x = " Cluster", y = "GWL")
-
-mosaic_gwl_kmeans <- ggplot(data = data.wide.cluster.gwl.kmeans) + geom_mosaic(aes(x = product(cluster, gwl), fill = as.factor(cluster)), 
-                                                                               na.rm = TRUE) 
-
-clusterkmeans_cov <- kmeans(x= as.dist(dist_mahal_cov), centers=9, iter.max=100, nstart=100)
-
-data.wide.cluster.kmeans <- data.wide[, cluster := clusterkmeans$cluster]
-data.wide.cluster.gwl.kmeans <- gwl[data.wide.cluster.kmeans, on = .(date)]
-kmeans.plot <- autoplot(clusterkmeans, frame = TRUE, frame.type = "norm")                                                         
-kmeans.plot
-plot(clusterkmeans)
-
-
-
+?mahalanobis
 

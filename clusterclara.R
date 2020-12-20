@@ -25,9 +25,9 @@ dim(data.completed)
 
 # Anzahl Cluster bestimmen
 ?fviz_nbclust()
-fviz_nbclust(as.data.frame(scale(data.wide[, 2:321])), FUNcluster = kmeans,
-              method = "silhouette", 
-             diss = dist(scale(data.wide[, 2:321]), method = "euclidean"))
+fviz_nbclust(data, clara, method = "silhouette",k.max = yourMaxValue)+theme_classic()
+fviz_nbclust(as.data.frame(scale(data.wide[, 2:321])), FUNcluster = clara,
+              method = "silhouette")
 ## geht bei mir leider nicht, da 0.5.0 geladen ist oder so, kann das mal bitte wer anders ausführen?
 
 ### normierung funktioniert noch nicht so
@@ -44,18 +44,19 @@ data.wide[, lapply(.SD, function(x) (.SD - min[x]) / (max[x] - min[x])), .SDcols
 #### clustern
 set.seed(1289)
 # dist.data.scaled <- dist(scale(data.wide[, 2:321]), method = "euclidean")
-clusterclara <- clara(scale(data.wide[, 2:321]), k = 9, metric = "euclidean", 
+clusterclara <- clara(scale(data.wide[, 2:321]), k = 5, metric = "euclidean", 
                       stand = FALSE, samples = 1000)
 summary(clusterclara)
 ?clara
 clusterclara$clustering
 
+clusterclara$silinfo
 data.wide.cluster <- data.wide[, cluster := clusterclara$clustering]
 data.wide.cluster.gwl <- gwl[data.wide.cluster, on = .(date)]
 clara.plot <- autoplot(clusterclara, frame = TRUE, frame.type = "norm")                                                         
 clara.plot
 plot(clusterclara)
-
+gwl.plot <- autoplot(clusterclara, data = data.wide.cluster.gwl, colour = "gwl")
 
 
 mosaic_cluster_clara <- ggplot(data = data.wide.cluster.gwl) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
