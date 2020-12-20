@@ -29,10 +29,15 @@ data06$time <- "06:00:00"
 data12$time <- "12:00:00"
 data18$time <- "18:00:00"
 
-
+library(data.table)
 data <- rbind(data00, data06, data12, data18)
 
-dataSubset <- data[data$date >= "2006-01-01" & data$date <= "2010-12-31", ]
+dataSubset <- data[data$date >= "1971-01-01" & data$date <= "2010-12-31", ]
+dataSubset <- as.data.table(dataSubset)
+
+dataSubset[, ":=" (year = substr(date, 1, 4), 
+                      month = substr(date, 6, 7),
+                   day = substr(data, 9,10))]
 
 # long to wide format pro Tag
 dataLong <- reshape(dataSubset,
@@ -42,6 +47,11 @@ dataLong <- reshape(dataSubset,
 
 dataLong <- dataLong[,c(3,1,2,4,6,8,10,5,7,9,11)]
 names(dataLong) <- c("date", "longitude", "latitude","mslp.00","mslp.06","mslp.12", "mslp.18","geopotential.00", "geopotential.06","geopotential.12", "geopotential.18")
+
+
+#Time aufteilen 
+
+
 
 
 # nur 2006 bis 2010

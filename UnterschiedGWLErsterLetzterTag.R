@@ -201,7 +201,7 @@ cli_jahreszeitMslp <- melt(cli_jahreszeitMslp,id.vars = c("Jahreszeit","date"), 
 cli_jahreszeitMslp <- cli_jahreszeitMslp[,lapply(.SD, function(x) x - lag(x)),by = c("date", "Jahreszeit"), .SDcols = 4]
 cli_jahreszeitMslp <- na.omit(cli_jahreszeitMslp)
 
-cli_jahreszeitGeo <- as.data.table(t(apply(cli_gwl_1971[,170:329], 1, range)))
+cli_jahreszeitGeo <- as.data.table(t(apply(cli_gwl_1971[,170:328], 1, range)))
 cli_jahreszeitGeo$Jahreszeit <- cli_gwl_1971$Jahreszeit
 cli_jahreszeitGeo$date <- cli_gwl_1971$date
 colnames(cli_jahreszeitGeo) <- c("minGeo", "maxGeo","Jahreszeit", "date")
@@ -209,6 +209,8 @@ setcolorder(cli_jahreszeitGeo,c(4,3,1,2))
 cli_jahreszeitGeo <- melt(cli_jahreszeitGeo,id.vars = c("Jahreszeit","date"), measure.vars = c("minGeo","maxGeo"))
 cli_jahreszeitGeo <- cli_jahreszeitGeo[,lapply(.SD, function(x) x - lag(x)),by = c("date","Jahreszeit"), .SDcols = 4]
 cli_jahreszeitGeo <- na.omit(cli_jahreszeitGeo)
+
+
 
 jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/MslpRangeJahreszeiten.jpeg")
 boxplot(cli_jahreszeitMslp$value ~ cli_jahreszeitMslp$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der Jahreszeiten",
@@ -389,7 +391,7 @@ colnames(rangesDiffInner) <- c("index_length_gwl","MslpInner","GeoInner")
 rangesGWL <- merge(rangesDiff, rangesDiffInner, by = "index_length_gwl")
 
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/rangeGWLMslp.jpeg")
+jpeg(width = 1000,height = 2000, pointsize = 29,quality = 100,"plots/rangeGWLMslp.jpeg")
 boxplot(rangesGWL[,c(2,4)], main = "Vergleich ranges pro GWL ohne und mit ersten und letzen Tag einer GWL",
         ylab = "Luftdruck in Pa",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
