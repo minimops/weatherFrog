@@ -81,7 +81,7 @@ for (k in 1:10){
 par(mfrow = c(1,1))
 plot(1:10, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
-clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers=9, iter.max=1000)
+clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers=3, iter.max=1000)
 
 data.scaled <- as.data.table(data.scaled)
 data.scaled <- data.scaled[, date := data.wide[, .(date)]]
@@ -89,7 +89,8 @@ data.wide.cluster.kmeans <- data.scaled[, cluster := clusterkmeans$cluster]
 data.wide.cluster.gwl.kmeans <- gwl[data.wide.cluster.kmeans, on = .(date)]
 kmeans.plot9 <- autoplot(clusterkmeans, as.dist(dist_mahal_scaled), colour = "cluster")                                                         
 kmeans.plot9
-
+kmeans.plot3 <- autoplot(clusterkmeans, as.dist(dist_mahal_scaled), colour = "cluster")                                                         
+kmeans.plot3
 
 mosaic_cluster_kmeans <- ggplot(data = data.wide.cluster.gwl.kmeans) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
                                                                            na.rm = TRUE) + labs(x = " Cluster", y = "GWL")
