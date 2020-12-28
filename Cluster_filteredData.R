@@ -1,8 +1,12 @@
 
 library(cluster)
 ?daisy
-dissimilarity <- daisy(as.data.frame(discrete[, .(minimum, intensitaet.tief, quadrant.min, 
-                                                  maximum, intensitaet.hoch, quadrant.max)]), metric = "gower")
+dissimilarity <- daisy(as.data.frame(discrete[, .(minimum, intensitaet.tief, quadrant.min,  
+                                                  maximum, intensitaet.hoch, quadrant.max, mean.mslp, median.mslp, 
+                                                  mean.geopot, median.geopot, min.geo, max.geo,
+                                                  range.mslp, range.geopot, euclidean)]), 
+                                                  weights = c(1, 0.5, 0.5, 1, 0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+                                                  metric = "gower")
 summary(dissimilarity)
 
 # dissimilarity als matrix speichern
@@ -21,7 +25,7 @@ discrete[
 
 sil_width <- c(NA)
 
-for(i in 2:10){
+for(i in 2:15){
   
   pam_fit <- pam(dissimilarity,
                  diss = TRUE,
@@ -33,15 +37,16 @@ for(i in 2:10){
 
 # Plot sihouette width (higher is better)
 
-plot(1:10, sil_width,
+plot(1:15, sil_width,
      xlab = "Number of clusters",
      ylab = "Silhouette Width")
-lines(1:10, sil_width)
+lines(1:15, sil_width)
 # 9 Cluster scheinen hier am besten zu sein, je höher, desto besser
 
 # hier wird das clustering angewandt
 ?pam
 pam_fit <- pam(dissimilarity, diss = TRUE, k = 9)
+
 cluster_vector <- pam_fit$clustering
 
 library(dplyr)
@@ -77,22 +82,6 @@ ggplot(aes(x = X, y = Y), data = tsne_data) +
 
 discrete_gwl <- gwl[discrete, on = .(date)]
 discrete_gwl_cluster <- discrete_gwl[, cluster := cluster_vector]
-
-(clust_table_pam <- round(
-  prop.table(table(discrete_gwl_cluster$gwl, discrete_gwl_cluster$cluster), margin = 1), 2))
-plot(clust_table_pam)
-
-(clust_table_pam2 <- round(
-  prop.table(table(discrete_gwl_cluster$cluster, discrete_gwl_cluster$gwl), margin = 1), 2))
-plot(clust_table_pam2)
-
-library(ggmosaic)
-mosaic_cluster <- ggplot(data = discrete_gwl_cluster) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
-                                                                    na.rm = TRUE) +
-  labs(x = " Cluster", y = "GWL")
-
-mosaic_gwl <- ggplot(data = discrete_gwl_cluster) + geom_mosaic(aes(x = product(cluster, gwl), fill = as.factor(cluster)), 
-                                                                na.rm = TRUE) 
 
 
 mosaicplot(table(discrete_gwl_cluster$gwl, discrete_gwl_cluster$cluster), color = TRUE)

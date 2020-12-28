@@ -44,8 +44,8 @@ data.wide[, lapply(.SD, function(x) (.SD - min[x]) / (max[x] - min[x])), .SDcols
 #### clustern
 set.seed(1289)
 # dist.data.scaled <- dist(scale(data.wide[, 2:321]), method = "euclidean")
-clusterclara <- clara(scale(data.wide[, 2:321]), k = 5, metric = "euclidean", 
-                      stand = FALSE, samples = 1000)
+clusterclara <- clara(scale(data.wide[, 2:321]), k = 9, metric = "euclidean", 
+                      stand = TRUE, samples = 1000, sampsize = 300)
 summary(clusterclara)
 ?clara
 clusterclara$clustering
