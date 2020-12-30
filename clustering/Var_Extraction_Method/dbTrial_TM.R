@@ -7,7 +7,7 @@ library(ggplot2)
 #sample one day
 oneDay <- readRDS("Data/cli_data_2k_avgDay.rds")[date %in% datestoCheck[[10]], ]
 resultDT <- copy(oneDay)
-oneDay[, ":=" (longitude = 1.2* scale(longitude), latitude = 1.2* scale(latitude),
+oneDay[, ":=" (longitude = 1* scale(longitude), latitude = 1* scale(latitude),
                avg_mslp = scale(avg_mslp), avg_geopot = scale(avg_geopot))]
 
 oneDay <- as.matrix(oneDay[, date := NULL])
@@ -16,7 +16,7 @@ kNNdistplot(oneDay, k = 5)
 abline(h=0.9, col = "red", lty =  2)
 
 #TODO gewichtung?
-result <- dbscan(oneDay, eps = 0.95, minPts = 10)
+result <- dbscan(oneDay, eps = .9, minPts = 10)
 result
 
 #attach clusterinfo to result dt
