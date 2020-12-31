@@ -2,6 +2,7 @@
 
 library(checkmate)
 library(KneeArrower)
+library(data.table)
 library(ggplot2)
 library(grid)
 library(gridExtra)
