@@ -112,7 +112,7 @@ dbRun <- function(day, type = "both",
          "mslp" = plots <- list(dbResPlot, mslpPlot),
          "geopot" = plots <- list(dbResPlot, geopotPlot)
         )
-  dbDay <- grid.arrange(grobs = plots, nrow = 1,  top = textGrob(text))
+  dbDay <- arrangeGrob(grobs = plots, nrow = 1,  top = textGrob(text))
   switch (out,
     "grob" = return(dbDay),
     "raw" = return(plots)
@@ -134,30 +134,44 @@ save.DBOutput <- function(dates, filename ,onePage = FALSE,
   lapply(list(dates), function (x) assertDate(as.Date(x)))
   assertLogical(onePage)
   assertString(filename)
+  assertSubset(type, c("both", "mixed", "mslp", "geopot"))
   
   if(length(dates) > 10) stop("Keep number of days to <= 10. 
                               Greater Numbers lead to nonsensically sized images 
                               and Memmory overload.")
+  if(type == "mixed" && isFALSE(onePage)) stop("mixed type only works in onePage
+                                               mode for now.")
   
   finalPath <- ifelse(is.null(pathext), path, paste(path, pathext, sep = "/"))
+  finalFilename <- paste(filename, type, sep = "_")
   
   if(onePage){
     
     plist <- c()
-    for (i in seq_len(length(dates))) {
-      plist <- c(plist, dbRun(dates[[i]], out = "raw", type, weights))
+    if(type == "mixed") { 
+      for (i in seq_len(length(dates))) {
+        plist <- c(plist, dbRun(dates[[i]], out = "raw", type = "both", weights),
+                   dbRun(dates[[i]], out = "raw", type = "mslp", weights)[1],
+                   dbRun(dates[[i]], out = "raw", type = "geopot", weights)[1]
+        )
+      }
+    } else {
+          for (i in seq_len(length(dates))) {
+            plist <- c(plist, dbRun(dates[[i]], out = "raw", type, weights))
+          }
     }
     
-    grid.arrange(grobs = plist, nrow = length(dates))
-    ggsave(filename = filename, path = finalPath,
+    ggsave(filename = finalFilename, path = finalPath,
            grid.arrange(grobs = plist, nrow = length(dates)), 
-           device = "png", height = 3 * length(dates), width = 10)
+           device = "png", height = 3 * length(dates), 
+           width = 3 * length(plist) / length(dates))
   } else{
     
     for (i in seq_len(length(dates))) {
-      ggsave(filename = paste(filename, i, sep = "-"), 
+      ggsave(filename = paste(finalFilename, i, sep = "-"), 
              path = finalPath,
-             dbRun(dates[[i]], type, weights), device = "png", width = 10, height = 3)
+             dbRun(dates[[i]], type, weights), device = "png", 
+             width = 9, height = 3)
     }
   }
 }
