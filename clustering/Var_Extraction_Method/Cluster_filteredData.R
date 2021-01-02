@@ -1,14 +1,17 @@
 
 library(cluster)
 ?daisy
-dissimilarity <- daisy(as.data.frame(discrete[, .(minimum, intensitaet.tief, quadrant.min,  
-                                                  maximum, intensitaet.hoch, quadrant.max, mean.mslp, median.mslp, 
-                                                  mean.geopot, median.geopot, min.geo, max.geo,
-                                                  range.mslp, range.geopot, euclidean)]), 
-                                                  weights = c(1, 0.5, 0.5, 1, 0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+dissimilarity <- daisy(as.data.frame(discrete[, .(scale(min.mslp), scale(intensitaet.tief), quadrant.min.mslp,
+                                                  quadrant.max.mslp, quadrant.min.geopot, quadrant.max.geopot,
+                                                  scale(max.mslp), scale(intensitaet.hoch),  scale(mean.mslp), 
+                                                  scale(median.mslp), scale(mean.geopot), scale(median.geopot), 
+                                                  scale(min.geopot), scale(max.geopot), scale(range.mslp),
+                                                  scale(range.geopot), scale(euclidean.mslp), scale(euclidean.geopot))]), 
+                                                  weights = c(1.5, 1, 0.5, 0.5, 0.5, 0.5, 1.5, 1, 1, 1, 1, 1, 1.5, 1.5, 1, 1, 1, 1),
                                                   metric = "gower")
 summary(dissimilarity)
 
+?daisy
 # dissimilarity als matrix speichern
 gower_mat <- as.matrix(dissimilarity)
 
@@ -41,14 +44,15 @@ plot(1:15, sil_width,
      xlab = "Number of clusters",
      ylab = "Silhouette Width")
 lines(1:15, sil_width)
-# 9 Cluster scheinen hier am besten zu sein, je höher, desto besser
+# 8 Cluster scheinen hier am besten zu sein, je höher, desto besser
 
 # hier wird das clustering angewandt
 ?pam
-pam_fit <- pam(dissimilarity, diss = TRUE, k = 9)
+pam_fit <- pam(dissimilarity, diss = TRUE, k = 8)
 
 cluster_vector <- pam_fit$clustering
 
+pam_fit$medoids
 library(dplyr)
 # für eine summary über die cluster
 pam_results <- discrete[, .(minimum, intensitaet.tief, quadrant.min, 

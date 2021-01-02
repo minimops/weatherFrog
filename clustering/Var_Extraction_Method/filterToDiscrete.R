@@ -34,7 +34,7 @@ mean.mslp <- mslp.wide[, apply(mslp.wide, 1, mean)]
 
 # und hier nochmal das gleiche für das geopotential
 geopot.wide <- data.wide[, 162:321]
-mean.geopot2 <- geopot.wide[, apply(geopot.wide, 1, mean)]
+mean.geopot <- geopot.wide[, apply(geopot.wide, 1, mean)]
 
 ## einfach nur abchecken, obs funktioniert hat
 if (length(mean.mslp) != nrow(data.wide) | length(mean.geopot) != nrow(data.wide)) {
@@ -68,7 +68,7 @@ min.geopot <- apply(geopot.wide[, 1:160], 1, min)
 ## einmal max und min geplottet, man erkennt deutlich saisonale unterschiede
 plot(min.mslp)
 hist(min.mslp)
-plot(density(minimum, na.rm = TRUE))
+plot(density(min.mslp, na.rm = TRUE))
 plot(max.mslp)
 hist(max.mslp)
 plot(density(max.mslp))
@@ -141,8 +141,8 @@ intensitaet.tief <- apply(mslp.tief, 1, function(x) sum(!is.na(x)))
 ### 8. Quadrant von Minimum/MAximum ##################################################################
 
 ## dafür benutze ich extra einen dataframe
-coordinates.min <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
-coordinates.max2 <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
+coordinates.min.mslp <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
+coordinates.max.mslp <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
 
 ## und splitte mslp nach Tag auf in eine list , die als inahlate die tageswerte im format 8x20 enthält
 mslp.split <- split(data.mslp[, 3:23], data.mslp[, id])
@@ -150,21 +150,21 @@ mslp.split <- split(data.mslp[, 3:23], data.mslp[, id])
 ## dann entnehme ich die koordinaten von den minima und maxima
 for (i in seq_len(1826)) {
   if (all(is.na(mslp.split[[i]][, 1:20]))){
-    coordinates.min[i, ] <- NA
+    coordinates.min.mslp[i, ] <- NA
   } else {
-  coordinates.min[i, ]<- which(mslp.split[[i]] == min(mslp.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
+  coordinates.min.mslp[i, ]<- which(mslp.split[[i]] == min(mslp.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
   }
 }
 
 for (i in seq_len(1826)) {
   if (all(is.na(mslp.split[[i]][, 1:20]))){
-    coordinates.max[i, ] <- NA
+    coordinates.max.mslp[i, ] <- NA
   } else {
-    coordinates.max[i, ]<- which(mslp.split[[i]] == max(mslp.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
+    coordinates.max.mslp[i, ]<- which(mslp.split[[i]] == max(mslp.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
   }
 }
-head(coordinates.min)
-head(coordinates.max)
+head(coordinates.min.mslp)
+head(coordinates.max.mslp)
 ##   1 ...     4|5 ...     8|9  ...   12|13 ...   16|17...    20|
 ##  ____________________________________________________________
 ## 1|1  1  1  1 | 2  2  2  2| 3  3  3  3| 4  4  4  4|5  5  5  5 |
@@ -179,159 +179,354 @@ head(coordinates.max)
 # so teil ich das jetzt ein, falls euch was anderes einfällt, gerne bescheid sagen
 # 0 wenn kein minimum oder maximum besteht
 
-quadrant.min <- integer(length = 1826)
+quadrant.min.mslp <- integer(length = 1826)
 for (i in 1:1826) {
-  if (is.na(coordinates.min[i, ][[1]])) {
-    quadrant.min[i] <- 0
+  if (is.na(coordinates.min.mslp[i, ][[1]])) {
+    quadrant.min.mslp[i] <- 0
   }
-  else if (coordinates.min[i, ][[1]] < 3) {
-    if (coordinates.min[i, ][[2]] < 5) {
-      quadrant.min[i] <- 1
+  else if (coordinates.min.mslp[i, ][[1]] < 3) {
+    if (coordinates.min.mslp[i, ][[2]] < 5) {
+      quadrant.min.mslp[i] <- 1
     }
-    else if (coordinates.min[i, ][[2]] < 9) {
-      quadrant.min[i] <- 2
+    else if (coordinates.min.mslp[i, ][[2]] < 9) {
+      quadrant.min.mslp[i] <- 2
     }
-    else if (coordinates.min[i, ][[2]] < 13) {
-      quadrant.min[i] <- 3
+    else if (coordinates.min.mslp[i, ][[2]] < 13) {
+      quadrant.min.mslp[i] <- 3
     }
-    else if (coordinates.min[i, ][[2]] < 17){
-      quadrant.min[i] <- 4
+    else if (coordinates.min.mslp[i, ][[2]] < 17){
+      quadrant.min.mslp[i] <- 4
     }
     else {
-      quadrant.min[i] <- 5
+      quadrant.min.mslp[i] <- 5
     }
   }
-  else if (coordinates.min[i, ][[1]] < 5) {
-    if (coordinates.min[i, ][[2]] < 5) {
-      quadrant.min[i] <- 6
+  else if (coordinates.min.mslp[i, ][[1]] < 5) {
+    if (coordinates.min.mslp[i, ][[2]] < 5) {
+      quadrant.min.mslp[i] <- 6
     }
-    else if (coordinates.min[i, ][[2]] < 9) {
-      quadrant.min[i] <- 7
+    else if (coordinates.min.mslp[i, ][[2]] < 9) {
+      quadrant.min.mslp[i] <- 7
     }
-    else if (coordinates.min[i, ][[2]] < 13) {
-      quadrant.min[i] <- 8
+    else if (coordinates.min.mslp[i, ][[2]] < 13) {
+      quadrant.min.mslp[i] <- 8
     }
-    else if (coordinates.min[i, ][[2]] < 17) {
-      quadrant.min[i] <- 9
+    else if (coordinates.min.mslp[i, ][[2]] < 17) {
+      quadrant.min.mslp[i] <- 9
     }
     else {
-      quadrant.min[i] <- 10
+      quadrant.min.mslp[i] <- 10
     }
   }
-  else if (coordinates.min[i, ][[1]] < 7) {
-    if (coordinates.min[i, ][[2]] < 5) {
-      quadrant.min[i] <- 11
+  else if (coordinates.min.mslp[i, ][[1]] < 7) {
+    if (coordinates.min.mslp[i, ][[2]] < 5) {
+      quadrant.min.mslp[i] <- 11
     }
-    else if (coordinates.min[i, ][[2]] < 9) {
-      quadrant.min[i] <- 12
+    else if (coordinates.min.mslp[i, ][[2]] < 9) {
+      quadrant.min.mslp[i] <- 12
     }
-    else if (coordinates.min[i, ][[2]] < 13) {
-      quadrant.min[i] <- 13
+    else if (coordinates.min.mslp[i, ][[2]] < 13) {
+      quadrant.min.mslp[i] <- 13
     }
-    else if (coordinates.min[i, ][[2]] < 17) {
-      quadrant.min[i] <- 14
+    else if (coordinates.min.mslp[i, ][[2]] < 17) {
+      quadrant.min.mslp[i] <- 14
     }
     else {
-      quadrant.min[i] <- 15
+      quadrant.min.mslp[i] <- 15
     }
   }
   else {
-    if (coordinates.min[i, ][[2]] < 5) {
-      quadrant.min[i] <- 16
+    if (coordinates.min.mslp[i, ][[2]] < 5) {
+      quadrant.min.mslp[i] <- 16
     }
-    else if (coordinates.min[i, ][[2]] < 9) {
-      quadrant.min[i] <- 17
+    else if (coordinates.min.mslp[i, ][[2]] < 9) {
+      quadrant.min.mslp[i] <- 17
     }
-    else if (coordinates.min[i, ][[2]] < 13) {
-      quadrant.min[i] <- 18
+    else if (coordinates.min.mslp[i, ][[2]] < 13) {
+      quadrant.min.mslp[i] <- 18
     }
-    else if (coordinates.min[i, ][[2]] < 17) {
-      quadrant.min[i] <- 19
+    else if (coordinates.min.mslp[i, ][[2]] < 17) {
+      quadrant.min.mslp[i] <- 19
     }
     else {
-      quadrant.min[i] <- 20
+      quadrant.min.mslp[i] <- 20
     }
   }
 }
 
-table(quadrant.min)
-quadrant.max <- integer(length = 1826)
+table(quadrant.min.mslp)
+quadrant.max.mslp <- integer(length = 1826)
 for (i in 1:1826) {
-  if (is.na(coordinates.max[i, ][[1]])) {
-    quadrant.max[i] <- 0
+  if (is.na(coordinates.max.mslp[i, ][[1]])) {
+    quadrant.max.mslp[i] <- 0
   }
-  else if (coordinates.max[i, ][[1]] < 3) {
-    if (coordinates.max[i, ][[2]] < 5) {
-      quadrant.max[i] <- 1
+  else if (coordinates.max.mslp[i, ][[1]] < 3) {
+    if (coordinates.max.mslp[i, ][[2]] < 5) {
+      quadrant.max.mslp[i] <- 1
     }
-    else if (coordinates.max[i, ][[2]] < 9) {
-      quadrant.max[i] <- 2
+    else if (coordinates.max.mslp[i, ][[2]] < 9) {
+      quadrant.max.mslp[i] <- 2
     }
-    else if (coordinates.max[i, ][[2]] < 13) {
-      quadrant.max[i] <- 3
+    else if (coordinates.max.mslp[i, ][[2]] < 13) {
+      quadrant.max.mslp[i] <- 3
     }
-    else if (coordinates.max[i, ][[2]] < 17){
-      quadrant.max[i] <- 4
+    else if (coordinates.max.mslp[i, ][[2]] < 17){
+      quadrant.max.mslp[i] <- 4
     }
     else {
-      quadrant.max[i] <- 5
+      quadrant.max.mslp[i] <- 5
     }
   }
-  else if (coordinates.max[i, ][[1]] < 5) {
-    if (coordinates.max[i, ][[2]] < 5) {
-      quadrant.max[i] <- 6
+  else if (coordinates.max.mslp[i, ][[1]] < 5) {
+    if (coordinates.max.mslp[i, ][[2]] < 5) {
+      quadrant.max.mslp[i] <- 6
     }
-    else if (coordinates.max[i, ][[2]] < 9) {
-      quadrant.max[i] <- 7
+    else if (coordinates.max.mslp[i, ][[2]] < 9) {
+      quadrant.max.mslp[i] <- 7
     }
-    else if (coordinates.max[i, ][[2]] < 13) {
-      quadrant.max[i] <- 8
+    else if (coordinates.max.mslp[i, ][[2]] < 13) {
+      quadrant.max.mslp[i] <- 8
     }
-    else if (coordinates.max[i, ][[2]] < 17) {
-      quadrant.max[i] <- 9
+    else if (coordinates.max.mslp[i, ][[2]] < 17) {
+      quadrant.max.mslp[i] <- 9
     }
     else {
-      quadrant.max[i] <- 10
+      quadrant.max.mslp[i] <- 10
     }
   }
-  else if (coordinates.max[i, ][[1]] < 7) {
-    if (coordinates.max[i, ][[2]] < 5) {
-      quadrant.max[i] <- 11
+  else if (coordinates.max.mslp[i, ][[1]] < 7) {
+    if (coordinates.max.mslp[i, ][[2]] < 5) {
+      quadrant.max.mslp[i] <- 11
     }
-    else if (coordinates.max[i, ][[2]] < 9) {
-      quadrant.max[i] <- 12
+    else if (coordinates.max.mslp[i, ][[2]] < 9) {
+      quadrant.max.mslp[i] <- 12
     }
-    else if (coordinates.max[i, ][[2]] < 13) {
-      quadrant.max[i] <- 13
+    else if (coordinates.max.mslp[i, ][[2]] < 13) {
+      quadrant.max.mslp[i] <- 13
     }
-    else if (coordinates.max[i, ][[2]] < 17) {
-      quadrant.max[i] <- 14
+    else if (coordinates.max.mslp[i, ][[2]] < 17) {
+      quadrant.max.mslp[i] <- 14
     }
     else {
-      quadrant.max[i] <- 15
+      quadrant.max.mslp[i] <- 15
     }
   }
   else {
-    if (coordinates.max[i, ][[2]] < 5) {
-      quadrant.max[i] <- 16
+    if (coordinates.max.mslp[i, ][[2]] < 5) {
+      quadrant.max.mslp[i] <- 16
     }
-    else if (coordinates.max[i, ][[2]] < 9) {
-      quadrant.max[i] <- 17
+    else if (coordinates.max.mslp[i, ][[2]] < 9) {
+      quadrant.max.mslp[i] <- 17
     }
-    else if (coordinates.max[i, ][[2]] < 13) {
-      quadrant.max[i] <- 18
+    else if (coordinates.max.mslp[i, ][[2]] < 13) {
+      quadrant.max.mslp[i] <- 18
     }
-    else if (coordinates.max[i, ][[2]] < 17) {
-      quadrant.max[i] <- 19
+    else if (coordinates.max.mslp[i, ][[2]] < 17) {
+      quadrant.max.mslp[i] <- 19
     }
     else {
-      quadrant.max[i] <- 20
+      quadrant.max.mslp[i] <- 20
     }
   }
 }
-which(quadrant.max == quadrant.min)
+which(quadrant.max.mslp == quadrant.min.mslp)
 ## an keinem tag liegt das max und min von mslp im gleichen quadranten
-table(quadrant.max)
+table(quadrant.max.mslp)
+
+## und alles nochmal für geopotential ####################################
+## dafür benutze ich extra einen dataframe
+coordinates.min.geopot <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
+coordinates.max.geopot <- data.frame(row = numeric(length = 1826), col = numeric(length = 1826))
+
+## und splitte mslp nach Tag auf in eine list , die als inahlate die tageswerte im format 8x20 enthält
+geopot.split <- split(data.geopot[, 3:23], data.geopot[, id])
+
+## dann entnehme ich die koordinaten von den minima und maxima
+for (i in seq_len(1826)) {
+  if (all(is.na(geopot.split[[i]][, 1:20]))){
+    coordinates.min.geopot[i, ] <- NA
+  } else {
+    coordinates.min.geopot[i, ]<- which(geopot.split[[i]] == min(geopot.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
+  }
+}
+
+for (i in seq_len(1826)) {
+  if (all(is.na(geopot.split[[i]][, 1:20]))){
+    coordinates.max.geopot[i, ] <- NA
+  } else {
+    coordinates.max.geopot[i, ]<- which(geopot.split[[i]] == max(geopot.split[[i]][, 1:20], na.rm = TRUE), arr.ind = TRUE)
+  }
+}
+head(coordinates.min.geopot)
+head(coordinates.max.geopot)
+##   1 ...     4|5 ...     8|9  ...   12|13 ...   16|17...    20|
+##  ____________________________________________________________
+## 1|1  1  1  1 | 2  2  2  2| 3  3  3  3| 4  4  4  4|5  5  5  5 |
+## 2|1  1  1  1 | 2  2  2  2| 3  3  3  3| 4  4  4  4|5  5  5  5 |
+## 3|6  6  6  6 | 7  7  7  7| 8  8  8  8| 9  9  9  9|10 10 10 10|
+## 4|6  6  6  6 | 7  7  7  7| 8  8  8  8| 9  9  9  9|10 10 10 10|
+## 5|11 11 11 11|12 12 12 12|13 13 13 13|14 14 14 14|15 15 15 15|
+## 6|11 11 11 11|12 12 12 12|13 13 13 13|14 14 14 14|15 15 15 15|
+## 7|16 16 16 16|17 17 17 17|18 18 18 18|19 19 19 19|20 20 20 20|
+## 8|16 16 16 16|17 17 17 17|18 18 18 18|19 19 19 19|20 20 20 20|
+
+# so teil ich das jetzt ein, falls euch was anderes einfällt, gerne bescheid sagen
+# 0 wenn kein minimum oder maximum besteht
+
+quadrant.min.geopot <- integer(length = 1826)
+for (i in 1:1826) {
+  if (is.na(coordinates.min.geopot[i, ][[1]])) {
+    quadrant.min.geopot[i] <- 0
+  }
+  else if (coordinates.min.geopot[i, ][[1]] < 3) {
+    if (coordinates.min.geopot[i, ][[2]] < 5) {
+      quadrant.min.geopot[i] <- 1
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 9) {
+      quadrant.min.geopot[i] <- 2
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 13) {
+      quadrant.min.geopot[i] <- 3
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 17){
+      quadrant.min.geopot[i] <- 4
+    }
+    else {
+      quadrant.min.geopot[i] <- 5
+    }
+  }
+  else if (coordinates.min.geopot[i, ][[1]] < 5) {
+    if (coordinates.min.geopot[i, ][[2]] < 5) {
+      quadrant.min.geopot[i] <- 6
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 9) {
+      quadrant.min.geopot[i] <- 7
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 13) {
+      quadrant.min.geopot[i] <- 8
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 17) {
+      quadrant.min.geopot[i] <- 9
+    }
+    else {
+      quadrant.min.geopot[i] <- 10
+    }
+  }
+  else if (coordinates.min.geopot[i, ][[1]] < 7) {
+    if (coordinates.min.geopot[i, ][[2]] < 5) {
+      quadrant.min.geopot[i] <- 11
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 9) {
+      quadrant.min.geopot[i] <- 12
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 13) {
+      quadrant.min.geopot[i] <- 13
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 17) {
+      quadrant.min.geopot[i] <- 14
+    }
+    else {
+      quadrant.min.geopot[i] <- 15
+    }
+  }
+  else {
+    if (coordinates.min.geopot[i, ][[2]] < 5) {
+      quadrant.min.geopot[i] <- 16
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 9) {
+      quadrant.min.geopot[i] <- 17
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 13) {
+      quadrant.min.geopot[i] <- 18
+    }
+    else if (coordinates.min.geopot[i, ][[2]] < 17) {
+      quadrant.min.geopot[i] <- 19
+    }
+    else {
+      quadrant.min.geopot[i] <- 20
+    }
+  }
+}
+
+table(quadrant.min.geopot)
+quadrant.max.geopot <- integer(length = 1826)
+for (i in 1:1826) {
+  if (is.na(coordinates.max.geopot[i, ][[1]])) {
+    quadrant.max.geopot[i] <- 0
+  }
+  else if (coordinates.max.geopot[i, ][[1]] < 3) {
+    if (coordinates.max.geopot[i, ][[2]] < 5) {
+      quadrant.max.geopot[i] <- 1
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 9) {
+      quadrant.max.geopot[i] <- 2
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 13) {
+      quadrant.max.geopot[i] <- 3
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 17){
+      quadrant.max.geopot[i] <- 4
+    }
+    else {
+      quadrant.max.geopot[i] <- 5
+    }
+  }
+  else if (coordinates.max.geopot[i, ][[1]] < 5) {
+    if (coordinates.max.geopot[i, ][[2]] < 5) {
+      quadrant.max.geopot[i] <- 6
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 9) {
+      quadrant.max.geopot[i] <- 7
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 13) {
+      quadrant.max.geopot[i] <- 8
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 17) {
+      quadrant.max.geopot[i] <- 9
+    }
+    else {
+      quadrant.max.geopot[i] <- 10
+    }
+  }
+  else if (coordinates.max.geopot[i, ][[1]] < 7) {
+    if (coordinates.max.geopot[i, ][[2]] < 5) {
+      quadrant.max.geopot[i] <- 11
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 9) {
+      quadrant.max.geopot[i] <- 12
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 13) {
+      quadrant.max.geopot[i] <- 13
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 17) {
+      quadrant.max.geopot[i] <- 14
+    }
+    else {
+      quadrant.max.geopot[i] <- 15
+    }
+  }
+  else {
+    if (coordinates.max.geopot[i, ][[2]] < 5) {
+      quadrant.max.geopot[i] <- 16
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 9) {
+      quadrant.max.geopot[i] <- 17
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 13) {
+      quadrant.max.geopot[i] <- 18
+    }
+    else if (coordinates.max.geopot[i, ][[2]] < 17) {
+      quadrant.max.geopot[i] <- 19
+    }
+    else {
+      quadrant.max.geopot[i] <- 20
+    }
+  }
+}
+which(quadrant.max.geopot == quadrant.min.geopot)
+## an keinem tag liegt das max und min von mslp im gleichen quadranten
+table(quadrant.max.geopot)
+
 
 
 # brauchen wir wahrscheinlich nicht, aber ich nehme mal das jahr, monat und tag als einzelne variablen mit 
@@ -340,22 +535,34 @@ table(quadrant.max)
 year <- as.numeric(format(data.wide$date,"%Y"))
 month <- as.numeric(format(data.wide$date, "%m"))
 day <- as.numeric(format(data.wide$date, "%d"))
-discrete <- data.table(date, day, month, year, min.mslp, intensitaet.tief, quadrant.min, tiefpunkt, 
-                       max.mslp, intensitaet.hoch, quadrant.max, hochpunkt, mean.mslp, median.mslp, 
-                       mean.geopot, median.geopot, min.geopot, max.geopot, range.mslp, range.geopot)
+discrete <- data.table(date, day, month, year, min.mslp, intensitaet.tief, quadrant.min.mslp, 
+                       max.mslp, intensitaet.hoch, quadrant.max.mslp, mean.mslp, median.mslp,
+                       range.mslp, min.geopot, quadrant.min.geopot, max.geopot, quadrant.max.geopot,
+                       mean.geopot, median.geopot, range.geopot)
 
 
 # quadrant als factor variable damit das beim clustern als ordinal gewertet wird
-discrete$quadrant.min <- as.factor(as.character(discrete$quadrant.min))
-discrete$quadrant.max <- as.factor(as.character(discrete$quadrant.max))
+discrete$quadrant.min.mslp <- as.factor(as.character(discrete$quadrant.min.mslp))
+discrete$quadrant.max.mslp <- as.factor(as.character(discrete$quadrant.max.mslp))
+discrete$quadrant.min.geopot <- as.factor(as.character(discrete$quadrant.min.geopot))
+discrete$quadrant.max.geopot <- as.factor(as.character(discrete$quadrant.max.geopot))
 discrete$month <- as.factor(as.character(discrete$month))
 
 
 ### 9.Euklidische Distanz zwischen hoch und tief ########################################################
-discrete[, c("y.max", "x.max") := .(coordinates.max[, 1], coordinates.max[, 2])]
-discrete[, c("y.min", "x.min") := .(coordinates.min[, 1], coordinates.min[, 2])]
-discrete <- discrete[, euclidean := sqrt((x.max - x.min)^2 + (y.max - y.min)^2)]
-any(is.na(discrete[, euclidean]))
+discrete[, c("y.max.mslp", "x.max.mslp") := .(coordinates.max.mslp[, 1], coordinates.max.mslp[, 2])]
+discrete[, c("y.min.mslp", "x.min.mslp") := .(coordinates.min.mslp[, 1], coordinates.min.mslp[, 2])]
+discrete <- discrete[, euclidean.mslp := sqrt((x.max.mslp - x.min.mslp)^2 + (y.max.mslp - y.min.mslp)^2)]
+any(is.na(discrete[, euclidean.mslp]))
 # keine NAs
 
+discrete[, c("y.max.geopot", "x.max.geopot") := .(coordinates.max.geopot[, 1], coordinates.max.geopot[, 2])]
+discrete[, c("y.min.geopot", "x.min.geopot") := .(coordinates.min.geopot[, 1], coordinates.min.geopot[, 2])]
+discrete <- discrete[, euclidean.geopot := sqrt((x.max.geopot - x.min.geopot)^2 + (y.max.geopot - y.min.geopot)^2)]
+any(is.na(discrete[, euclidean.geopot]))
 
+
+
+### 10. Datensatz speichern #############################################################################
+
+saveRDS(discrete, "Data/discrete.rds")
