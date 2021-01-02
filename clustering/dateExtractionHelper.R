@@ -4,8 +4,9 @@ library(data.table)
 #and a selection of gwl's.
 #if following is set to TRUE, the last two days will be following dates
 
-getDates <- function(count, timeframe, following = FALSE, gwl = "NA", 
-                     seed = 1234) {
+getDates <- function(count, timeframe, following = FALSE, 
+                     gwltype = "notSpecified", 
+                     seed = 4321) {
   assertNumber(count)
   assertNumeric(timeframe, lower = 1900, upper = 2010)
   assertLogical(following)
@@ -13,14 +14,14 @@ getDates <- function(count, timeframe, following = FALSE, gwl = "NA",
   assertNumber(seed)
   
   gwls <- readRDS("Data/gwl.rds")
-  if(gwl == "NA") gwl <- unique(gwls$gwl)
+  if(gwltype == "notSpecified") gwltype <- unique(gwls$gwl)
   
   #subset years in timeframe and picked gwl
-  gwls <- gwls[gwl %in% gwl, ][format(as.Date(date),"%Y") %in% timeframe, ]
+  gwls <- gwls[gwl %in% gwltype, ][format(as.Date(date),"%Y") %in% timeframe, ]
   
   set.seed(seed)
   
-  if(following){
+  if(following && count > 1){
     day <- copy(gwls)[sample(.N, 1)]
     sdate <- day$date
     sgwl <- day$gwl
