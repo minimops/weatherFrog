@@ -15,8 +15,8 @@ save.DBOutput(datestoCheck, "SWZ", pathext = "dbtrial", type = "geopot")
 save.DBOutput(datestoCheck, "SWZ", pathext = "dbtrial", onePage = TRUE,
               type = "geopot")
 #SWZ mixed
-save.DBOutput(datestoCheck, "SWZ", pathext = "dbtrial", onePage = TRUE,
-              type = "mixed")
+save.DBOutput(datestoCheck, "SWZ_alt_weights", pathext = "dbtrial", onePage = TRUE,
+              type = "mixed", weights = c(1,1,2,2))
 
 #BM mixed
 save.DBOutput(getDates(count = 10, timeframe = seq(2000, 2010), 
@@ -49,4 +49,9 @@ dates <- vapply(chosenGwls, function(x) as.character(getDates(count = 1,
                                 timeframe = seq(2000, 2010), gwl = x)), 
                 FUN.VALUE = character(1))
 save.DBOutput(dates, "different_gwls", pathext = "dbtrial", onePage = TRUE,
+              type = "mixed")
+
+
+#12.12.2006
+save.DBOutput("2006-12-12", "12-12-2006", pathext = "dbtrial", onePage = TRUE,
               type = "mixed")
