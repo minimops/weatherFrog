@@ -1,5 +1,7 @@
 ###functions for normal dbscan
 
+###CAUTION: This files gets sourced###
+
 library(checkmate)
 library(KneeArrower)
 library(data.table)
@@ -7,6 +9,8 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(dbscan)
+
+source("clustering/dayDrawer.R")
 
 #this function spatial clusters a day with the dbscan algorythm
 #inputs: a date (string or date class)
@@ -52,50 +56,27 @@ dbRun <- function(day, type = "both",
   #attach clusterinfo to result dt
   plotRes <- data.frame(resultDT, cluster = as.factor(result$cluster))
   
+  #plot dbresult
+  dbResPlot <- drawDay(plotRes, whichFill = "cluster", showGuide = FALSE,
+                       discrete = TRUE)
+  
+  
   world_map_local <- readRDS("Data/world_map_local.rds")
   coords_diff <- readRDS("Data/diff_coords.rds")
   
-  #plot dbresult
-  dbResPlot <- world_map_local +
-    geom_rect(data = plotRes, mapping=aes(xmin=longitude - coords_diff[[1]], 
-                                          xmax=longitude + coords_diff[[1]],
-                                          ymin=latitude - coords_diff[[2]], 
-                                          ymax=latitude + coords_diff[[2]], 
-                                          fill = cluster), alpha = 0.7) +
-    scale_fill_brewer(palette = "Set1", guide = FALSE) +
-    labs(title = "dbscan", x = "", y = "") +
-    theme(axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          axis.ticks.x=element_blank(),
-          axis.title.y=element_blank(),
-          axis.text.y=element_blank(),
-          axis.ticks.y=element_blank())
-  
   #plot actual values:
-  mslpPlot <- world_map_local +
-    geom_rect(data = plotRes, mapping=aes(xmin=longitude - coords_diff[[1]], 
-                                          xmax=longitude + coords_diff[[1]],
-                                          ymin=latitude - coords_diff[[2]], 
-                                          ymax=latitude + coords_diff[[2]], 
-                                          fill = avg_mslp), alpha = 0.7) +
-    scale_fill_gradient(low = "blue", high = "red", guide = FALSE) + 
-    labs(title = "mslp", x = "", y = "") +
-    theme(axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          axis.ticks.x=element_blank(),
-          axis.title.y=element_blank(),
-          axis.text.y=element_blank(),
-          axis.ticks.y=element_blank())
+  mslpPlot <- drawDay(plotRes, whichFill = "avg_mslp", showGuide = FALSE,
+                      discrete = FALSE)
   
-  geopotPlot <- 
-    world_map_local +
+  geopotPlot <- world_map_local +
     geom_rect(data = plotRes, mapping=aes(xmin=longitude - coords_diff[[1]], 
-                                          xmax=longitude + coords_diff[[1]],
-                                          ymin=latitude - coords_diff[[2]], 
-                                          ymax=latitude + coords_diff[[2]], 
-                                          fill = avg_geopot), alpha = 0.7) +
-    scale_fill_gradient(low = "blue", high = "red", guide = FALSE) + 
-    labs(title = "geopot", x = "", y = "") +
+                                       xmax=longitude + coords_diff[[1]],
+                                       ymin=latitude - coords_diff[[2]], 
+                                       ymax=latitude + coords_diff[[2]], 
+                                       fill = avg_geopot), alpha = 0.7) +
+    scale_fill_gradient(low = "blue", high = "red", 
+                        guide = FALSE) +
+    labs(title ="avg_geopot", x = "", y = "") +
     theme(axis.title.x=element_blank(),
           axis.text.x=element_blank(),
           axis.ticks.x=element_blank(),

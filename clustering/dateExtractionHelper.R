@@ -1,5 +1,7 @@
 library(data.table)
 
+###CAUTION: This files gets sourced###
+
 #this function returns a vector of dates radomly selected from a timeline
 #and a selection of gwl's.
 #if following is set to TRUE, the last two days will be following dates
@@ -10,7 +12,7 @@ getDates <- function(count, timeframe, following = FALSE,
   assertNumber(count)
   assertNumeric(timeframe, lower = 1900, upper = 2010)
   assertLogical(following)
-  assertCharacter(gwl)
+  assertCharacter(gwltype)
   assertNumber(seed)
   
   gwls <- readRDS("Data/gwl.rds")

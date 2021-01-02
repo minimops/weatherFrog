@@ -1,7 +1,10 @@
 ##dbscan testing
 
+source("clustering/Var_Extraction_Method/f_dbscan_funs.R")
+source("clustering/dateExtractionHelper.R")
+
 datestoCheck <- getDates(count = 10, timeframe = seq(2000, 2010), 
-                         following = TRUE, gwl = "SWZ")
+                         following = TRUE, gwltype = "SWZ")
 
 #SWZ both
 save.DBOutput(datestoCheck, "SWZ", pathext = "dbtrial")
@@ -20,33 +23,33 @@ save.DBOutput(datestoCheck, "SWZ_alt_weights", pathext = "dbtrial", onePage = TR
 
 #BM mixed
 save.DBOutput(getDates(count = 10, timeframe = seq(2000, 2010), 
-                       following = TRUE, gwl = "BM"),
+                       following = TRUE, gwltype = "BM"),
               "BM", pathext = "dbtrial", onePage = TRUE,
               type = "mixed")
 
 #TRW mixed
 save.DBOutput(getDates(count = 10, timeframe = seq(2000, 2010), 
-                       following = TRUE, gwl = "TRW"),
+                       following = TRUE, gwltype = "TRW"),
               "TRW", pathext = "dbtrial", onePage = TRUE,
               type = "mixed")
 
 
 #WA mixed
 save.DBOutput(getDates(count = 10, timeframe = seq(2000, 2010), 
-                       following = TRUE, gwl = "WA"),
+                       following = TRUE, gwltype = "WA"),
               "WA", pathext = "dbtrial", onePage = TRUE,
               type = "mixed")
 
 #TB mixed
 save.DBOutput(getDates(count = 10, timeframe = seq(2000, 2010), 
-                       following = TRUE, gwl = "TB"),
+                       following = TRUE, gwltype = "TB"),
               "TB", pathext = "dbtrial", onePage = TRUE,
               type = "mixed")
 
 #different gwls mixed
 chosenGwls <- sample(unique(readRDS("Data/gwl.rds")$gwl), 10)
 dates <- vapply(chosenGwls, function(x) as.character(getDates(count = 1, 
-                                timeframe = seq(2000, 2010), gwl = x)), 
+                                timeframe = seq(2000, 2010), gwltype = x)), 
                 FUN.VALUE = character(1))
 save.DBOutput(dates, "different_gwls", pathext = "dbtrial", onePage = TRUE,
               type = "mixed")
