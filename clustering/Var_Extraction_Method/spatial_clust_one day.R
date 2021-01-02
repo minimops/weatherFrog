@@ -17,7 +17,7 @@ kNNdistplot(oneDay, k = 5)
 abline(h=0.8, col = "red", lty =  2)
 
 #TODO gewichtung?
-result <- dbscan(oneDay, eps = .8, minPts = 10)
+result <- dbscan(oneDay, eps = .9, minPts = 10)
 result
 
 #attach clusterinfo to result dt
