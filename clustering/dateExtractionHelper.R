@@ -27,7 +27,7 @@ getDates <- function(count, timeframe, following = FALSE,
     day <- copy(gwls)[sample(.N, 1)]
     sdate <- day$date
     sgwl <- day$gwl
-    ifelse(copy(gwls)[date == as.Date(sdate) + 1, ]$gwl == sgwl, 
+    ifelse((as.Date(sdate) + 1) %in% gwls, 
            fdate <- as.Date(sdate) + 1,
            fdate <- as.Date(sdate) - 1)
     datestoCheck <- c(sample(gwls$date[!gwls$date %in% c(sdate, fdate)], count - 2),

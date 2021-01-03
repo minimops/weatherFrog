@@ -1,8 +1,15 @@
 # plot helper
 
+library(data.table)
+library(checkmate)
+library(ggplot2)
+
+
 #This funcion draws the local world map with a specified fill. 
 #you can also choose if you wish a legend 
 #you have to specify if the scale is discrete or continuous
+
+###CAUTION: This files gets sourced###
 
 drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
   assertDataFrame(data)
@@ -21,7 +28,7 @@ drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
                                              xmax=longitude + coords_diff[[1]],
                                              ymin=latitude - coords_diff[[2]], 
                                              ymax=latitude + coords_diff[[2]], 
-                                             fill = fFill), alpha = 0.7) +
+                                             fill = as.factor(fFill)), alpha = 0.7) +
        scale_fill_brewer(palette = "Set1", guide = showGuide) +
        labs(title =whichFill, x = "", y = "") +
        theme(axis.title.x=element_blank(),
