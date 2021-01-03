@@ -9,6 +9,9 @@ knitr::opts_chunk$set(echo = TRUE)
 require(data.table)
 require(checkmate)
 require(stringr)
+require(rnaturalearth)
+require(rnaturalearthdata)
+require(ggplot2)
 ```
 
 ```{r 0 functions}
@@ -65,7 +68,6 @@ longToWide <- function(data, id = "date", col = "geoIndex", vars = c("avg_mslp",
         value.var = vars)
 }
 ```
-
 
 takes raw datasets
   - saves them as dt
@@ -215,4 +217,41 @@ saveRDS(gwl_5_years, "Data/gwl_5_years_split.rds")
 
 ```{r 4 1971-2000}
 
+```
+
+
+creates saved maps
+```{r M maps}
+
+# load data
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# world map
+world_map <- ggplot(data = world) +
+  geom_sf() +
+  labs( x = "Longitude", y = "Latitude") +
+  ggtitle("World map")
+#save world map
+saveRDS(world_map, "Data/world_map.rds")
+
+#get data
+cli_data_2k_avgDay <- readRDS("Data/cli_data_2k_avgDay.rds")
+#subsetting just one day
+one_day <- copy(cli_data_2k_avgDay)[format(date, "%Y-%m-%d")
+                                    %in% c("2006-01-01"), ]
+#world map in range
+world_map_local <- world_map +
+  coord_sf(xlim = c(min(one_day$longitude) - 5, 
+                    max(one_day$longitude) + 5), 
+           ylim = c(min(one_day$latitude) - 5, 
+                    max(one_day$latitude) + 5), expand = FALSE)
+
+#save world map local
+saveRDS(world_map_local, "Data/world_map_local.rds")
+
+
+diff_lon <- abs(unique(one_day$longitude)[[1]] - unique(one_day$longitude)[[2]]) / 2
+diff_lat <- abs(unique(one_day$latitude)[[1]] - unique(one_day$latitude)[[2]]) / 2
+
+saveRDS(c(diff_lon, diff_lat), "Data/diff_coords.rds")
 ```

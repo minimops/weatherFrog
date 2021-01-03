@@ -21,18 +21,8 @@ cli_data_2k_avgDay_mslp <- dcast(copy(one_day),
 names(cli_data_2k_avgDay_mslp) <- as.character(seq(1, 20))
 
 
-
-library(rnaturalearth)
-library(rnaturalearthdata)
-# load data
-world <- ne_countries(scale = "medium", returnclass = "sf")
-
-
 # world map
-world_map <- ggplot(data = world) +
-  geom_sf() +
-  labs( x = "Longitude", y = "Latitude") +
-  ggtitle("World map")
+world_map <- readRDS("Data/world_map.rds")
 
 #world map with measure points
 world_map +
@@ -49,15 +39,8 @@ world_map +
           ylim = c(min(one_day$latitude) - 5, 
                     max(one_day$latitude) + 5), expand = FALSE)
 
-#world map in range
-world_map_local <- world_map +
-  coord_sf(xlim = c(min(one_day$longitude) - 5, 
-                    max(one_day$longitude) + 5), 
-           ylim = c(min(one_day$latitude) - 5, 
-                    max(one_day$latitude) + 5), expand = FALSE)
 
-diff_lon <- abs(unique(one_day$longitude)[[1]] - unique(one_day$longitude)[[2]]) / 2
-diff_lat <- abs(unique(one_day$latitude)[[1]] - unique(one_day$latitude)[[2]]) / 2
+world_map_local <- readRDS("Data/world_map_local.rds")
 
 #rectangles over points
 world_map_local +
