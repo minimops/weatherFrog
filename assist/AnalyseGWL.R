@@ -16,7 +16,7 @@ GWLAnzahl <- as.data.frame(table(lengthGWL$gwl))
 GWLAnzahl <-GWLAnzahl[order(GWLAnzahl$Freq),]
 # GWL WZ kommt am haufigsten vor: 345 mal
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/anzahlGWLs.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/anzahlGWLs.jpeg")
 
 barplot(table(lengthGWL$gwl), main = "Anzahl der GWLs 1971 - 2010", ylab = "Anzahl der GWLs"
         ,cex.names = 1.5, las = 2, ylim = c(0,350),cex.axis = 1.5,cex.main = 1.5, cex.lab = 1.5)
@@ -26,7 +26,7 @@ dev.off()
 # Anzahl der GWLs je Laenge
 
 table(as.numeric(lengthGWL$length))
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/anzahlLängeGWLs.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/anzahlLängeGWLs.jpeg")
 barplot(table(as.numeric(lengthGWL$length)), main = "Anzahl der Länge der GWLs",
         xlab = "Länge der GWLs", ylab = "Häufigkeit", ylim = c(0,700),cex.axis = 1.5,cex.names = 1.5,cex.main = 1.5, cex.lab = 1.5)
 dev.off()
@@ -66,12 +66,14 @@ GWLJahreszeiten <- as.data.table(table(gwlNachJahreszeit$values,gwlNachJahreszei
 barplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(4))
 mosaicplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(31), las = 1)
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"plots/GWLsJahreszeiten.jpeg")
+
+
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/GWLsJahreszeiten.jpeg")
 mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der Jahreszeiten",
            cex.axis = 1.0)
 dev.off()
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/gesamtanzahlGWLs.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWLgesamtanzahlGWLs.jpeg")
 barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der Jhreszeiten",
         ylab = "Anzahl", ylim = c(0,800),cex.main = 1.5,cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
@@ -79,16 +81,16 @@ dev.off()
 
 # Verteilung der Messwerte von Mslp und Geopot ueber Jahreszeiten
 
-cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,10 : 329])))
-cli_gwl_long_mslp <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,10 : 169])))
-cli_gwl_long_geo <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,170 : 329])))
+cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 328])))
+cli_gwl_long_mslp <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 168])))
+cli_gwl_long_geo <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,169 : 328])))
 
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/MslpRangeJahreszeiten.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/MslpRangeJahreszeiten.jpeg")
 boxplot(cli_gwl_long_mslp$value ~ cli_gwl_long_mslp$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"plots/GeopotentailRangeJahreszeiten.jpeg")
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/GeopotentailRangeJahreszeiten.jpeg")
 boxplot(cli_gwl_long_geo$value ~ cli_gwl_long_geo$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
@@ -98,15 +100,95 @@ dev.off()
 #Verteilung der einzelnen GWLs über Jahreszeit
 
 
-gwlUeberJahreszeit <- function(GWL){
-  cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,10 : 329])))
-  dataTable <- cli_gwl_long[cli_gwl_long$gwl == GWL,]
-  boxplot(dataTable$value ~ dataTable$Jahreszeit)
+gwlUeberJahreszeitMslp <- function(GWL){
+ # cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 328])))
+  dataTable <- cli_gwl_long_mslp[cli_gwl_long_mslp$gwl == GWL,]
+  boxplot(dataTable$value ~ dataTable$Jahreszeit,ylab = GWL, main = "Mslp")
 }
 
-gwlUeberJahreszeit("TRW")
 
-table(cli_gwl_1971$gwl)
+gwlUeberJahreszeit("BM")
+gwlUeberJahreszeit("HB")
+gwlUeberJahreszeit("HFA")
+gwlUeberJahreszeit("HFZ")
+gwlUeberJahreszeit("HM")
+gwlUeberJahreszeit("HNA")
+gwlUeberJahreszeit("HNFA")
+gwlUeberJahreszeit("HNFZ")
+gwlUeberJahreszeit("HNZ")
+gwlUeberJahreszeit("NA")
+gwlUeberJahreszeit("NEA")
+gwlUeberJahreszeit("NEZ")
+gwlUeberJahreszeit("NWA")
+gwlUeberJahreszeit("NWZ")
+gwlUeberJahreszeit("NZ")
+gwlUeberJahreszeit("SA")
+gwlUeberJahreszeit("SEA")
+gwlUeberJahreszeit("SEZ")
+gwlUeberJahreszeit("SWA")
+gwlUeberJahreszeit("SWZ")
+gwlUeberJahreszeit("SZ")
+gwlUeberJahreszeit("TB")
+gwlUeberJahreszeit("TM")
+gwlUeberJahreszeit("TRM")
+gwlUeberJahreszeit("TRW")
+gwlUeberJahreszeit("WA")
+gwlUeberJahreszeit("WS")
+gwlUeberJahreszeit("WW")
+gwlUeberJahreszeit("WZ")
+
+# Andere Analyse für : Sind die Messwerte der GWLs inden verschiedenen
+#Jahreszeiten verschieden?
+
+# Mittelwert und Median pro GWL ausrechenen
+
+meanJahreszeitenMslp <- cli_gwl_long_mslp[, lapply(.SD, function (x) mean(x)), by = c("gwl","Jahreszeit"), .SDcols = 6]
+meanJahreszeitenGeo <- cli_gwl_long_geo[, lapply(.SD, function (x) mean(x)), by = c("gwl","Jahreszeit"), .SDcols = 6]
+
+medianJahreszeitenMslp <- cli_gwl_long_mslp[, lapply(.SD, function (x) median(x)), by = c("gwl","Jahreszeit"), .SDcols = 6]
+medianJahreszeitenGeo <- cli_gwl_long_geo[, lapply(.SD, function (x) median(x)), by = c("gwl","Jahreszeit"), .SDcols = 6]
+
+
+# Streeung der Mittelwerte der Jahreszeiten pro GWL ausrechnen
+
+sdMeanJahreszeitenMslp <- meanJahreszeitenMslp[, lapply(.SD, function(x) sd(x)), by = gwl, .SDcols = 3]
+sdMeanJahreszeitenGeo <- meanJahreszeitenGeo[, lapply(.SD, function(x) sd(x)), by = gwl, .SDcols = 3]
+
+sdMedianJahreszeitenMslp <- medianJahreszeitenMslp[, lapply(.SD, function(x) sd(x)), by = gwl, .SDcols = 3]
+sdMedianJahreszeitenGeo <- medianJahreszeitenGeo[, lapply(.SD, function(x) sd(x)), by = gwl, .SDcols = 3]
+
+#Barplot
+
+# Barplot Streuung der Mittelwerte der einzelnen Jahreszeitem für Mslp
+mslpValue <- sdMeanJahreszeitenMslp$value
+names(mslpValue) <- sdMeanJahreszeitenMslp$gwl
+
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/streungMslpMeanProJahreszeit.jpeg")
+barplot(mslpValue, main = "Mslp Mean")
+dev.off()
+
+# Barplot Streuung der Mittelwerte der einzelnen Jahreszeitem für Geopotential
+GeoValue <- sdMeanJahreszeitenGeo$value
+names(GeoValue) <- sdMeanJahreszeitenGeo$gwl
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/streungGeoMeanProJahreszeit.jpeg")
+barplot(GeoValue, main = "Geo Mean")
+dev.off()
+
+# das gleiche für median
+mslpValueMedian <- sdMedianJahreszeitenMslp$value
+names(mslpValueMedian) <- sdMedianJahreszeitenMslp$gwl
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/streungMslpMedianProJahreszeit.jpeg")
+barplot(mslpValueMedian, main = "Mslp Median")
+dev.off()
+
+GeoValueMedian <- sdMedianJahreszeitenGeo$value
+names(GeoValueMedian) <- sdMeanJahreszeitenGeo$gwl
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"Documentation/plots/AnalyseGWL/streungGeoMeanProJahreszeit.jpeg")
+barplot(GeoValueMedian, main = "Geo Mean")
+dev.off()
+
+
+
 
 ############################################
 #Analyse, ob erster und letzter Tag in einer GWL von den Messwerten der inneren Tage unterschiedlich ist
@@ -180,8 +262,7 @@ colnames(rangeProTagGeoInner)[colnames(rangeProTagGeoInner) == "value"] <- "Geo"
 rangesInner <- cbind(rangeProTagMslpInner, rangeProTagGeoInner[,10 : 11])
 
 
-rangesProGwlInner <- rangesInner[, lapply(.SD, function(x) range(x)), by = index_length_gwl, .SDcols = c(11,13)] 
-rangesDiffInner <- rangesProGwlInner[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
+gwlUeberJahreszeit("NA")rangesDiffInner <- rangesProGwlInner[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
 rangesDiffInner <- na.omit(rangesDiffInner)
 
 colnames(rangesDiffInner) <- c("index_length_gwl","MslpInner","GeoInner")
