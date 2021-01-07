@@ -104,8 +104,9 @@ gwlUeberJahreszeit <- function(GWL){
   boxplot(dataTable$value ~ dataTable$Jahreszeit)
 }
 
-gwlUeberJahreszeit("SA")
+gwlUeberJahreszeit("TRW")
 
+table(cli_gwl_1971$gwl)
 
 ############################################
 #Analyse, ob erster und letzter Tag in einer GWL von den Messwerten der inneren Tage unterschiedlich ist

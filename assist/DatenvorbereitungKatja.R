@@ -2,9 +2,8 @@ library(data.table)
 library(ggplot2)
 library(data.table)
 library(stringr)
-library(tidyverse)
 library(dplyr)
-library(plyr)
+
 
 
 
@@ -48,7 +47,7 @@ saveRDS(gwl_data_long,file = "Data\\gwl_data1.rds")
 
 #subset timeframe
 
-gwl1971 <- gwl_data1[year %in% seq(1971, 2010), ]
+gwl1971 <- gwl_data_long[year %in% seq(1971, 2010), ]
 saveRDS(gwl1971, file ="Data\\gwl1971.rds")
 
 

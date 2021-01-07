@@ -5,27 +5,19 @@ library(data.table)
 library(ggplot2)
 
 #sample one day
-oneDay <- readRDS("Data/cli_data_2k_avgDay.rds")[date %in% as.Date(datestoCheck[[10]]), ]
+oneDay <- readRDS("Data/cli_data_05_avgDay.rds")[date %in% as.Date("2006-12-12"), ]
 resultDT <- copy(oneDay)
-oneDay[, ":=" (longitude = 1.5* scale(longitude), latitude = 1.5* scale(latitude),
+oneDay[, ":=" (longitude = 1.2* scale(longitude), latitude = 1.2* scale(latitude),
               avg_mslp = scale(avg_mslp), avg_geopot = scale(avg_geopot))]
 
 oneDay <- as.matrix(oneDay[, date := NULL])
 
-#kNNdist(oneDay, k = 5)
-kNNdistplot(oneDay, k = 6)
-abline(h=1.3, col = "red", lty =  2)
 
-# eelenbogenpunkt berechenen
-y <- kNNdist(oneDay, k = 6)
-x <- seq(from = 1, to = 160, by = 1)
-
-(a <- KneeArrower::findCutoff(x,y, method = "curvature")$y)
-(b <- KneeArrower::findCutoff(x,y, method = "first")$y)
-
+kNNdistplot(oneDay, k = 5)
+abline(h=0.8, col = "red", lty =  2)
 
 #TODO gewichtung?
-result <- dbscan(oneDay, eps = (a+b)/2, minPts = 9)
+result <- dbscan(oneDay, eps = .9, minPts = 10)
 result
 
 #attach clusterinfo to result dt
