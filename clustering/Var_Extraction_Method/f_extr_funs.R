@@ -36,4 +36,12 @@ getSeason <- function(DATES) {
                   ifelse (d >= SS & d < FE, "Summer", "Fall")))
 }
 
+#returns min, max, quantils and range
+
+placeholder <- function() {
+  
+  #the function just takes one of the parameters.
+  
+  #return a dt with the values
+}
 
