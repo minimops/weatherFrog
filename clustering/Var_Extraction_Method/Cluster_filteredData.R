@@ -1,13 +1,20 @@
 
 library(cluster)
 ?daisy
-dissimilarity <- daisy(as.data.frame(discrete[, .(scale(min.mslp), scale(intensitaet.tief), quadrant.min.mslp,
-                                                  quadrant.max.mslp, quadrant.min.geopot, quadrant.max.geopot,
-                                                  scale(max.mslp), scale(intensitaet.hoch),  scale(mean.mslp), 
-                                                  scale(median.mslp), scale(mean.geopot), scale(median.geopot), 
-                                                  scale(min.geopot), scale(max.geopot), scale(range.mslp),
-                                                  scale(range.geopot), scale(euclidean.mslp), scale(euclidean.geopot))]), 
-                                                  weights = c(1.5, 1, 0.5, 0.5, 0.5, 0.5, 1.5, 1, 1, 1, 1, 1, 1.5, 1.5, 1, 1, 1, 1),
+dissimilarity <- daisy(as.data.frame(discrete[, .(scale(min.mslp), scale(intensitaet.tief.mslp), quadrant.min.mslp,
+                                                  quadrant.max.mslp, scale(max.mslp), scale(intensitaet.hoch.mslp),  
+                                                  scale(mean.mslp), scale(median.mslp), scale(range.mslp),
+                                                  scale(mean.geopot), scale(median.geopot), scale(range.geopot),
+                                                  scale(min.geopot), quadrant.min.geopot, scale(intensitaet.tief.geopot),
+                                                  quadrant.max.geopot, scale(intensitaet.hoch.geopot), scale(max.geopot), 
+                                                  scale(euclidean.mslp), scale(euclidean.geopot))]), 
+                                                  weights = c(1 / 3, 1 / 3, 1 / 3, 
+                                                              1 / 3, 1 / 3, 1 / 3, 
+                                                              1 / 3, 1 / 3, 1 / 3,
+                                                              1 / 3, 1 / 3, 1 / 3,
+                                                              1 / 3, 1 / 3, 1 / 3, 
+                                                              1 / 3, 1 / 3, 1 / 3,
+                                                              0.5, 0.5),
                                                   metric = "gower")
 summary(dissimilarity)
 
@@ -48,7 +55,7 @@ lines(1:15, sil_width)
 
 # hier wird das clustering angewandt
 ?pam
-pam_fit <- pam(dissimilarity, diss = TRUE, k = 8)
+pam_fit <- pam(dissimilarity, diss = TRUE, k = 11)
 
 cluster_vector <- pam_fit$clustering
 
