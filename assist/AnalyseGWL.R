@@ -1,3 +1,13 @@
+library(tidyverse)
+library(data.table)
+library(ggplot2)
+library(data.table)
+library(stringr)
+library(dplyr)
+library(plyr)
+
+
+
 cli_gwl_1971 <- readRDS("Data\\cli_gwl_1971.rds")
 
 
@@ -100,7 +110,7 @@ dev.off()
 #Verteilung der einzelnen GWLs über Jahreszeit
 
 
-gwlUeberJahreszeitMslp <- function(GWL){
+gwlUeberJahreszeit <- function(GWL){
  # cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 328])))
   dataTable <- cli_gwl_long_mslp[cli_gwl_long_mslp$gwl == GWL,]
   boxplot(dataTable$value ~ dataTable$Jahreszeit,ylab = GWL, main = "Mslp")
@@ -238,6 +248,12 @@ rangesDiff <- na.omit(rangesDiff)
 
 #######Berechung der ranges über alle Standorte pro GWL ohne den ersten und letzten Tag
 
+#cli_gwl_inner erstellen (GWL ohne den ersten und letzten Tag)
+cli_gwl_inner <- ddply(cli_gwl_1971, .(index_length_gwl),function(x) x[c(2 : (nrow(x) -1)), ])
+
+
+
+
 rangeProTagMslpInner <- as.data.table(t(apply(cli_gwl_inner[,10:169], 1, range)))
 colnames(rangeProTagMslpInner) <- c("minMslp", "maxMslp")
 rangeProTagMslpInner <- cbind(cli_gwl_inner[,1:9],rangeProTagMslpInner)
@@ -246,10 +262,12 @@ rangeProTagGeoInner <- as.data.table(t(apply(cli_gwl_inner[,170 : 329], 1, range
 colnames(rangeProTagGeoInner) <- c("minGeo", "maxGeo")
 rangeProTagGeoInner <- cbind(cli_gwl_inner[,1:9],rangeProTagGeoInner)
 
+rangeProTagMslpInner <- as.data.table(rangeProTagMslpInner)
 rangeProTagMslpInner <- melt(rangeProTagMslpInner, id.vars = c("index_length_gwl", "N", "id", "Jahreszeit","date",
                                                                "year", "month", "day", "gwl"),
                              measure.vars = c("minMslp","maxMslp"))
 
+rangeProTagGeoInner <- as.data.table(rangeProTagGeoInner)
 rangeProTagGeoInner <- melt(rangeProTagGeoInner, id.vars = c("index_length_gwl", "N", "id", "Jahreszeit","date",
                                                              "year", "month", "day", "gwl"),
                             measure.vars = c("minGeo","maxGeo"))
@@ -259,23 +277,23 @@ colnames(rangeProTagMslpInner)[colnames(rangeProTagMslpInner) == "value"] <- "Ms
 colnames(rangeProTagGeoInner)[colnames(rangeProTagGeoInner) == "variable"] <- "MinMaxGeo"
 colnames(rangeProTagGeoInner)[colnames(rangeProTagGeoInner) == "value"] <- "Geo"
 
-rangesInner <- cbind(rangeProTagMslpInner, rangeProTagGeoInner[,10 : 11])
+rangesProGwlInner <- cbind(rangeProTagMslpInner, rangeProTagGeoInner[,10 : 11])
 
-
-gwlUeberJahreszeit("NA")rangesDiffInner <- rangesProGwlInner[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
+#########
+rangesDiffInner <- rangesProGwlInner[,lapply(.SD, function(x) x - lag(x)),by = index_length_gwl, .SDcols = c(2,3)]
 rangesDiffInner <- na.omit(rangesDiffInner)
 
 colnames(rangesDiffInner) <- c("index_length_gwl","MslpInner","GeoInner")
 rangesGWL <- merge(rangesDiff, rangesDiffInner, by = "index_length_gwl")
 
 
-jpeg(width = 1000,height = 1700, pointsize = 29,quality = 100,"plots/rangeGWLMslp.jpeg")
+jpeg(width = 1000,height = 1700, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/rangeGWLMslp.jpeg")
 boxplot(rangesGWL[,c(2,4)], main = "Vergleich ranges pro GWL ohne 
         und mit ersten und letzen Tag einer GWL",
         ylab = "Luftdruck in Pa",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
 
-jpeg(width = 1000,height =1700, pointsize = 29,quality = 100,"plots/rangeGWLGeo.jpeg")
+jpeg(width = 1000,height =1700, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/rangeGWLGeo.jpeg")
 boxplot(rangesGWL[,c(3,5)], main = "Vergleich ranges pro GWL ohne 
         und mit ersten und letzen Tag einer GWL",
         ylab = "Geopotential in m²/s²",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
