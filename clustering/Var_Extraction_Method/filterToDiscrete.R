@@ -159,6 +159,7 @@ sum(intensitaet.tief.mslp)
 #                                                              })]
 
 quantile(data.long[, avg_geopot])
+mean(data.long[, avg_geopot])
 ## ich orientiere mich ersteinmal an den 25 und 75 prozent quartilen von geopotential insgesamt
 q_0.25 <- quantile(data.long[, avg_geopot], probs = 0.25)
 ## -> 52570.22
