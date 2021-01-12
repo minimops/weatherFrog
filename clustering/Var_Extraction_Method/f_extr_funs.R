@@ -45,3 +45,56 @@ placeholder <- function() {
   #return a dt with the values
 }
 
+
+# this is to extract all measures of central tendency (lagemaße) such as min, max, quartiles, 
+# range, mean and median for oth geopotential and mslp
+
+# INPUT: - a data table in wide format (one row for each day) 
+#        - first column has to be date, columns 2-161 mslp values amd columns 162-321 geopotential
+#        - the years should have already been filtered
+
+# OUTPUT: a data table with the above mentioned variables and the date  
+#         -> dim(measures(data)) = nrow(data) x 15
+
+measures <- function(data) {
+  assertDataTable(data, ncols = 321, null.ok = FALSE)
+  assertSubset("date", colnames(data)[1])
+  
+  date <- data[, .(date)]
+  
+  data.mslp <- data[, 2:161]
+  data.geopot <- data[, 162:321]
+  
+  mean.mslp <- data.mslp[, apply(data.mslp, 1, mean)]
+  mean.geopot <- data.geopot[, apply(data.geopot, 1, mean)]
+  
+  median.mslp <- apply(data.mslp, 1, median)
+  median.geopot <- apply(data.geopot, 1, median)
+  
+  max.mslp <- apply(data.mslp, 1, max)
+  max.geopot <- apply(data.geopot, 1, max)
+  
+  min.mslp <- apply(data.mslp, 1, min)
+  min.geopot <- apply(data.geopot, 1, min)
+  
+  quartile25.mslp <- apply(data.mslp, 1, function(x) quantile(x, probs = 0.25))
+  quartile25.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.25))
+  
+  quartile75.mslp <- apply(data.mslp, 1, function(x) quantile(x, probs = 0.75))
+  quartile75.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.25))
+  
+  range.mslp <- max.mslp - min.mslp
+  range.geopot <- max.geopot - min.geopot
+  
+  if (any(c(length(mean.mslp), length(mean.geopot), length(median.mslp), length(median.geopot),
+            length(max.mslp), length(max.geopot), length(min.mslp), length(min.geopot), 
+            length(quartile25.mslp), length(quartile25.geopot), length(quartile75.mslp), 
+            length(quartile75.geopot), length(range.mslp), length(range.geopot)) != nrow(data.wide))) {
+    stop("at least one of the created variables was computed wrongly")
+  }
+  
+  measuresLocalTen <- data.table(date, mean.mslp, mean.geopot, median.mslp, median.geopot, max.mslp, max.geopot,
+                                 min.mslp, min.geopot, quartile25.mslp, quartile25.geopot, 
+                                 quartile75.mslp, quartile75.geopot, range.mslp, range.geopot)
+  measuresLocalTen
+}
