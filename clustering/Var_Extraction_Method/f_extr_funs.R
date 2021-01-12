@@ -49,9 +49,9 @@ append.QuadrantID <- function(data) {
   out <- copy(data)
   
   #messy, but i dont have the patience rn
-  out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 1, verChar = "North")]
-  out[latitude %in% unique(latitude)[seq(4,6)], ":=" (verID = 2, verChar = "Center")]
-  out[latitude %in% unique(latitude)[seq(7,8)], ":=" (verID = 3, verChar = "South")]
+  out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 3, verChar = "South")]
+  out[latitude %in% unique(latitude)[seq(4,5)], ":=" (verID = 2, verChar = "Center")]
+  out[latitude %in% unique(latitude)[seq(6,8)], ":=" (verID = 1, verChar = "North")]
   
   out[longitude %in% unique(longitude)[seq(1,7)], ":=" (horID = 1, horChar = "West")]
   out[longitude %in% unique(longitude)[seq(8,13)], ":=" (horID = 2, horChar = "Center")]
@@ -59,8 +59,9 @@ append.QuadrantID <- function(data) {
   
   out
 }
-
-
+data.long
+a <- append.QuadrantID(copy(data.long))
+a
 #get the quadrant for min/max values per day
 #function returns a dt of min and max quadrant values  for all days in data
 #input data needs to be in long format like the output of append.QuadrantID
