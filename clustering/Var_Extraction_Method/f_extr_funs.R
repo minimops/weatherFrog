@@ -36,6 +36,7 @@ extrapolate <- function(yearspan, vars = "all") {
   distMeasures <- measures(copy(data_wide_avgDay))
   
   #return new dataset
+  #TODO remove out
   out <- Reduce(merge, list(distMeasures, max_mins_location))
 }
 
