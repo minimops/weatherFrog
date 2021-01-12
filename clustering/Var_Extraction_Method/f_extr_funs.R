@@ -67,14 +67,15 @@ a
 #input data needs to be in long format like the output of append.QuadrantID
 #if StringID is given as True, (North, Centre, South) will be output instead
 #of (1,2,3)
+#now also outputs the raw coords of the max/mins
 
 quadrantValues <- function(data, StringID = FALSE) {
   assertDataTable(data)
   assertSubset(c("verID", "horID"), names(data))
   assertLogical(StringID)
   
-  ifelse(StringID, cols <- c("verChar", "horChar"),
-         cols <- c("verID", "horID"))
+  ifelse(StringID, cols <- c("latitude", "longitude", "verChar", "horChar"),
+         cols <- c("latitude", "longitude", "verID", "horID"))
   
   out <- copy(data)
   
