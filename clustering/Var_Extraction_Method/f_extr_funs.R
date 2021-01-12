@@ -1,20 +1,42 @@
-### Instert functions here used to extract variables from Dataset 
+### Insert functions here used to extract variables from Dataset 
 
 library(data.table)
 library(checkmate)
 
 #one overhead function that performs wanted date extraction for given Data
-extrapolate <- function(data, vars = "all") {
+extrapolate <- function(yearspan, vars = "all") {
   
-  assertDataTable(data)
+  assertNumeric(yearspan, lower = 1900, upper = 2010)
   assertSubset("date", names(data))
   #TODO insert all possible var creations
   assertSubset(vars, c("all", "season", "min", "max", "intensity", "location",
                        "range", "distance"))
   
+  #TODO year span handling
+  
+  #read in different Data formats
+  #TODO put this directly in front of where used in the future, as this is
+  #possibly a memory overload issue
+  
+  #TODO for now, this is just the 05 avg day dataset
+  data_long_avg <- readRDS("Data/cli_data_05_avgDay.rds")
+  
+  #TODO for now, the wide dataset here is the 05 one
+  data_wide_avgDay <- readRDS("Data/cli_data_05_avgDay_wide.rds")
+  
   #run all the different var extraction methods based on the vars 
   
+  #attatch quadrant info
+  data_long_avg_quadrant <- append.QuadrantID(data_long_avg)
+  
+  #get max and min quadrant values
+  max_mins_location <- quadrantValues(data_long_avg_quadrant)
+ 
+  #distribution measures
+  distMeasures <- measures(copy(data_wide_avgDay))
+  
   #return new dataset
+  out <- Reduce(merge, list(distMeasures, max_mins_location))
 }
 
 #individual extractions in indiv functions
