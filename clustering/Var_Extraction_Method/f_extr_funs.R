@@ -59,9 +59,7 @@ append.QuadrantID <- function(data) {
   
   out
 }
-data.long
-a <- append.QuadrantID(copy(data.long))
-a
+
 #get the quadrant for min/max values per day
 #function returns a dt of min and max quadrant values  for all days in data
 #input data needs to be in long format like the output of append.QuadrantID
@@ -109,6 +107,34 @@ quadrantValues <- function(data, StringID = FALSE) {
   Reduce(merge, list(maxMslp, minMslp, maxGeopot, minGeopot))
 }
 
+# this is a function to calculate the euclidean distance between two points which are the points x1 and x2.
+# INPUT: - data, a data table in format of output of the function quadrantValues
+#        - x1: first point (either maxMslp, minMslp, maxGeopot, minGeopot)
+#        - x2: second point
+#        - outputname: name of the output, so f.e. distance between minGeopot and minMslp "geopot.mslp.min"
+#                      or "mslp" for minMslp and maxMslp
+
+# OUTPUT: a data table with two columns, date and euclidean distance
+
+euclidean <- function(data, x1 = "maxMslp", x2 = "minMslp", outputname = "mslp") {
+  assertDataTable(data)
+  assertString(x1)
+  assertString(x2)
+  assertSubset(x1, choices = c("maxMslp", "minMslp", "maxGeopot", "minGeopot"))
+  assertSubset(x2, choices = c("maxMslp", "minMslp", "maxGeopot", "minGeopot"))
+  assertString(outputname)
+  
+  cols <- str_split(paste("date", paste0(x1, ".latitude"), paste0(x1, ".longitude"),
+                          paste0(x2, ".latitude"), paste0(x2, ".longitude")), pattern = " ")[[1]]
+  
+  data.euc <- data[, .SD, .SDcols = cols]
+  colnames(data.euc) <- c("date", "lat1", "long1", "lat2", "long2")
+  
+  data.euc <- data.euc[, euclidean := sqrt((lat1 - lat2)^2 + (long1 - long2)^2)][, 
+                                                                                 ":=" (lat1 = NULL, lat2 = NULL, long1 = NULL, long2 = NULL)]
+  colnames(data.euc) <- c("date", paste0("euclidean.", outputname))
+  data.euc
+}
 
 # this is to extract all measures of central tendency (lagemaße) such as min, max, quartiles, 
 # range, mean and median for oth geopotential and mslp
