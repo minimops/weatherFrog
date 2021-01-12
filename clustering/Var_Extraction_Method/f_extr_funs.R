@@ -36,13 +36,75 @@ getSeason <- function(DATES) {
                   ifelse (d >= SS & d < FE, "Summer", "Fall")))
 }
 
-#returns min, max, quantils and range
+#splitting up into quadrants
+#this funcitons adds 4 variables to the inout data,
+#a vertical and horizontal Quadrant ID, as well as those ids in char version
+#Input: Long format of Dataset
+#Output: data with the 4 added on variables
 
-placeholder <- function() {
+append.QuadrantID <- function(data) {
+  assertDataTable(data)
+  assertSubset(c("longitude", "latitude"), names(data))
   
-  #the function just takes one of the parameters.
+  out <- copy(data)
   
-  #return a dt with the values
+  #messy, but i dont have the patience rn
+  out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 1, verChar = "North")]
+  out[latitude %in% unique(latitude)[seq(4,6)], ":=" (verID = 2, verChar = "Center")]
+  out[latitude %in% unique(latitude)[seq(7,8)], ":=" (verID = 3, verChar = "South")]
+  
+  out[longitude %in% unique(longitude)[seq(1,7)], ":=" (horID = 1, horChar = "West")]
+  out[longitude %in% unique(longitude)[seq(8,13)], ":=" (horID = 2, horChar = "Center")]
+  out[longitude %in% unique(longitude)[seq(14,20)], ":=" (horID = 3, horChar = "East")]
+  
+  out
+}
+
+
+#get the quadrant for min/max values per day
+#function returns a dt of min and max quadrant values  for all days in data
+#input data needs to be in long format like the output of append.QuadrantID
+#if StringID is given as True, (North, Centre, South) will be output instead
+#of (1,2,3)
+
+quadrantValues <- function(data, StringID = FALSE) {
+  assertDataTable(data)
+  assertSubset(c("verID", "horID"), names(data))
+  assertLogical(StringID)
+  
+  ifelse(StringID, cols <- c("verChar", "horChar"),
+         cols <- c("verID", "horID"))
+  
+  out <- copy(data)
+  
+  #again, mapply can fuck off, wasting too much time
+  maxMslp <- out[, .SD[which(avg_mslp == max(avg_mslp))], by = date, .SDcols = 
+                   cols]
+  setnames(maxMslp, cols, vapply(cols, 
+                    FUN = function(x) paste(
+                      deparse(substitute(maxMslp)), x, sep = "."), 
+                    FUN.VALUE = character(1)))
+  minMslp <- out[, .SD[which(avg_mslp == min(avg_mslp))], by = date, .SDcols = 
+                   cols]
+  setnames(minMslp, cols, vapply(cols, 
+                                 FUN = function(x) paste(
+                                   deparse(substitute(minMslp)), x, sep = "."), 
+                                 FUN.VALUE = character(1)))
+  maxGeopot <- out[, .SD[which(avg_geopot == max(avg_geopot))], by = date, .SDcols = 
+                     cols]
+  setnames(maxGeopot, cols, vapply(cols, 
+                                 FUN = function(x) paste(
+                                   deparse(substitute(maxGeopot)), x, sep = "."), 
+                                 FUN.VALUE = character(1)))
+  minGeopot <- out[, .SD[which(avg_geopot == min(avg_geopot))], by = date, .SDcols = 
+                     cols]
+  setnames(minGeopot, cols, vapply(cols, 
+                                 FUN = function(x) paste(
+                                   deparse(substitute(minGeopot)), x, sep = "."), 
+                                 FUN.VALUE = character(1)))
+  
+  
+  Reduce(merge, list(maxMslp, minMslp, maxGeopot, minGeopot))
 }
 
 
