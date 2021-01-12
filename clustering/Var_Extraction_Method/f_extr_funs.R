@@ -86,15 +86,73 @@ measures <- function(data) {
   range.mslp <- max.mslp - min.mslp
   range.geopot <- max.geopot - min.geopot
   
-  if (any(c(length(mean.mslp), length(mean.geopot), length(median.mslp), length(median.geopot),
-            length(max.mslp), length(max.geopot), length(min.mslp), length(min.geopot), 
-            length(quartile25.mslp), length(quartile25.geopot), length(quartile75.mslp), 
-            length(quartile75.geopot), length(range.mslp), length(range.geopot)) != nrow(data.wide))) {
-    stop("at least one of the created variables was computed wrongly")
-  }
-  
-  measuresLocalTen <- data.table(date, mean.mslp, mean.geopot, median.mslp, median.geopot, max.mslp, max.geopot,
+  measuresCentralTen <- data.table(date, mean.mslp, mean.geopot, median.mslp, median.geopot, max.mslp, max.geopot,
                                  min.mslp, min.geopot, quartile25.mslp, quartile25.geopot, 
                                  quartile75.mslp, quartile75.geopot, range.mslp, range.geopot)
-  measuresLocalTen
+  
+  if (any(is.na(measuresCentralTen))) {
+    stop("at least one of the created variables was computed wrongly")
+  }
+  measuresCentralTen
 }
+
+# just run this function, it is needed for calculating the intensity 
+# INPUT: - a data table, either mslp or geopot without date
+#        - ncol = 160
+#        - variable, either mslp or geopot, determining the variable which will be used
+#        - quartiles, 0.25 and 0.75 quartiles for either mslp or geopot, which are computed in the function intensity
+# OUTPUT: a list which has in its first position a data table only with values which are greater than the 0.75 quartile
+#         and in its second position a data table with those values that are less than the 0.25 quartile
+
+keepQuartiles <- function(data, variable = "mslp", quartiles = quartiles.mslp) {
+  assertDataTable(data, ncols = 160)
+  assertString(variable)
+  assertSubset(variable, choices = c("mslp", "geopot"))
+  assertNumeric(quartiles, len = 2)
+  
+  hoch <- data[, apply(data, 2, 
+                       function(col) lapply(col, function(x) if (x < quartiles[2]) {x <-  NA} 
+                                            else {x <- x}))]
+  tief <- data[, apply(data, 2, 
+                       function(col) lapply(col, function(x) if (x > quartiles[1]) {x <-  NA} 
+                                            else {x <- x}))]
+  list(hoch, tief)
+}
+
+# this is to calculate the intensity for high pressure and low pressure for both mslp and geopot
+
+# INPUT: a data table in long format. By this, I mean the original one which ran through timeToWinter and
+#        toDailyAverage in dataset Mutate, lines 35-50. So the column names are supposed to be 
+#        c("date", "longitude", "latitude", "avg_mslp", "avg_geopot")
+
+# OUTPUT: a data table with 5 columns, first  one is the date, the others are  the intensity for 
+#         high pressure and low pressure for both mslp and geopot
+
+intensity <- function(data) {
+  assertDataTable(data, ncols = 5)
+  assertSubset(colnames(data), choices = c("date", "longitude", "latitude", "avg_mslp", "avg_geopot"))
+  
+  quartiles.mslp <- quantile(data[, avg_mslp], probs = c(0.25, 0.75))
+  quartiles.geopot <- quantile(data[, avg_geopot], probs = c(0.25, 0.75))
+  
+  date <- data[, .(date)]
+  
+  data <- toGeoIndex(data = data)
+  data <- longToWide(data = data)
+  data.mslp <- data[, 2:161]
+  data.geopot <- data[, 162:321]
+  
+  mslp <- keepQuartiles(data.mslp)
+  geopot <- keepQuartiles(data.geopot, variable = "geopot", quartiles = quartiles.geopot)
+  
+  intensitaet.hoch.mslp <- apply(mslp[[1]], 1, function(x) sum(!is.na(x)))
+  intensitaet.tief.mslp <- apply(mslp[[2]], 1, function(x) sum(!is.na(x)))
+  
+  intensitaet.hoch.geopot <- apply(geopot[[1]], 1, function(x) sum(!is.na(x)))
+  intensitaet.tief.geopot <- apply(geopot[[2]], 1, function(x) sum(!is.na(x)))
+  
+  intensity <- data.table(date, intensitaet.hoch.mslp, intensitaet.tief.mslp, 
+                          intensitaet.hoch.geopot, intensitaet.tief.geopot)
+  intensity
+}
+
