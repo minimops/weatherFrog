@@ -16,6 +16,8 @@ drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
   assertSubset(whichFill, names(data))
   assertLogical(c(showGuide, discrete))
   
+  data <- as.data.frame(data)
+  
   world_map_local <- readRDS("Data/world_map_local.rds")
   coords_diff <- readRDS("Data/diff_coords.rds")
   

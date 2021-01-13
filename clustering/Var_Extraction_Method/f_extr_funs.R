@@ -1,20 +1,43 @@
-### Instert functions here used to extract variables from Dataset 
+### Insert functions here used to extract variables from Dataset 
 
 library(data.table)
 library(checkmate)
 
 #one overhead function that performs wanted date extraction for given Data
-extrapolate <- function(data, vars = "all") {
+extrapolate <- function(yearspan, vars = "all") {
   
-  assertDataTable(data)
+  assertNumeric(yearspan, lower = 1900, upper = 2010)
   assertSubset("date", names(data))
   #TODO insert all possible var creations
   assertSubset(vars, c("all", "season", "min", "max", "intensity", "location",
                        "range", "distance"))
   
+  #TODO year span handling
+  
+  #read in different Data formats
+  #TODO put this directly in front of where used in the future, as this is
+  #possibly a memory overload issue
+  
+  #TODO for now, this is just the 05 avg day dataset
+  data_long_avg <- readRDS("Data/cli_data_05_avgDay.rds")
+  
+  #TODO for now, the wide dataset here is the 05 one
+  data_wide_avgDay <- readRDS("Data/cli_data_05_avgDay_wide.rds")
+  
   #run all the different var extraction methods based on the vars 
   
+  #attatch quadrant info
+  data_long_avg_quadrant <- append.QuadrantID(data_long_avg)
+  
+  #get max and min quadrant values
+  max_mins_location <- quadrantValues(data_long_avg_quadrant)
+ 
+  #distribution measures
+  distMeasures <- measures(copy(data_wide_avgDay))
+  
   #return new dataset
+  #TODO remove out
+  out <- Reduce(merge, list(distMeasures, max_mins_location))
 }
 
 #individual extractions in indiv functions
@@ -49,9 +72,9 @@ append.QuadrantID <- function(data) {
   out <- copy(data)
   
   #messy, but i dont have the patience rn
-  out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 1, verChar = "North")]
-  out[latitude %in% unique(latitude)[seq(4,6)], ":=" (verID = 2, verChar = "Center")]
-  out[latitude %in% unique(latitude)[seq(7,8)], ":=" (verID = 3, verChar = "South")]
+  out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 3, verChar = "South")]
+  out[latitude %in% unique(latitude)[seq(4,5)], ":=" (verID = 2, verChar = "Center")]
+  out[latitude %in% unique(latitude)[seq(6,8)], ":=" (verID = 1, verChar = "North")]
   
   out[longitude %in% unique(longitude)[seq(1,7)], ":=" (horID = 1, horChar = "West")]
   out[longitude %in% unique(longitude)[seq(8,13)], ":=" (horID = 2, horChar = "Center")]
@@ -60,20 +83,20 @@ append.QuadrantID <- function(data) {
   out
 }
 
-
 #get the quadrant for min/max values per day
 #function returns a dt of min and max quadrant values  for all days in data
 #input data needs to be in long format like the output of append.QuadrantID
 #if StringID is given as True, (North, Centre, South) will be output instead
 #of (1,2,3)
+#now also outputs the raw coords of the max/mins
 
 quadrantValues <- function(data, StringID = FALSE) {
   assertDataTable(data)
   assertSubset(c("verID", "horID"), names(data))
   assertLogical(StringID)
   
-  ifelse(StringID, cols <- c("verChar", "horChar"),
-         cols <- c("verID", "horID"))
+  ifelse(StringID, cols <- c("latitude", "longitude", "verChar", "horChar"),
+         cols <- c("latitude", "longitude", "verID", "horID"))
   
   out <- copy(data)
   
@@ -107,6 +130,34 @@ quadrantValues <- function(data, StringID = FALSE) {
   Reduce(merge, list(maxMslp, minMslp, maxGeopot, minGeopot))
 }
 
+# this is a function to calculate the euclidean distance between two points which are the points x1 and x2.
+# INPUT: - data, a data table in format of output of the function quadrantValues
+#        - x1: first point (either maxMslp, minMslp, maxGeopot, minGeopot)
+#        - x2: second point
+#        - outputname: name of the output, so f.e. distance between minGeopot and minMslp "geopot.mslp.min"
+#                      or "mslp" for minMslp and maxMslp
+
+# OUTPUT: a data table with two columns, date and euclidean distance
+
+euclidean <- function(data, x1 = "maxMslp", x2 = "minMslp", outputname = "mslp") {
+  assertDataTable(data)
+  assertString(x1)
+  assertString(x2)
+  assertSubset(x1, choices = c("maxMslp", "minMslp", "maxGeopot", "minGeopot"))
+  assertSubset(x2, choices = c("maxMslp", "minMslp", "maxGeopot", "minGeopot"))
+  assertString(outputname)
+  
+  cols <- str_split(paste("date", paste0(x1, ".latitude"), paste0(x1, ".longitude"),
+                          paste0(x2, ".latitude"), paste0(x2, ".longitude")), pattern = " ")[[1]]
+  
+  data.euc <- data[, .SD, .SDcols = cols]
+  colnames(data.euc) <- c("date", "lat1", "long1", "lat2", "long2")
+  
+  data.euc <- data.euc[, euclidean := sqrt((lat1 - lat2)^2 + (long1 - long2)^2)][, 
+                                 ":=" (lat1 = NULL, lat2 = NULL, long1 = NULL, long2 = NULL)]
+  colnames(data.euc) <- c("date", paste0("euclidean.", outputname))
+  data.euc
+}
 
 # this is to extract all measures of central tendency (lagemaße) such as min, max, quartiles, 
 # range, mean and median for oth geopotential and mslp
@@ -119,7 +170,7 @@ quadrantValues <- function(data, StringID = FALSE) {
 #         -> dim(measures(data)) = nrow(data) x 15
 
 measures <- function(data) {
-  assertDataTable(data, ncols = 321, null.ok = FALSE)
+  assertDataTable(data, null.ok = FALSE)
   assertSubset("date", colnames(data)[1])
   
   date <- data[, .(date)]
@@ -183,26 +234,28 @@ keepQuartiles <- function(data, variable = "mslp", quartiles = quartiles.mslp) {
 
 # this is to calculate the intensity for high pressure and low pressure for both mslp and geopot
 
-# INPUT: a data table in long format. By this, I mean the original one which ran through timeToWinter and
-#        toDailyAverage in dataset Mutate, lines 35-50. So the column names are supposed to be 
-#        c("date", "longitude", "latitude", "avg_mslp", "avg_geopot")
+# INPUT: - a data table data.long in long format. By this, I mean the original one which ran through timeToWinter and
+#          toDailyAverage in dataset Mutate, lines 35-50. So the column names are supposed to be 
+#          c("date", "longitude", "latitude", "avg_mslp", "avg_geopot")
+#        - a data table data.wide in wide format ( 321 cols)
 
 # OUTPUT: a data table with 5 columns, first  one is the date, the others are  the intensity for 
 #         high pressure and low pressure for both mslp and geopot
 
-intensity <- function(data) {
-  assertDataTable(data, ncols = 5)
-  assertSubset(colnames(data), choices = c("date", "longitude", "latitude", "avg_mslp", "avg_geopot"))
+intensity <- function(data.wide, data.long) {
+  assertDataTable(data.long, ncols = 5)
+  assertDataTable(data.wide)
+  assertSubset(colnames(data.long), choices = c("date", "longitude", "latitude", "avg_mslp", "avg_geopot"))
   
-  quartiles.mslp <- quantile(data[, avg_mslp], probs = c(0.25, 0.75))
-  quartiles.geopot <- quantile(data[, avg_geopot], probs = c(0.25, 0.75))
+  quartiles.mslp <- quantile(data.long[, avg_mslp], probs = c(0.25, 0.75))
+  quartiles.geopot <- quantile(data.long[, avg_geopot], probs = c(0.25, 0.75))
   
-  date <- data[, .(date)]
+  date <- data.wide[, .(date)]
   
-  data <- toGeoIndex(data = data)
-  data <- longToWide(data = data)
-  data.mslp <- data[, 2:161]
-  data.geopot <- data[, 162:321]
+  #data <- toGeoIndex(data = data)
+  #data <- longToWide(data = data)
+  data.mslp <- data.wide[, 2:161]
+  data.geopot <- data.wide[, 162:321]
   
   mslp <- keepQuartiles(data.mslp)
   geopot <- keepQuartiles(data.geopot, variable = "geopot", quartiles = quartiles.geopot)
@@ -217,4 +270,5 @@ intensity <- function(data) {
                           intensitaet.hoch.geopot, intensitaet.tief.geopot)
   intensity
 }
+intensity(copy(data.wide), copy(data.long))
 
