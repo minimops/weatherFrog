@@ -35,9 +35,16 @@ extrapolate <- function(yearspan, vars = "all") {
   #distribution measures
   distMeasures <- measures(copy(data_wide_avgDay))
   
+  # intensity of high and low pressure
+  intensity <- intesity(data_wide_avgDay, data_long_avg)
+  
+  # euclidean distance 
+  euclidean.mslp <- euclidean(max_mins_location)
+  euclidean.geopot <- euclidean(max_mins_location, x1 = "maxGeopot", x2 = "minGeopot", outputname = "geopot")
+  
   #return new dataset
   #TODO remove out
-  out <- Reduce(merge, list(distMeasures, max_mins_location))
+  out <- Reduce(merge, list(distMeasures, max_mins_location, intensity, euclidean.mslp, euclidean.geopot))
 }
 
 #individual extractions in indiv functions
