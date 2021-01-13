@@ -5,7 +5,8 @@ library(checkmate)
 library(stringr)
 
 
-#one overhead function that performs wanted date extraction for given Data
+#one overhead function that performs wanted date and 
+#variable extraction for given Data
 extrapolate <- function(yearspan, vars = "all") {
   
   assertNumeric(yearspan, lower = 1900, upper = 2010)
@@ -13,17 +14,31 @@ extrapolate <- function(yearspan, vars = "all") {
   assertSubset(vars, c("all", "season", "min", "max", "intensity", "location",
                        "range", "distance"))
   
-  #TODO year span handling
+  #TODO input dataset names when finalized
+  #available datasets:
+  #sort these smaller to larger
+  avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010))
+  
+  for (setNum in seq_len(length(avail.sets))) {
+    if(all(yearspan %in% avail.sets[[setNum]])){
+      SETtoUSE <- (names(avail.sets[setNum]))
+      break
+    }
+  }
+  
+  ds.Name.long <- paste0("Data/cli_data_", SETtoUSE, "_avgDay.rds")
+  ds.Name.wide <- paste0("Data/cli_data_", SETtoUSE, "_avgDay_wide.rds")
   
   #read in different Data formats
   #TODO put this directly in front of where used in the future, as this is
   #possibly a memory overload issue
   
-  #TODO for now, this is just the 05 avg day dataset
-  data_long_avg <- readRDS("Data/cli_data_05_avgDay.rds")
+  #read long ds
+  data_long_avg <- readRDS(ds.Name.long)[format(as.Date(date),"%Y") %in% yearspan, ]
   
-  #TODO for now, the wide dataset here is the 05 one
-  data_wide_avgDay <- readRDS("Data/cli_data_05_avgDay_wide.rds")
+  #read wide ds
+  data_wide_avgDay <- readRDS(ds.Name.wide)[format(as.Date(date),"%Y") %in% yearspan, ]
+  
   
   #run all the different var extraction methods based on the vars 
   
@@ -62,6 +77,8 @@ extrapolate <- function(yearspan, vars = "all") {
                      intensity,
                      Qmeans))
 }
+
+
 
 #individual extractions in indiv functions
 
