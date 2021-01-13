@@ -14,7 +14,6 @@ require(rnaturalearthdata)
 require(ggplot2)
 require(tidyverse)
 require(stringr)
-require(dplyr)
 ```
 
 ```{r 0 functions}
@@ -220,9 +219,10 @@ saveRDS(gwl_5_years, "Data/gwl_5_years_split.rds")
 
 reanalysis dataset and gwl dataset united in one dataset from 1971 to 2010
 one row contains one day with all measure points of mslp and geopotential
-require data_reanalysis_20201109.rds and 
+require cli_data.rds and 
         GWL_1900-2010.csv
-```{r 4 1971-2000}
+used for Analyse GWL: differences in season? differ first and last day of one GWL compared to the other days?
+```{r 4 1971-2000 unifies GWL and reanalysis data}
 
 ####################GWL data
 gwl_data <- as.data.table(read.table("Data/GWL_1900-2010.csv", header = TRUE, sep = ";",
@@ -241,7 +241,7 @@ gwl_data_long <- as.data.table(gather(data = gwl_data_long,key = JAHRMONAT, valu
 
 gwl_data_long <- gwl_data_long[!(apply(gwl_data_long, 1, function(y) any(y == ""))),]
 
-
+#########################################
 
 #split year and month
 gwl_data_long[, ":=" (year = substr(JAHRMONAT, 1, 4), 
