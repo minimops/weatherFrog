@@ -1,9 +1,18 @@
 
 #### Trying measure values for the evaluation for clustersolutions
-
+library(rattle.data)
+data(wine, package="rattle.data")
+wine_subset <- scale(wine[ , c(2:4)])
+wine_cluster <- kmeans(wine_subset, centers = 3,
+                       iter.max = 10,
+                       nstart = 25)
+cluster <- wine_cluster$cluster
+wine1 <- cbind(cluster,wine_subset)
+wine1 <- as.data.frame(wine1)
 
 ############
 ######1. Gamma Koeffizient / Kophenetischer Korrelationskoeffizient
+# ist eine Anpassung von GoodmannKruskalGamma an Clusteranalyse
 
 ######### ACHTUNG: Nur geeignet für hierarchisches Clustering, da in 
 #die Berechnung des Gamma Koeffizienten die Dendrigramm-Matrix eingeht ( die es nur bei
@@ -19,15 +28,16 @@
 
 
 ######## Anwendung
-## Bsp "erster Clusterversuch" aus clustermahalanobis.R: cpmplete_linkage mit mahalanobis
-# Berechnung der kophenet. Matrix = Matrix aus dem Dendrogramm
 
-###Fragen:
-#Wie exrahiere ich Matrix des Dendrogramms?
-# Wie bestimme ich die Distanzen zwischen den beiden Matrizen?
-# Im Internet gibt es dazu nichts, nur allgemein zu Goodmann und Kruskals Gamma 
+# cophenetic(x) : erzeugen der kophenetischen Matrix 
+# cor_cophenetic(x1 = distance_matric, x2 = cophenetische_Matrix)
 
 
+# Frage: goodman/Kruskals Gamma eventuell auch bei nicht hierarchischen Cluster anwendbar?:
+# Antwort: scheint zu gehen laut dem Buch Clusteranalyse von Bacher, leider steht nicht drin, 
+# wie man es berechnet bzw. in R implementiert
+# gamma gibt an, in welchem Ausmaß die Distanzen (Unähnlichkeiten) innerhalb des 
+#Clusters kleiner sind als zwischen den Clustern (hört sich irgendwie nach MANOVA an) ( Buch S. 248)
 
 ###########################################
 #2. MANOVA
@@ -58,8 +68,8 @@ wine1 <- as.data.frame(wine1)
 #manova(as.matrix(dat[,c("read","math")]) ~ dat$income_cut)
 model <-  manova(as.matrix(wine1[,2:4]) ~ wine1$cluster)
  summary(model, test = "Wilks")
-
-##Bsp 2 aus R file clustermahalanobis K- means
+ 
+#Bsp 2 aus R file clustermahalanobis K- means
 
 # benoetigt ( attributes of kmeans output)
   #withness = sum of squares of within clusters
@@ -85,7 +95,16 @@ clusterzuordnung <- clusterkmeans$cluster
  
 # Problem: k means wurde anstatt mti den "Originaldaten" mit der Distanzmatrix durchgeführt
  
+
+ ####mit checkManova
+ #scheint nur mit clusterobjekt von fuzzy zu funktionieren, kmeans hat andere
+ #Struktur im cluster output
  
+ library(RcmdrPlugin.FuzzyClust)
+ fuzzy.CM(X=wine[,2:5],K = 3,m = 2,RandomNumber = 1234)->cl
+ checkManova(cl)
+
+
  
 
  
@@ -127,3 +146,13 @@ clusterzuordnung <- clusterkmeans$cluster
 adjustedRandIndex(c1,c2) 
 table(c1,c2)
 
+
+# Weitere Möglichkeiten, ein Cluster zu bewerten:
+
+#Diskriminanzanalyse
+# allgemeines, lineares Modell / multiples, lineares Regressionsmodell
+
+#
+
+
+# Anmerkung: einen blick auf fuzzy means werfen?
