@@ -2,27 +2,43 @@
 
 library(data.table)
 library(checkmate)
+library(stringr)
 
-#one overhead function that performs wanted date extraction for given Data
+
+#one overhead function that performs wanted date and 
+#variable extraction for given Data
 extrapolate <- function(yearspan, vars = "all") {
   
   assertNumeric(yearspan, lower = 1900, upper = 2010)
-  assertSubset("date", names(data))
   #TODO insert all possible var creations
   assertSubset(vars, c("all", "season", "min", "max", "intensity", "location",
                        "range", "distance"))
   
-  #TODO year span handling
+  #TODO input dataset names when finalized
+  #available datasets:
+  #sort these smaller to larger
+  avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010))
+  
+  for (setNum in seq_len(length(avail.sets))) {
+    if(all(yearspan %in% avail.sets[[setNum]])){
+      SETtoUSE <- (names(avail.sets[setNum]))
+      break
+    }
+  }
+  
+  ds.Name.long <- paste0("Data/cli_data_", SETtoUSE, "_avgDay.rds")
+  ds.Name.wide <- paste0("Data/cli_data_", SETtoUSE, "_avgDay_wide.rds")
   
   #read in different Data formats
   #TODO put this directly in front of where used in the future, as this is
   #possibly a memory overload issue
   
-  #TODO for now, this is just the 05 avg day dataset
-  data_long_avg <- readRDS("Data/cli_data_05_avgDay.rds")
+  #read long ds
+  data_long_avg <- readRDS(ds.Name.long)[format(as.Date(date),"%Y") %in% yearspan, ]
   
-  #TODO for now, the wide dataset here is the 05 one
-  data_wide_avgDay <- readRDS("Data/cli_data_05_avgDay_wide.rds")
+  #read wide ds
+  data_wide_avgDay <- readRDS(ds.Name.wide)[format(as.Date(date),"%Y") %in% yearspan, ]
+  
   
   #run all the different var extraction methods based on the vars 
   
@@ -35,17 +51,40 @@ extrapolate <- function(yearspan, vars = "all") {
   #distribution measures
   distMeasures <- measures(copy(data_wide_avgDay))
   
-  # intensity of high and low pressure
-  intensity <- intesity(data_wide_avgDay, data_long_avg)
-  
-  # euclidean distance 
-  euclidean.mslp <- euclidean(max_mins_location)
-  euclidean.geopot <- euclidean(max_mins_location, x1 = "maxGeopot", x2 = "minGeopot", outputname = "geopot")
-  
+
   #return new dataset
   #TODO remove out
   out <- Reduce(merge, list(distMeasures, max_mins_location, intensity, euclidean.mslp, euclidean.geopot))
+
+  #quadrant means
+  Qmeans <- quadrantMean(data_long_avg_quadrant)
+  
+  #distance of extreme points
+  distances <- Reduce(merge, list(
+                      euclidean(max_mins_location),
+                      euclidean(max_mins_location, 
+                        x1 = "maxGeopot", x2 = "minGeopot", outputname = "geopot"),
+                      euclidean(max_mins_location,
+                        x1 = "maxMslp", x2 = "maxGeopot", outputname = "maxDiff"),
+                      euclidean(max_mins_location,
+                        x1 = "minMslp", x2 = "minGeopot", outputname = "minDiff")
+                        )
+                      )
+  
+  #intensity
+  intensity <- intensity(data_wide_avgDay, data_long_avg)
+  
+  #return new dataset
+  Reduce(merge, list(distMeasures, 
+                     max_mins_location[, grep("latitude|longitude$", 
+                                   colnames(max_mins_location)) := NULL], 
+                     distances,
+                     intensity,
+                     Qmeans))
+
 }
+
+
 
 #individual extractions in indiv functions
 
@@ -267,15 +306,37 @@ intensity <- function(data.wide, data.long) {
   mslp <- keepQuartiles(data.mslp)
   geopot <- keepQuartiles(data.geopot, variable = "geopot", quartiles = quartiles.geopot)
   
-  intensitaet.hoch.mslp <- apply(mslp[[1]], 1, function(x) sum(!is.na(x)))
-  intensitaet.tief.mslp <- apply(mslp[[2]], 1, function(x) sum(!is.na(x)))
+  intensity.high.mslp <- apply(mslp[[1]], 1, function(x) sum(!is.na(x)))
+  intensity.low.mslp <- apply(mslp[[2]], 1, function(x) sum(!is.na(x)))
   
-  intensitaet.hoch.geopot <- apply(geopot[[1]], 1, function(x) sum(!is.na(x)))
-  intensitaet.tief.geopot <- apply(geopot[[2]], 1, function(x) sum(!is.na(x)))
+  intensity.high.geopot <- apply(geopot[[1]], 1, function(x) sum(!is.na(x)))
+  intensity.low.geopot <- apply(geopot[[2]], 1, function(x) sum(!is.na(x)))
   
-  intensity <- data.table(date, intensitaet.hoch.mslp, intensitaet.tief.mslp, 
-                          intensitaet.hoch.geopot, intensitaet.tief.geopot)
+  intensity <- data.table(date, intensity.high.mslp, intensity.low.mslp, 
+                          intensity.high.geopot, intensity.low.geopot)
   intensity
 }
-intensity(copy(data.wide), copy(data.long))
+
+
+#function for the mean of the quadrants per day
+#Input log format datatable from append.QuadrantID
+#outputs the date and means of the quadrants
+
+quadrantMean <- function(data) {
+  assertDataTable(data)
+  assertSubset(c("date", "verID", "horID", "avg_mslp", "avg_geopot"),
+               names(data))
+  
+  out <- copy(data)
+  
+  out <- out[,  .(meanMslp = mean(avg_mslp), 
+                  meanGeopot = mean(avg_geopot)), 
+      by = .(date, verID, horID)]
+  out[, ID := paste(verID, horID, sep = ".")][, ":=" (verID = NULL, horID = NULL)]
+  out <- dcast(out, date ~ ID, value.var = c("meanMslp", "meanGeopot"))
+  
+  out
+}
+
+
 
