@@ -39,3 +39,25 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "") {
     labs(x = "Length", 
          title = paste("Occurence frequencies of lengths", titleAdd))
 }
+
+
+
+
+
+silhouette <- function(cluster.fitted, cluster.vector, distance, algorithm) {
+  assertInteger(cluster.vector)
+  # assertString(metric)
+  assertString(algorithm)
+  # assertSubset(metric, choices = c("euclidean", "manhatten", "gower", "mahalanobis"))
+  assertSubset(algorithm, choices = c("pam", "kmeans", "fuzzy", "distribution"))
+  
+  if (algorithm == "fuzzy") {
+    fviz_silhouette(cluster.fitted)
+  }
+  sil <- silhouette(x = cluster.vector, dist = distance)
+  print(mean(sil[, 3]))
+  fviz_silhouette(sil.obj = sil)
+  
+}
+silhouette(pam_fit, pam_fit$clustering, dissimilarity, "pam")
+
