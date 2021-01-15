@@ -11,13 +11,14 @@ extrapolate <- function(yearspan, vars = "all") {
   
   assertNumeric(yearspan, lower = 1900, upper = 2010)
   #TODO insert all possible var creations
+  #TODO handling
   assertSubset(vars, c("all", "season", "min", "max", "intensity", "location",
                        "range", "distance"))
   
-  #TODO input dataset names when finalized
   #available datasets:
   #sort these smaller to larger
-  avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010))
+  avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010), 
+                     "30" = seq(1971, 2000), "full" = seq(1900, 2010))
   
   for (setNum in seq_len(length(avail.sets))) {
     if(all(yearspan %in% avail.sets[[setNum]])){
@@ -51,11 +52,6 @@ extrapolate <- function(yearspan, vars = "all") {
   #distribution measures
   distMeasures <- measures(copy(data_wide_avgDay))
   
-
-  #return new dataset
-  #TODO remove out
-  out <- Reduce(merge, list(distMeasures, max_mins_location, intensity, euclidean.mslp, euclidean.geopot))
-
   #quadrant means
   Qmeans <- quadrantMean(data_long_avg_quadrant)
   
@@ -75,13 +71,30 @@ extrapolate <- function(yearspan, vars = "all") {
   intensity <- intensity(data_wide_avgDay, data_long_avg)
   
   #return new dataset
-  Reduce(merge, list(distMeasures, 
+  out <- Reduce(merge, list(distMeasures, 
                      max_mins_location[, grep("latitude|longitude$", 
                                    colnames(max_mins_location)) := NULL], 
                      distances,
                      intensity,
                      Qmeans))
-
+  setcolorder(out, c("date", "mean.mslp", "median.mslp", "max.mslp", "min.mslp", 
+                     "quartile25.mslp", "quartile75.mslp", "range.mslp", 
+                     "intensity.high.mslp", "intensity.low.mslp", "mean.geopot", 
+                     "median.geopot", "max.geopot", "min.geopot", "quartile25.geopot", 
+                     "quartile75.geopot", "range.geopot", "intensity.high.geopot", 
+                     "intensity.low.geopot", "maxMslp.verID", "maxMslp.horID", 
+                     "minMslp.verID", "minMslp.horID", "euclidean.mslp", 
+                     "euclidean.maxDiff", "maxGeopot.verID", "maxGeopot.horID", 
+                     "minGeopot.verID", "minGeopot.horID", "euclidean.geopot", 
+                     "euclidean.minDiff", "meanMslp_1.1",  "meanMslp_1.2", 
+                     "meanMslp_1.3", "meanMslp_2.1", "meanMslp_2.2", "meanMslp_2.3", 
+                     "meanMslp_3.1", "meanMslp_3.2", "meanMslp_3.3",
+                     "meanGeopot_1.1",  "meanGeopot_1.2", "meanGeopot_1.3", 
+                     "meanGeopot_2.1", "meanGeopot_2.2", "meanGeopot_2.3", 
+                     "meanGeopot_3.1", "meanGeopot_3.2", "meanGeopot_3.3"
+  ))
+  
+  out
 }
 
 
@@ -263,18 +276,23 @@ measures <- function(data) {
 # OUTPUT: a list which has in its first position a data table only with values which are greater than the 0.75 quartile
 #         and in its second position a data table with those values that are less than the 0.25 quartile
 
-keepQuartiles <- function(data, variable = "mslp", quartiles = quartiles.mslp) {
+keepQuartiles <- function(data, variable = "mslp", quartiles) {
   assertDataTable(data, ncols = 160)
   assertString(variable)
   assertSubset(variable, choices = c("mslp", "geopot"))
   assertNumeric(quartiles, len = 2)
   
-  hoch <- data[, apply(data, 2, 
-                       function(col) lapply(col, function(x) if (x < quartiles[2]) {x <-  NA} 
-                                            else {x <- x}))]
-  tief <- data[, apply(data, 2, 
-                       function(col) lapply(col, function(x) if (x > quartiles[1]) {x <-  NA} 
-                                            else {x <- x}))]
+  # hoch <- data[, apply(data, 2, 
+  #                      function(col) lapply(col, function(x) if (x < quartiles[2]) {x <-  NA} 
+  #                                           else {x <- x}))]
+  hoch <- copy(data)
+  hoch[hoch < quartiles[2]] <- NA
+  # tief <- data[, apply(data, 2, 
+  #                      function(col) lapply(col, function(x) if (x > quartiles[1]) {x <-  NA} 
+  #                                           else {x <- x}))]
+  tief <- copy(data)
+  tief[tief > quartiles[1]] <- NA
+  
   list(hoch, tief)
 }
 
@@ -303,7 +321,7 @@ intensity <- function(data.wide, data.long) {
   data.mslp <- data.wide[, 2:161]
   data.geopot <- data.wide[, 162:321]
   
-  mslp <- keepQuartiles(data.mslp)
+  mslp <- keepQuartiles(data.mslp, variable = "mslp", quartiles = quartiles.mslp)
   geopot <- keepQuartiles(data.geopot, variable = "geopot", quartiles = quartiles.geopot)
   
   intensity.high.mslp <- apply(mslp[[1]], 1, function(x) sum(!is.na(x)))
