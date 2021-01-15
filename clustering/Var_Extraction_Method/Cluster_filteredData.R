@@ -18,6 +18,8 @@ dissimilarity <- daisy(as.data.frame(discrete[, .(scale(min.mslp), scale(intensi
                                                   metric = "gower")
 summary(dissimilarity)
 
+dissimilarity <- daisy(discrete[, 2:49],
+                       metric = "gower")
 ?daisy
 ?kmeans
 # dissimilarity als matrix speichern
@@ -113,3 +115,4 @@ plot(clust_gower)
 fviz_dist(dissimilarity)
 a <- 1
 a
+saveRDS(discrete, "Data/discrete.rds")

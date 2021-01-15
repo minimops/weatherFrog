@@ -41,14 +41,21 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "") {
 }
 
 
+# this function is to get the silhouette coefficient. 
+# INPUT: - cluster.fittet: Result of a clustering
+#        - cluster.vector: the clustering vector of the fittet cluster, normally it is either
+#                          cluster.fittet$cluster or cluster.fittet$clustering
+#        - distance: an object of class "dist", so for example with dist(...) or daisy(...)
+#        - algorithm: method you have chosen. Fuzzy is a bit different and I dont know what the density based
+#                     clustering will be like
+
+# OUTPUT: exact mean value of silhouette width and output of fviz_silhouette which is the silhouette width 
+#         and a plot
 
 
-
-silhouette <- function(cluster.fitted, cluster.vector, distance, algorithm) {
+sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   assertInteger(cluster.vector)
-  # assertString(metric)
   assertString(algorithm)
-  # assertSubset(metric, choices = c("euclidean", "manhatten", "gower", "mahalanobis"))
   assertSubset(algorithm, choices = c("pam", "kmeans", "fuzzy", "distribution"))
   
   if (algorithm == "fuzzy") {
@@ -59,5 +66,6 @@ silhouette <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   fviz_silhouette(sil.obj = sil)
   
 }
-silhouette(pam_fit, pam_fit$clustering, dissimilarity, "pam")
+# an example:
+sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
 
