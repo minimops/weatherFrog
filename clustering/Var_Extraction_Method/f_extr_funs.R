@@ -51,6 +51,11 @@ extrapolate <- function(yearspan, vars = "all") {
   #distribution measures
   distMeasures <- measures(copy(data_wide_avgDay))
   
+
+  #return new dataset
+  #TODO remove out
+  out <- Reduce(merge, list(distMeasures, max_mins_location, intensity, euclidean.mslp, euclidean.geopot))
+
   #quadrant means
   Qmeans <- quadrantMean(data_long_avg_quadrant)
   
@@ -76,6 +81,7 @@ extrapolate <- function(yearspan, vars = "all") {
                      distances,
                      intensity,
                      Qmeans))
+
 }
 
 

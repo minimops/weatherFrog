@@ -190,7 +190,7 @@ coordinates.max.mslp <- data.frame(row = numeric(length = 1826), col = numeric(l
 
 ## und splitte mslp nach Tag auf in eine list , die als inahlate die tageswerte im format 8x20 enthält
 mslp.split <- split(data.mslp[, 3:23], data.mslp[, id])
-
+mslp.split[[1]]
 ## dann entnehme ich die koordinaten von den minima und maxima
 for (i in seq_len(1826)) {
   coordinates.min.mslp[i, ]<- which(mslp.split[[i]] == min(mslp.split[[i]][, 1:20], na.rm = TRUE), 
@@ -471,3 +471,5 @@ any(is.na(discrete[, euclidean.geopot]))
 saveRDS(discrete, "Data/discrete.rds")
 discrete <- readRDS("Data/discrete.rds")
 discrete
+
+
