@@ -398,17 +398,6 @@ cli_gwl_long <- cbind(cli_gwl_long_mslp,cli_gwl_long_geo[,8:9])
 
 saveRDS(cli_gwl_long,"Data\\cli_gwl_1971_long.rds")
 
-
-
-
-
-
-
-
-
-
-
-
 ```
 
 creates saved maps

@@ -282,12 +282,17 @@ keepQuartiles <- function(data, variable = "mslp", quartiles) {
   assertSubset(variable, choices = c("mslp", "geopot"))
   assertNumeric(quartiles, len = 2)
   
-  hoch <- data[, apply(data, 2, 
-                       function(col) lapply(col, function(x) if (x < quartiles[2]) {x <-  NA} 
-                                            else {x <- x}))]
-  tief <- data[, apply(data, 2, 
-                       function(col) lapply(col, function(x) if (x > quartiles[1]) {x <-  NA} 
-                                            else {x <- x}))]
+  # hoch <- data[, apply(data, 2, 
+  #                      function(col) lapply(col, function(x) if (x < quartiles[2]) {x <-  NA} 
+  #                                           else {x <- x}))]
+  hoch <- copy(data)
+  hoch[hoch < quartiles[2]] <- NA
+  # tief <- data[, apply(data, 2, 
+  #                      function(col) lapply(col, function(x) if (x > quartiles[1]) {x <-  NA} 
+  #                                           else {x <- x}))]
+  tief <- copy(data)
+  tief[tief > quartiles[1]] <- NA
+  
   list(hoch, tief)
 }
 
