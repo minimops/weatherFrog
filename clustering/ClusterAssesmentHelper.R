@@ -1,6 +1,7 @@
 
 library(checkmate)
 library(data.table)
+library(ggplot2)
 
 #function to attach gwl to a dataset with date column
 attachGwl <- function(data) {
@@ -24,11 +25,11 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "") {
   
   #this is next level stupid,i cant figure out a different way to extract the
   #cluster column while leaving it a variable
-  use <- data.table(gwl = copy(data)[[as.character(cluster)]],
+  use <- data.table(ClustID = copy(data)[[as.character(cluster)]],
                date = copy(data)[["date"]])
   setorder(use, date)
   
-  runLengths <- rle(use[[as.character(cluster)]])
+  runLengths <- rle(use[["ClustID"]])
   
   print("distribution of runLengths:")
   print(table(runLengths$lengths))
