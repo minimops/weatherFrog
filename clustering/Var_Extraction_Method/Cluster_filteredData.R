@@ -79,6 +79,9 @@ mosaic <- function(data, cluster_vector, title = "PAM") {
 
 mosaic(copy(data), cluster_vector)
 
+############################################################################
+############################### PAM ########################################
+
 ####### PAM with Gower ######################
 diss.pam.gower <- dissimilarityPAM(copy(datscale), metric = "gower", dist = FALSE)
 
@@ -103,7 +106,22 @@ cluster_vector <- pam_fit$clustering
 mosaic(copy(data), cluster_vector, title = "PAM WITH MANHATTAN")
 # sil_width: 0.149
 
+###########################################################################
+############################# KMEANS ######################################
 
+?kmeans
+
+km_list <- list()
+wss <- numeric()
+
+for (k in 1:15){
+  km_list[[k]] <- kmeans(copy(datscale)[, 2:49], centers=k, iter.max = 5000, nstart = 5)
+  wss[k] <- sum(km_list[[k]]$withinss)
+}
+plot(1:15, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+
+kmeans.euc <- kmeans(copy(datscale)[, 2:49], iter.max = 10000, nstart = 5, centers = 7)
+mosaic(copy(data), kmeans.euc$cluster, "KMEANS WITH EUCLIDEAN")
 
 
 # dissimilarity als matrix speichern
