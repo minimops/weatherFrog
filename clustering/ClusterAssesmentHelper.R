@@ -70,3 +70,42 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
 # an example:
 sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
 
+
+
+# function to scale and weight the data.
+# weighting is a bit difficult because normally it should be done in a clustering or dissimilarity function
+# and not by multiplying the weight and the variable.
+# INPUT: - data in format of extrapolate(seq(x-y)), or with selected variables
+#        - weight: logical whether oe wants the output to be weighted or not
+#        - weights: the weights for the variables, right now for data input of extrapolate(seq(x, y), vars = "all)
+#                   if the input data has less variables, the weights vector must be adjusted
+#                   date is not included in weighting, so length(weights) == ncol(data)-1
+
+# OUTPUT: a data table with same dimensions as input data, either scaled and weighted or just scaled
+
+scaleNweight <- function(data, weight = FALSE, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
+                                                           rep(1/6, 12), rep(1/18, 18))) {
+  assertDataTable(data)
+  assertSubset("date", colnames(data)[1])
+  assertLogical(weight)
+  assertNumeric(weights, len = ncol(data) - 1)
+  
+  date <- data[, .(date)]
+  cols <- colnames(data)[2:ncol(data)]
+  
+  data.scaled <- copy(data)[, (cols) := lapply(.SD, scale), .SDcols = cols]
+  
+  if (!weight) {
+    return(data.scaled)
+  }  
+  
+  data.weighted <- as.data.frame(matrix(0, ncol = ncol(data)-1, nrow = nrow(data)))
+  for (i in 1:(ncol(data) - 1)) {
+    data.weighted[, i] <- data.scaled[, .SD, .SDcols = cols[i]] * weights[i]
+  }
+  
+  data.weighted <- data.table(date, data.weighted)
+  colnames(data.weighted) <- c("date", cols)
+  data.weighted
+}
+
