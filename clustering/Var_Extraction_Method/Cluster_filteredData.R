@@ -18,7 +18,10 @@ dissimilarity <- daisy(as.data.frame(discrete[, .(scale(min.mslp), scale(intensi
                                                   metric = "gower")
 summary(dissimilarity)
 
+dissimilarity <- daisy(discrete[, 2:49],
+                       metric = "gower")
 ?daisy
+?kmeans
 # dissimilarity als matrix speichern
 gower_mat <- as.matrix(dissimilarity)
 
@@ -45,12 +48,15 @@ for(i in 2:15){
   
 }
 
+
+silh <- silhouette(x = cluster_vector, dissimilarity)
+fviz_silhouette(silh)
 # Plot sihouette width (higher is better)
 
-plot(1:15, sil_width,
+plot(1:12, sil_width,
      xlab = "Number of clusters",
      ylab = "Silhouette Width")
-lines(1:15, sil_width)
+lines(1:12, sil_width)
 # 8 Cluster scheinen hier am besten zu sein, je höher, desto besser
 
 # hier wird das clustering angewandt
@@ -93,10 +99,11 @@ ggplot(aes(x = X, y = Y), data = tsne_data) +
 
 discrete_gwl <- gwl[discrete, on = .(date)]
 discrete_gwl_cluster <- discrete_gwl[, cluster := cluster_vector]
-
+discrete_gwl_kmm <- discrete_gwl[, cluster := kmm$cluster]
 
 mosaicplot(table(discrete_gwl_cluster$gwl, discrete_gwl_cluster$cluster), color = TRUE)
 mosaicplot(table(discrete_gwl_cluster$cluster, discrete_gwl_cluster$gwl), color = TRUE)
+mosaicplot(table(discrete_gwl_kmm$gwl, discrete_gwl_kmm$cluster), color = TRUE)
 ?mosaicplot
 
 library(factoextra)
@@ -108,3 +115,4 @@ plot(clust_gower)
 fviz_dist(dissimilarity)
 a <- 1
 a
+saveRDS(discrete, "Data/discrete.rds")

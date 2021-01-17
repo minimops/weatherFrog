@@ -82,6 +82,9 @@ par(mfrow = c(1,1))
 plot(1:10, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
 clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers=3, iter.max=1000)
+clusterpam <- pam(as.dist(dist_mahal_scaled), k = 9, diss = TRUE)
+clusterpam$silinfo
+?pam
 
 data.scaled <- as.data.table(data.scaled)
 data.scaled <- data.scaled[, date := data.wide[, .(date)]]
