@@ -13,8 +13,8 @@ source("clustering/ClusterAssesmentHelper.R")
 extr.Data.05 <- scaleNweight(extrapolate(seq(2006, 2010)))
 extr.Data.05.noDate <- as.data.frame(extr.Data.05)
 extr.Data.05.noDate$date <- NULL
-extr.Data.05.noDate <- center_scale(extr.Data.05.noDate, mean_center = TRUE,
-                                    sd_scale = TRUE)
+#extr.Data.05.noDate <- center_scale(extr.Data.05.noDate, mean_center = TRUE,
+#                                    sd_scale = TRUE)
 
 #get optimal number of clusters
 opt_gmm <- Optimal_Clusters_GMM(extr.Data.05.noDate, max_clusters = 30, 
