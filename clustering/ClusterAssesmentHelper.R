@@ -2,6 +2,7 @@
 library(checkmate)
 library(data.table)
 library(ggplot2)
+library(cluster)
 
 #function to attach gwl to a dataset with date column
 attachGwl <- function(data) {
@@ -68,7 +69,7 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   
 }
 # an example:
-sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
+#sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
 
 
 
