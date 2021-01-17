@@ -12,7 +12,8 @@ extrapolate <- function(yearspan, vars = "all") {
   assertNumeric(yearspan, lower = 1900, upper = 2010)
   #TODO insert all possible var creations
   #TODO handling
-  assertSubset(vars, c("all", "season", "min", "max", "intensity", "location",
+  assertSubset(vars, c("all", "all.4qm", "season", "min", "max", 
+                       "intensity", "location",
                        "range", "distance"))
   
   #available datasets:
@@ -53,7 +54,10 @@ extrapolate <- function(yearspan, vars = "all") {
   distMeasures <- measures(copy(data_wide_avgDay))
   
   #quadrant means
-  Qmeans <- quadrantMean(data_long_avg_quadrant)
+  ifelse(vars == "all.4qm",
+         Qmeans <- quadrantMean(append.QuadrantID(data_long_avg, amount = 4)),
+         Qmeans <- quadrantMean(data_long_avg_quadrant))
+         
   
   #distance of extreme points
   distances <- Reduce(merge, list(
@@ -77,21 +81,17 @@ extrapolate <- function(yearspan, vars = "all") {
                      distances,
                      intensity,
                      Qmeans))
-  setcolorder(out, c("date", "mean.mslp", "median.mslp", "max.mslp", "min.mslp", 
-                     "quartile25.mslp", "quartile75.mslp", "range.mslp", 
-                     "intensity.high.mslp", "intensity.low.mslp", "mean.geopot", 
-                     "median.geopot", "max.geopot", "min.geopot", "quartile25.geopot", 
-                     "quartile75.geopot", "range.geopot", "intensity.high.geopot", 
-                     "intensity.low.geopot", "maxMslp.verID", "maxMslp.horID", 
-                     "minMslp.verID", "minMslp.horID", "euclidean.mslp", 
-                     "euclidean.maxDiff", "maxGeopot.verID", "maxGeopot.horID", 
-                     "minGeopot.verID", "minGeopot.horID", "euclidean.geopot", 
-                     "euclidean.minDiff", "meanMslp_1.1",  "meanMslp_1.2", 
-                     "meanMslp_1.3", "meanMslp_2.1", "meanMslp_2.2", "meanMslp_2.3", 
-                     "meanMslp_3.1", "meanMslp_3.2", "meanMslp_3.3",
-                     "meanGeopot_1.1",  "meanGeopot_1.2", "meanGeopot_1.3", 
-                     "meanGeopot_2.1", "meanGeopot_2.2", "meanGeopot_2.3", 
-                     "meanGeopot_3.1", "meanGeopot_3.2", "meanGeopot_3.3"
+  setcolorder(out, c("date", "mean.mslp", "median.mslp", "max.mslp", "min.mslp",
+                     "quartile25.mslp", "quartile75.mslp", "range.mslp",
+                     "intensity.high.mslp", "intensity.low.mslp", "mean.geopot",
+                     "median.geopot", "max.geopot", "min.geopot", "quartile25.geopot",
+                     "quartile75.geopot", "range.geopot", "intensity.high.geopot",
+                     "intensity.low.geopot", "maxMslp.verID", "maxMslp.horID",
+                     "minMslp.verID", "minMslp.horID", "euclidean.mslp",
+                     "euclidean.maxDiff", "maxGeopot.verID", "maxGeopot.horID",
+                     "minGeopot.verID", "minGeopot.horID", "euclidean.geopot",
+                     "euclidean.minDiff", grep("meanMslp", names(out), value = TRUE),
+                     grep("meanGeopot", names(out), value = TRUE)
   ))
   
   out
@@ -124,12 +124,14 @@ getSeason <- function(DATES) {
 #Input: Long format of Dataset
 #Output: data with the 4 added on variables
 
-append.QuadrantID <- function(data) {
+append.QuadrantID <- function(data, amount = 9) {
   assertDataTable(data)
   assertSubset(c("longitude", "latitude"), names(data))
+  assertSubset(amount, c(9, 4))
   
   out <- copy(data)
-  
+  ifelse(amount == 9,
+         {
   #messy, but i dont have the patience rn
   out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 3, verChar = "South")]
   out[latitude %in% unique(latitude)[seq(4,5)], ":=" (verID = 2, verChar = "Center")]
@@ -138,6 +140,21 @@ append.QuadrantID <- function(data) {
   out[longitude %in% unique(longitude)[seq(1,7)], ":=" (horID = 1, horChar = "West")]
   out[longitude %in% unique(longitude)[seq(8,13)], ":=" (horID = 2, horChar = "Center")]
   out[longitude %in% unique(longitude)[seq(14,20)], ":=" (horID = 3, horChar = "East")]
+         },
+  {
+  #this is so dumb, my brain hurts though
+  nw <- out[which(latitude %in% unique(latitude)[seq(1,4)]), ][longitude %in% 
+    unique(longitude)[seq(1, 10)], ][, ":=" (quadID = 1, quadChar = "Northwest")]
+  ne <- out[which(latitude %in% unique(latitude)[seq(1,4)]), ][longitude %in% 
+    unique(longitude)[seq(11, 20)], ][, ":=" (quadID = 2, quadChar = "Northeast")]
+  sw <- out[which(latitude %in% unique(latitude)[seq(5,8)]), ][longitude %in% 
+    unique(longitude)[seq(1, 10)], ][, ":=" (quadID = 3, quadChar = "Southwest")]
+  se <- out[which(latitude %in% unique(latitude)[seq(5,8)]), ][longitude %in% 
+    unique(longitude)[seq(11, 20)], ][, ":=" (quadID = 4, quadChar = "Southeast")]
+  
+  out <- rbind(nw, ne, sw, se)
+  
+  })
   
   out
 }
@@ -343,17 +360,28 @@ intensity <- function(data.wide, data.long) {
 
 quadrantMean <- function(data) {
   assertDataTable(data)
-  assertSubset(c("date", "verID", "horID", "avg_mslp", "avg_geopot"),
-               names(data))
-  
   out <- copy(data)
-  
-  out <- out[,  .(meanMslp = mean(avg_mslp), 
-                  meanGeopot = mean(avg_geopot)), 
-      by = .(date, verID, horID)]
-  out[, ID := paste(verID, horID, sep = ".")][, ":=" (verID = NULL, horID = NULL)]
+  out <- tryCatch(
+    {
+      assertSubset(c("date", "verID", "horID", "avg_mslp", "avg_geopot"),
+                   names(data))
+      
+      out <- out[,  .(meanMslp = mean(avg_mslp), 
+                      meanGeopot = mean(avg_geopot)), 
+          by = .(date, verID, horID)]
+      out[, ID := paste(verID, horID, sep = ".")][, ":=" (verID = NULL, horID = NULL)]
+      
+    }, error = function(cond) {
+      assertSubset(c("date", "quadID", "avg_mslp", "avg_geopot"),
+                   names(data))
+      
+      out <- out[,  .(meanMslp = mean(avg_mslp), 
+                      meanGeopot = mean(avg_geopot)), 
+                 by = .(date, quadID)]
+      out[, ID := paste(quadID, sep = ".")][, ":=" (quadID = NULL)]
+    }
+  )
   out <- dcast(out, date ~ ID, value.var = c("meanMslp", "meanGeopot"))
-  
   out
 }
 
