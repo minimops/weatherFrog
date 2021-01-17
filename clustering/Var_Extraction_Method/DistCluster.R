@@ -24,7 +24,7 @@ opt_gmm <- Optimal_Clusters_GMM(extr.Data.05.noDate, max_clusters = 30,
                                 plot_data = TRUE)
 
 
-#lets take 10 for now
+#lets take 7 for now
 
 gmm <- GMM(extr.Data.05.noDate, 10, dist_mode = "maha_dist",
            seed_mode = "random_subset", km_iter = 10, em_iter = 10,
@@ -43,4 +43,4 @@ Cl.timeline(distri_cluster_data, titleAdd = "GMM Clustering")
 
 mosaic(distri_cluster_data, as.integer(predictClusters$cluster_labels), title = "GMM")
 
-
+table(predictClusters$cluster_labels)
