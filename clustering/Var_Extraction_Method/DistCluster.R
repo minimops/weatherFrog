@@ -26,7 +26,7 @@ opt_gmm <- Optimal_Clusters_GMM(extr.Data.05.noDate, max_clusters = 30,
 
 #lets take 7 for now
 
-gmm <- GMM(extr.Data.05.noDate, 10, dist_mode = "maha_dist",
+gmm <- GMM(extr.Data.05.noDate, 7, dist_mode = "maha_dist",
            seed_mode = "random_subset", km_iter = 10, em_iter = 10,
            verbose = FALSE)
 
