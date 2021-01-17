@@ -160,26 +160,27 @@ quadrantValues <- function(data, StringID = FALSE) {
   out <- copy(data)
   
   #again, mapply can fuck off, wasting too much time
-  maxMslp <- out[, .SD[which(avg_mslp == max(avg_mslp))], by = date, .SDcols = 
-                   cols]
+  #TODO the uniquw is a dirty fix to it creating duplicate rows
+  maxMslp <- unique(out[, .SD[which(avg_mslp == max(avg_mslp))], by = date, .SDcols = 
+                   cols], by = "date")
   setnames(maxMslp, cols, vapply(cols, 
                     FUN = function(x) paste(
                       deparse(substitute(maxMslp)), x, sep = "."), 
                     FUN.VALUE = character(1)))
-  minMslp <- out[, .SD[which(avg_mslp == min(avg_mslp))], by = date, .SDcols = 
-                   cols]
+  minMslp <- unique(out[, .SD[which(avg_mslp == min(avg_mslp))], by = date, .SDcols = 
+                   cols], by = "date")
   setnames(minMslp, cols, vapply(cols, 
                                  FUN = function(x) paste(
                                    deparse(substitute(minMslp)), x, sep = "."), 
                                  FUN.VALUE = character(1)))
-  maxGeopot <- out[, .SD[which(avg_geopot == max(avg_geopot))], by = date, .SDcols = 
-                     cols]
+  maxGeopot <- unique(out[, .SD[which(avg_geopot == max(avg_geopot))], by = date, .SDcols = 
+                     cols], by ="date")
   setnames(maxGeopot, cols, vapply(cols, 
                                  FUN = function(x) paste(
                                    deparse(substitute(maxGeopot)), x, sep = "."), 
                                  FUN.VALUE = character(1)))
-  minGeopot <- out[, .SD[which(avg_geopot == min(avg_geopot))], by = date, .SDcols = 
-                     cols]
+  minGeopot <- unique(out[, .SD[which(avg_geopot == min(avg_geopot))], by = date, .SDcols = 
+                     cols], by ="date")
   setnames(minGeopot, cols, vapply(cols, 
                                  FUN = function(x) paste(
                                    deparse(substitute(minGeopot)), x, sep = "."), 
