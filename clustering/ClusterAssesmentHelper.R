@@ -109,3 +109,26 @@ scaleNweight <- function(data, weight = FALSE, weights = c(rep(c(1/9, 1/9, 1/6, 
   data.weighted
 }
 
+
+# function that print mosaicplots
+# INPUT: - data with date 
+#        - clustering vector of clusters
+#        - title of plots, input is the used method
+
+mosaic <- function(data, cluster_vector, title = "PAM") {
+  assertDataTable(data)
+  assertInteger(cluster_vector)
+  assertString(title)
+  assertSubset("date", colnames(data))
+  
+  gwl <- readRDS("Data/gwl.rds")
+  data.gwl <- gwl[data, on = .(date)]
+  data.gwl.cluster <- data.gwl[, cluster := cluster_vector]
+  
+  mosaicplot(table(data.gwl.cluster$cluster, data.gwl.cluster$gwl), color = TRUE,
+             xlab = "Cluster", ylab = "GWL", cex.axis = 0.6, las = 2,
+             main = paste0(title, " Cluster - GWL"))
+  mosaicplot(table(data.gwl.cluster$gwl, data.gwl.cluster$cluster), color = TRUE,
+             ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
+             main = paste0(title, " Cluster - GWL"))
+}
