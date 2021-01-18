@@ -18,28 +18,46 @@ attachGwl <- function(data) {
 #data input has to be a dt with date and id column
 #cluster input is used to identify the id column
 #title add input can be used to add smth to the plot title
-Cl.timeline <- function(data, cluster = "cluster", titleAdd = "") {
+Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE) {
   assertDataTable(data)
   assertString(cluster)
   assertString(titleAdd)
   assertSubset(c("date", cluster), names(data))
+  assertLogical(seperated)
   
   #this is next level stupid,i cant figure out a different way to extract the
   #cluster column while leaving it a variable
   use <- data.table(ClustID = copy(data)[[as.character(cluster)]],
                date = copy(data)[["date"]])
   setorder(use, date)
-  
-  runLengths <- rle(use[["ClustID"]])
-  
-  print("distribution of runLengths:")
-  print(table(runLengths$lengths))
-  
-  ggplot(data = as.data.frame(table(runLengths$lengths)), 
-         aes(x= Var1, y = Freq)) +
-    geom_col() +
-    labs(x = "Length", 
-         title = paste("Occurence frequencies of lengths", titleAdd))
+  if(seperated){
+           runLengths <- rle(use[["ClustID"]])
+           
+           for (i in unique(use[["ClustID"]])) {
+             
+             length.runLengths.part <- runLengths$lengths[which(runLengths$values == i)]
+             print(paste("distribution of runLengths", "Cluster:", i))
+             print(table(length.runLengths.part))
+             
+             print(ggplot(data = as.data.frame(table(length.runLengths.part)), 
+                    aes(x= length.runLengths.part, y = Freq)) +
+               geom_col() +
+               labs(x = "Length", 
+                    title = paste("Occurence frequencies of lengths", 
+                                  paste(titleAdd, "Cluster:", i))))
+           }
+         } else{
+          runLengths <- rle(use[["ClustID"]])
+          
+          print("distribution of runLengths:")
+          print(table(runLengths$lengths))
+          
+          ggplot(data = as.data.frame(table(runLengths$lengths)), 
+                 aes(x= Var1, y = Freq)) +
+            geom_col() +
+            labs(x = "Length", 
+                 title = paste("Occurence frequencies of lengths", titleAdd))
+         }
 }
 
 
@@ -133,3 +151,28 @@ mosaic <- function(data, cluster_vector, title = "PAM") {
              ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
              main = paste0(title, " Cluster - GWL"))
 }
+
+
+#function that classifies noise for soft clustering methods
+#observations with to low probability or ultiple high probabilities
+#are classified as noise
+#inputs are the clusterid vector of a cluster result 
+#and a cluster probability matrix
+#outputs new clusterid vector
+noiseAllocation <- function(cluster.id, cluster.prob) {
+  assertMatrix(cluster.prob)
+  assertNumeric(cluster.id, len = nrow(cluster.prob))
+  
+  #rows where no probability is greater than 35%
+  low.Prob.rows <- which(!apply(cluster.prob, 1, function(r) any(r > 0.35)))
+  #rows where probility greater than 50percent to more than one cluster
+  mult.high.Prob.rows <- which(apply(y, 1, function(r) sum(r > 0.5)) > 1)
+  
+  #give these observations the cluster id 99 
+  #TODO maybe NA instead of 99?
+  cluster.id[unique(c(low.Prob.rows, mult.high.Prob.rows))] <- 99
+  
+  cluster.id
+}
+
+
