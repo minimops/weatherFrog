@@ -14,10 +14,12 @@ print(lrn)
 source("clustering/ClusterAssesmentHelper.R")
 origdat <- attachGwl(readRDS("Data/cli_data_05_avgDay_wide.rds"))
 origdat[, ":=" (date = NULL, gwl = as.factor(gwl))]
+origdat <- origdat[gwl != "U"]
 
 source("clustering/Var_Extraction_Method/f_extr_funs.R")
 newdat <- attachGwl(scaleNweight(extrapolate(seq(2006, 2010))))
 newdat[, ":=" (date = NULL, gwl = as.factor(gwl))]
+newdat <- newdat[gwl != "U"]
 
 
 task1 = TaskClassif$new("measuredat", origdat, target = "gwl")
@@ -39,6 +41,8 @@ measure <- msr("classif.acc")
 predorg$score(measure) 
 #0.333 random
 #0.219 4years
+#0.335 random and without gwl "U"
+
 
 #extraction data
 lrn$train(task2, train)
@@ -48,5 +52,6 @@ measure <- msr("classif.acc")
 predext$score(measure) 
 #0.254 random
 #0.183 4years
+#0.306 random and without gwl "U"
 #seems to be doing worse...
 
