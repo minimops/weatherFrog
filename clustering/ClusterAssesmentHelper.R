@@ -30,6 +30,8 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
   use <- data.table(ClustID = copy(data)[[as.character(cluster)]],
                date = copy(data)[["date"]])
   setorder(use, date)
+  print("Table of Cluster frequencies:")
+  print(table(use$ClustID))
   if(seperated){
            runLengths <- rle(use[["ClustID"]])
            
