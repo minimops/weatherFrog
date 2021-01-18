@@ -11,13 +11,15 @@ extrapolate <- function(yearspan, vars = "all") {
   
   assertNumeric(yearspan, lower = 1900, upper = 2010)
   #TODO insert all possible var creations
-  assertSubset(vars, c("all", "season", "min", "max", "intensity", "location",
+  #TODO handling
+  assertSubset(vars, c("all", "all.4qm", "season", "min", "max", 
+                       "intensity", "location",
                        "range", "distance"))
   
-  #TODO input dataset names when finalized
   #available datasets:
   #sort these smaller to larger
-  avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010))
+  avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010), 
+                     "30" = seq(1971, 2000), "full" = seq(1900, 2010))
   
   for (setNum in seq_len(length(avail.sets))) {
     if(all(yearspan %in% avail.sets[[setNum]])){
@@ -52,7 +54,10 @@ extrapolate <- function(yearspan, vars = "all") {
   distMeasures <- measures(copy(data_wide_avgDay))
   
   #quadrant means
-  Qmeans <- quadrantMean(data_long_avg_quadrant)
+  ifelse(vars == "all.4qm",
+         Qmeans <- quadrantMean(append.QuadrantID(data_long_avg, amount = 4)),
+         Qmeans <- quadrantMean(data_long_avg_quadrant))
+         
   
   #distance of extreme points
   distances <- Reduce(merge, list(
@@ -70,12 +75,26 @@ extrapolate <- function(yearspan, vars = "all") {
   intensity <- intensity(data_wide_avgDay, data_long_avg)
   
   #return new dataset
-  Reduce(merge, list(distMeasures, 
+  out <- Reduce(merge, list(distMeasures, 
                      max_mins_location[, grep("latitude|longitude$", 
                                    colnames(max_mins_location)) := NULL], 
                      distances,
                      intensity,
                      Qmeans))
+  setcolorder(out, c("date", "mean.mslp", "median.mslp", "max.mslp", "min.mslp",
+                     "quartile25.mslp", "quartile75.mslp", "range.mslp",
+                     "intensity.high.mslp", "intensity.low.mslp", "mean.geopot",
+                     "median.geopot", "max.geopot", "min.geopot", "quartile25.geopot",
+                     "quartile75.geopot", "range.geopot", "intensity.high.geopot",
+                     "intensity.low.geopot", "maxMslp.verID", "maxMslp.horID",
+                     "minMslp.verID", "minMslp.horID", "euclidean.mslp",
+                     "euclidean.maxDiff", "maxGeopot.verID", "maxGeopot.horID",
+                     "minGeopot.verID", "minGeopot.horID", "euclidean.geopot",
+                     "euclidean.minDiff", grep("meanMslp", names(out), value = TRUE),
+                     grep("meanGeopot", names(out), value = TRUE)
+  ))
+  
+  out
 }
 
 
@@ -105,12 +124,14 @@ getSeason <- function(DATES) {
 #Input: Long format of Dataset
 #Output: data with the 4 added on variables
 
-append.QuadrantID <- function(data) {
+append.QuadrantID <- function(data, amount = 9) {
   assertDataTable(data)
   assertSubset(c("longitude", "latitude"), names(data))
+  assertSubset(amount, c(9, 4))
   
   out <- copy(data)
-  
+  ifelse(amount == 9,
+         {
   #messy, but i dont have the patience rn
   out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 3, verChar = "South")]
   out[latitude %in% unique(latitude)[seq(4,5)], ":=" (verID = 2, verChar = "Center")]
@@ -119,6 +140,21 @@ append.QuadrantID <- function(data) {
   out[longitude %in% unique(longitude)[seq(1,7)], ":=" (horID = 1, horChar = "West")]
   out[longitude %in% unique(longitude)[seq(8,13)], ":=" (horID = 2, horChar = "Center")]
   out[longitude %in% unique(longitude)[seq(14,20)], ":=" (horID = 3, horChar = "East")]
+         },
+  {
+  #this is so dumb, my brain hurts though
+  nw <- out[which(latitude %in% unique(latitude)[seq(1,4)]), ][longitude %in% 
+    unique(longitude)[seq(1, 10)], ][, ":=" (quadID = 1, quadChar = "Northwest")]
+  ne <- out[which(latitude %in% unique(latitude)[seq(1,4)]), ][longitude %in% 
+    unique(longitude)[seq(11, 20)], ][, ":=" (quadID = 2, quadChar = "Northeast")]
+  sw <- out[which(latitude %in% unique(latitude)[seq(5,8)]), ][longitude %in% 
+    unique(longitude)[seq(1, 10)], ][, ":=" (quadID = 3, quadChar = "Southwest")]
+  se <- out[which(latitude %in% unique(latitude)[seq(5,8)]), ][longitude %in% 
+    unique(longitude)[seq(11, 20)], ][, ":=" (quadID = 4, quadChar = "Southeast")]
+  
+  out <- rbind(nw, ne, sw, se)
+  
+  })
   
   out
 }
@@ -141,26 +177,27 @@ quadrantValues <- function(data, StringID = FALSE) {
   out <- copy(data)
   
   #again, mapply can fuck off, wasting too much time
-  maxMslp <- out[, .SD[which(avg_mslp == max(avg_mslp))], by = date, .SDcols = 
-                   cols]
+  #TODO the uniquw is a dirty fix to it creating duplicate rows
+  maxMslp <- unique(out[, .SD[which(avg_mslp == max(avg_mslp))], by = date, .SDcols = 
+                   cols], by = "date")
   setnames(maxMslp, cols, vapply(cols, 
                     FUN = function(x) paste(
                       deparse(substitute(maxMslp)), x, sep = "."), 
                     FUN.VALUE = character(1)))
-  minMslp <- out[, .SD[which(avg_mslp == min(avg_mslp))], by = date, .SDcols = 
-                   cols]
+  minMslp <- unique(out[, .SD[which(avg_mslp == min(avg_mslp))], by = date, .SDcols = 
+                   cols], by = "date")
   setnames(minMslp, cols, vapply(cols, 
                                  FUN = function(x) paste(
                                    deparse(substitute(minMslp)), x, sep = "."), 
                                  FUN.VALUE = character(1)))
-  maxGeopot <- out[, .SD[which(avg_geopot == max(avg_geopot))], by = date, .SDcols = 
-                     cols]
+  maxGeopot <- unique(out[, .SD[which(avg_geopot == max(avg_geopot))], by = date, .SDcols = 
+                     cols], by ="date")
   setnames(maxGeopot, cols, vapply(cols, 
                                  FUN = function(x) paste(
                                    deparse(substitute(maxGeopot)), x, sep = "."), 
                                  FUN.VALUE = character(1)))
-  minGeopot <- out[, .SD[which(avg_geopot == min(avg_geopot))], by = date, .SDcols = 
-                     cols]
+  minGeopot <- unique(out[, .SD[which(avg_geopot == min(avg_geopot))], by = date, .SDcols = 
+                     cols], by ="date")
   setnames(minGeopot, cols, vapply(cols, 
                                  FUN = function(x) paste(
                                    deparse(substitute(minGeopot)), x, sep = "."), 
@@ -257,18 +294,23 @@ measures <- function(data) {
 # OUTPUT: a list which has in its first position a data table only with values which are greater than the 0.75 quartile
 #         and in its second position a data table with those values that are less than the 0.25 quartile
 
-keepQuartiles <- function(data, variable = "mslp", quartiles = quartiles.mslp) {
+keepQuartiles <- function(data, variable = "mslp", quartiles) {
   assertDataTable(data, ncols = 160)
   assertString(variable)
   assertSubset(variable, choices = c("mslp", "geopot"))
   assertNumeric(quartiles, len = 2)
   
-  hoch <- data[, apply(data, 2, 
-                       function(col) lapply(col, function(x) if (x < quartiles[2]) {x <-  NA} 
-                                            else {x <- x}))]
-  tief <- data[, apply(data, 2, 
-                       function(col) lapply(col, function(x) if (x > quartiles[1]) {x <-  NA} 
-                                            else {x <- x}))]
+  # hoch <- data[, apply(data, 2, 
+  #                      function(col) lapply(col, function(x) if (x < quartiles[2]) {x <-  NA} 
+  #                                           else {x <- x}))]
+  hoch <- copy(data)
+  hoch[hoch < quartiles[2]] <- NA
+  # tief <- data[, apply(data, 2, 
+  #                      function(col) lapply(col, function(x) if (x > quartiles[1]) {x <-  NA} 
+  #                                           else {x <- x}))]
+  tief <- copy(data)
+  tief[tief > quartiles[1]] <- NA
+  
   list(hoch, tief)
 }
 
@@ -297,7 +339,7 @@ intensity <- function(data.wide, data.long) {
   data.mslp <- data.wide[, 2:161]
   data.geopot <- data.wide[, 162:321]
   
-  mslp <- keepQuartiles(data.mslp)
+  mslp <- keepQuartiles(data.mslp, variable = "mslp", quartiles = quartiles.mslp)
   geopot <- keepQuartiles(data.geopot, variable = "geopot", quartiles = quartiles.geopot)
   
   intensity.high.mslp <- apply(mslp[[1]], 1, function(x) sum(!is.na(x)))
@@ -318,17 +360,28 @@ intensity <- function(data.wide, data.long) {
 
 quadrantMean <- function(data) {
   assertDataTable(data)
-  assertSubset(c("date", "verID", "horID", "avg_mslp", "avg_geopot"),
-               names(data))
-  
   out <- copy(data)
-  
-  out <- out[,  .(meanMslp = mean(avg_mslp), 
-                  meanGeopot = mean(avg_geopot)), 
-      by = .(date, verID, horID)]
-  out[, ID := paste(verID, horID, sep = ".")][, ":=" (verID = NULL, horID = NULL)]
+  out <- tryCatch(
+    {
+      assertSubset(c("date", "verID", "horID", "avg_mslp", "avg_geopot"),
+                   names(data))
+      
+      out <- out[,  .(meanMslp = mean(avg_mslp), 
+                      meanGeopot = mean(avg_geopot)), 
+          by = .(date, verID, horID)]
+      out[, ID := paste(verID, horID, sep = ".")][, ":=" (verID = NULL, horID = NULL)]
+      
+    }, error = function(cond) {
+      assertSubset(c("date", "quadID", "avg_mslp", "avg_geopot"),
+                   names(data))
+      
+      out <- out[,  .(meanMslp = mean(avg_mslp), 
+                      meanGeopot = mean(avg_geopot)), 
+                 by = .(date, quadID)]
+      out[, ID := paste(quadID, sep = ".")][, ":=" (quadID = NULL)]
+    }
+  )
   out <- dcast(out, date ~ ID, value.var = c("meanMslp", "meanGeopot"))
-  
   out
 }
 
