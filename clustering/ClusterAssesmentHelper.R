@@ -76,7 +76,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
 
 
 sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
-  assertInteger(cluster.vector)
+  assertNumeric(cluster.vector)
   assertString(algorithm)
   assertSubset(algorithm, choices = c("pam", "kmeans", "fuzzy", "distribution"))
   
