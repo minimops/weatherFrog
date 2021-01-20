@@ -13,11 +13,24 @@ print(lrn)
 
 source("clustering/ClusterAssesmentHelper.R")
 origdat <- attachGwl(readRDS("Data/cli_data_05_avgDay_wide.rds"))
+# origdat <- readRDS("Data/cli_data_05.rds")
+# origdat <- dcast(origdat, date ~ time + longitude + latitude, value.var = 
+#              c("mslp", "geopotential"))
+# origdat <- attachGwl(origdat)
+
 origdat[, ":=" (date = NULL, gwl = as.factor(gwl))]
 origdat <- origdat[gwl != "U"]
 
+# setnames(origdat, names(origdat), as.character(c(unlist(lapply(list("mslp", "geopot"), function(x) 
+#   lapply(seq(1, 4), function(y) lapply(
+#     seq(1, 160), function(z) paste0(x, y, z))))), "gwl")))
+
+
 source("clustering/Var_Extraction_Method/f_extr_funs.R")
-newdat <- attachGwl(scaleNweight(extrapolate(seq(2006, 2010))))
+
+newdat <- attachGwl(scaleNweight(extrapolate(seq(2006, 2010)), weight = T))
+#newdat <- attachGwl(extrapolate(seq(2006, 2010), vars = "all.4qm"))
+
 newdat[, ":=" (date = NULL, gwl = as.factor(gwl))]
 newdat <- newdat[gwl != "U"]
 
@@ -42,6 +55,7 @@ predorg$score(measure)
 #0.333 random
 #0.219 4years
 #0.335 random and without gwl "U"
+#0.344 random, without "U" and not averaged over day, so 4*320 cols
 
 
 #extraction data
@@ -53,5 +67,6 @@ predext$score(measure)
 #0.254 random
 #0.183 4years
 #0.306 random and without gwl "U"
+#0.208 random, without "U" and only 4qm
 #seems to be doing worse...
 
