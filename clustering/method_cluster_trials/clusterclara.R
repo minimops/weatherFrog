@@ -30,46 +30,53 @@ fviz_nbclust(as.data.frame(scale(data.wide[, 2:321])), FUNcluster = clara,
               method = "silhouette")
 ## geht bei mir leider nicht, da 0.5.0 geladen ist oder so, kann das mal bitte wer anders ausführen?
 
-### normierung funktioniert noch nicht so
-min <- data.wide[, apply(.SD, 2, min), .SDcols = j]
-max <- data.wide[, apply(.SD, 2, max), .SDcols = j]
-j <- 2:321
-data.normiert <- data.wide[, lapply(.SD, function(x) ((.SD - min[x]) / (max[x] - min[x]))), .SDcols = j]
-min[1]
-
-data.wide[, lapply(.SD, function(x) (.SD - min[x]) / (max[x] - min[x])), .SDcols = j]
-
-
-
 #### clustern
 set.seed(1289)
 # dist.data.scaled <- dist(scale(data.wide[, 2:321]), method = "euclidean")
-clusterclara <- clara(scale(data.wide[, 2:321]), k = 9, metric = "euclidean", 
+clusterclara <- clara(scale(data.wide[, 2:321]), k = 5, metric = "euclidean", 
                       stand = TRUE, samples = 1000, sampsize = 300)
 summary(clusterclara)
 ?clara
-clusterclara$clustering
+cluster.vector.clara <- clusterclara$clustering
+?clara
+## Measurements EUC ########### 
+# 1.
+sil(clusterclara, cluster.vector.clara, dist(scale(copy(data.wide)[, 2:321])), "kmeans")
+    
+?manova
+dat.clara <- copy(data.wide)[, cluster := cluster.vector.clara]
+# 2.
+Cl.timeline(copy(dat.clara))
+# 3.
+model.clara <- manova(as.matrix(dat.clara[, 2:321]) ~ dat.clara$cluster)
+summary(as.matrix(dat.clara[, 2:321]) ~ dat.clara$cluster, test = "Wilks")
+summary.aov(model.clara)
+# 4.
+mosaic(copy(data.wide), cluster.vector.clara, title = "CLARA WITH EUC")
 
-clusterclara$silinfo
-data.wide.cluster <- data.wide[, cluster := clusterclara$clustering]
-data.wide.cluster.gwl <- gwl[data.wide.cluster, on = .(date)]
-clara.plot <- autoplot(clusterclara, frame = TRUE, frame.type = "norm")                                                         
-clara.plot
-plot(clusterclara)
-gwl.plot <- autoplot(clusterclara, data = data.wide.cluster.gwl, colour = "gwl")
+
+######### MANHATTAN ##################################
+clusterclara.manhat <- clara(scale(data.wide[, 2:321]), k = 5, metric = "jaccard", 
+                      stand = TRUE, samples = 1000, sampsize = 300)
+summary(clusterclara.manhat)
+cluster.vector.clara.manhat <- clusterclara.manhat$clustering
+?clara
+## Measurements MANHATTAN ########### 
+# 1.
+sil(clusterclara.manhat, cluster.vector.clara.manhat, dist(scale(copy(data.wide)[, 2:321])), "kmeans")
+
+?manova
+dat.clara.manhat <- copy(data.wide)[, cluster := cluster.vector.clara.manhat]
+# 2.
+Cl.timeline(copy(dat.clara.manhat))
+# 3.
+model.clara.manhat <- manova(as.matrix(dat.clara.manhat[, 2:321]) ~ dat.clara.manhat$cluster)
+summary(as.matrix(dat.clara.manhat[, 2:321]) ~ dat.clara.manhat$cluster, test = "Wilks")
+summary.aov(model.clara.manhat)
+# 4.
+mosaic(copy(data.wide), cluster.vector.clara.manhat, title = "CLARA WITH EUC")
 
 
-mosaic_cluster_clara <- ggplot(data = data.wide.cluster.gwl) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
-                                                                    na.rm = TRUE) +
-  labs(x = " Cluster", y = "GWL")
-
-mosaic_gwl_clara <- ggplot(data = data.wide.cluster.gwl) + geom_mosaic(aes(x = product(cluster, gwl), fill = as.factor(cluster)), 
-                                                                na.rm = TRUE) 
-mosaicplot(table(data.wide.cluster.gwl$gwl, data.wide.cluster.gwl$cluster), color = TRUE, main = "Clustering Large Applications", 
-           ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2)
-mosaicplot(table(data.wide.cluster.gwl$cluster, data.wide.cluster.gwl$gwl), color = TRUE)
-
-?mosaicplot
 
 
 
@@ -85,14 +92,5 @@ data.wide.cluster.gwl.complete <- gwl[data.wide.cluster.complete, on = .(date)]
 clara.plot <- autoplot(clusterclara.complete, frame = TRUE, frame.type = "norm")                                                         
 clara.plot
 plot(clusterclara)
-
-
-
-mosaic_cluster_clara_complete <- ggplot(data = data.wide.cluster.gwl.complete) + geom_mosaic(aes(x = product(gwl, cluster), fill = gwl), 
-                                                                           na.rm = TRUE) +
-  labs(x = " Cluster", y = "GWL")
-
-mosaic_gwl_clara_complete <- ggplot(data = data.wide.cluster.gwl.complete) + geom_mosaic(aes(x = product(cluster, gwl), fill = as.factor(cluster)), 
-                                                                       na.rm = TRUE) 
 
 
