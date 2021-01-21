@@ -200,7 +200,7 @@ manovaFUN <- function(data,cluster_vector){
   model <- manova(as.matrix(data[,-1]) ~ data$cluster_vector)
   print(model)
   
-  sum_model <- summary(model, test = "Wilks")
+  sum_model <- summary(model,test = "Wilks")
   print(sum_model)
   
   aov_model <- summary.aov(model)
