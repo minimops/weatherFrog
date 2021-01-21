@@ -16,16 +16,15 @@ wine_subset <- as.data.table(wine_subset)
 manovaFUN(wine_subset,cluster)
 
 manovaFUN <- function(data,cluster_vector){
-data <- cbind(cluster_vector,data)
-data <- as.data.frame(data)
-print(colnames(data))
+data <- data.frame(cbind(cluster_vector,data))
+#print(colnames(data))
 
-model <- manova(as.matrix(data[,-1]) ~ data$cluster_vector)
+vars <- as.matrix(data[, !(names(data) %in% c("date", "cluster_vector"))])
+
+model <- manova(vars ~ cluster_vector, data = data)
 print(model)
-
-sum_model <- summary(model, test = "Wilks")
-print(sum_model)
-
+# sum_model <- summary(model, test = "Wilks")
+# print(sum_model)
 aov_model <- summary.aov(model)
 print(aov_model)
 
