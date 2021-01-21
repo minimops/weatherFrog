@@ -52,6 +52,22 @@ mydata <- data.frame(comp, fit$cluster)
 mydata <- data.frame(mydata, wide_05$gwl)
 
 
+
+## Measurement 
+# 1.
+sil(fit, fit$cluster, dist(comp), "kmeans")
+?manova
+dat.pca <- copy(as.data.table(wide_05))[, cluster := fit$cluster]
+# 2.
+Cl.timeline(copy(dat.pca))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(as.data.table(wide_05)), fit$cluster, title = "PAM WITH MANHAT")
+
+
 #which proportion of GWL x is in which cluster
 (clust_table_1 <- round(
   prop.table(table(mydata$wide_05.gwl, mydata$fit.cluster), margin = 1), 2))
