@@ -8,18 +8,36 @@
 # input variables: 
 # cluster_vector:  A vector of integers (from 1:k) indicating the cluster to which each point is allocated.
 # data: our data table with the extracted variables that we are clustering with
+library(data.table)
+wine_subset <- as.data.table(wine_subset)
+data <- wine_subset
+cluster_vector <- cluster
 
-manova <- function(data,cluster_vector){
-data <- cbind(cluster,data)
-data <- as.data.frame(data)
-colnames(data)[colnames(data) == "V1"] <- "cluster_group"
+manovaFUN(wine_subset,cluster)
+
+manovaFUN <- function(data,cluster_vector){
+data <- cbind(cluster_vector,data)
+print(is.data.table(data))
+print(colnames(data))
+
+model <- manova(as.matrix(data[,-1]) ~ data[,1])
+print(model)
+
+sum_model <- summary(model, test = "Wilks")
+print(sum_model)
+
+aov_model <- summary.aov(model)
+print(aov_model)
+
 
 # Boxplots der einzelnen Einflussvariablen aufgeteilt nach Cluster
 
 for ( i in seq_len(ncol(data)) - 1){
-  boxplot(data[, i + 1] ~ data$cluster_group, ylab = colnames(data[i + 1]))
+  boxplot(data[, i + 1] ~ data[,1], ylab = colnames(data[i + 1]))
   
 }
+}
+
 
 # MANOVA: is the variance within smaller than the variance between?
 # manova(v1,v2 ~ vi):
@@ -35,6 +53,16 @@ summary.aov(model1)
 
 
 }
+
+# was man auch noch machen könnte:
+# ANOVA, wo dann z. B. in die Bewertung nur die Zentren eines Clusters mit 
+# Streuung eingehen 
+
+#Frage: was wäre besser/genauer? ANOVA mit Zentren der Cluster oder MANOVA,
+# wo dann die Mittelwerte aller extract variable je Cluster eingehen?
+
+#BSP wine cluster
+
 
 
 
