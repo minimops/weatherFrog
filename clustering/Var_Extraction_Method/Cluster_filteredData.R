@@ -17,7 +17,7 @@ dissimilarityPAM <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1
                                                rep(1/6, 12), rep(1/18, 18)), 
                              metric = "euclidean", dist = TRUE) {
   assertDataTable(data)
-  assertNumeric(weights, len = ncol(data) - 1, null.ok = TRUE)
+  assertNumeric(weights, null.ok = TRUE)
   assertSubset("date", colnames(data)[1])
   assertSubset(metric, choices = c("euclidean", "gower", "manhattan"))
   assertLogical(dist)
@@ -52,9 +52,8 @@ pam_fit <- pam(diss.gower.pam, diss = TRUE, k = 7)
 cluster_vector <- pam_fit$clustering
 
 
-
 ############################################################################
-############################### PAM ########################################
+############################## PAM #########################################
 
 ####### PAM with Gower ######################
 diss.pam.gower <- dissimilarityPAM(copy(datscale), metric = "gower", dist = FALSE)
@@ -186,12 +185,47 @@ summary.aov(model.kmeans.euc)
 # 4.
 mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
 
+
+####### KMEANS with Euclidean weighted ###############
+km.list.euc.weighted <- list()
+wss.euc.weighted <- numeric()
+
+for (k in 1:15){
+  km.list.euc.weighted[[k]] <- kmeans(scaleNweight(copy(data), weight = TRUE)[, 2:49]
+                                      , centers=k, iter.max = 5000, nstart = 5)
+  wss.euc.weighted[k] <- sum(km.list.euc.weighted[[k]]$withinss)
+}
+plot(1:15, wss.euc.weighted, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+
+kmeans.euc.weighted <- kmeans(scaleNweight(copy(data), weight = TRUE)[, 2:49], iter.max = 10000, nstart = 5, centers = 9)
+mosaic(copy(data), kmeans.euc.weighted$cluster, "KMEANS WITH EUCLIDEAN")
+
+
+## Measurement 
+# 1.
+sil(kmeans.euc.weighted, kmeans.euc.weighted$cluster, dist(scaleNweight(copy(data), weight = TRUE)[, 2:49]),
+                                                           "kmeans")
+?manova
+dat.kmeans.weighted <- copy(dat)[, cluster := kmeans.euc.weighted$cluster]
+# 2.
+Cl.timeline(copy(dat.kmeans.weighted))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
+
 ####### KMEANS with Gower ###################
 
 # geht nicht!
   
-  
-  
+####### KMEANS with Manhattan ###############
+
+# geht nicht!
+
+
+
 # dissimilarity als matrix speichern
 infoCluster <- function(data, dissimilarity, cluster_vector) {
   assertDataTable(data)
