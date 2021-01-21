@@ -28,7 +28,7 @@ dist_mahal_scaled <- matrix(NA, nrow=n, ncol=n)
 for(i in seq_len(n)){
   dist_mahal_scaled[i,] <- mahalanobis(data.scaled, data.scaled[i,], variance)
 }
-
+?mahalanobis
 
 rownames(dist_mahal_scaled) <- colnames(dist_mahal_scaled) <- rn <- 1:1826
 # dist_mahal_scaled <- as.dist(dist_mahal)

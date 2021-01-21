@@ -52,32 +52,6 @@ pam_fit <- pam(diss.gower.pam, diss = TRUE, k = 7)
 cluster_vector <- pam_fit$clustering
 
 
-### Mosaikplot
-
-# function that print mosaicplots
-# INPUT: - data with date 
-#        - clustering vector of clusters
-#        - title of plots, input is the used method
-
-mosaic <- function(data, cluster_vector, title = "PAM") {
-  assertDataTable(data)
-  assertInteger(cluster_vector)
-  assertString(title)
-  assertSubset("date", colnames(data))
-  
-  gwl <- readRDS("Data/gwl.rds")
-  data.gwl <- gwl[data, on = .(date)]
-  data.gwl.cluster <- data.gwl[, cluster := cluster_vector]
-  
-  mosaicplot(table(data.gwl.cluster$cluster, data.gwl.cluster$gwl), color = TRUE,
-             xlab = "Cluster", ylab = "GWL", cex.axis = 0.6, las = 2,
-             main = paste0(title, " Cluster - GWL"))
-  mosaicplot(table(data.gwl.cluster$gwl, data.gwl.cluster$cluster), color = TRUE,
-             ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
-             main = paste0(title, " Cluster - GWL"))
-}
-
-mosaic(copy(data), cluster_vector)
 
 ############################################################################
 ############################### PAM ########################################
@@ -85,45 +59,139 @@ mosaic(copy(data), cluster_vector)
 ####### PAM with Gower ######################
 diss.pam.gower <- dissimilarityPAM(copy(datscale), metric = "gower", dist = FALSE)
 
-pam_fit <- pam(diss.pam.gower, diss = TRUE, k = 6)
-cluster_vector <- pam_fit$clustering
-mosaic(copy(data), cluster_vector, title = "PAM WITH GOWER")
-# sil_width: 0.145
+pam.gower <- pam(diss.pam.gower, diss = TRUE, k = 6)
+cluster.gower <- pam.gower$clustering
+mosaic(copy(data), cluster.gower, title = "PAM WITH GOWER")
+# sil_width: 0.144
+
+## Measurement 
+# 1.
+sil(pam.gower, cluster.gower, diss.pam.gower, "pam")
+?manova
+dat.gower <- copy(dat)[, cluster := cluster.gower]
+# 2.
+Cl.timeline(copy(dat.gower))
+# 3.
+model.pam.gower <- manova(as.matrix(dat.gower[, 2:49]) ~ dat.gower$cluster)
+summary(as.matrix(dat.gower[, 2:49]) ~ dat.gower$cluster, test = "Wilks")
+summary.aov(model.pam.gower)
+# 4.
+mosaic(copy(data), cluster.gower, title = "PAM WITH GOWER")
 
 ####### PAM with Euclidean ##################
 diss.pam.euc <- dissimilarityPAM(copy(datscale), metric = "euclidean", dist = FALSE)
 
-pam_fit <- pam(diss.pam.euc, diss = TRUE, k = 6)
-cluster_vector <- pam_fit$clustering
-mosaic(copy(data), cluster_vector, title = "PAM WITH EUCLIDEAN")
+pam.euc <- pam(diss.pam.euc, diss = TRUE, k = 6)
+cluster.euc <- pam.euc$clustering
+mosaic(copy(data), cluster.euc, title = "PAM WITH EUCLIDEAN")
 # sil_width: 0.114
+
+## Measurement 
+# 1.
+sil(pam.euc, cluster.euc, diss.pam.euc, "pam")
+?manova
+dat.euc <- copy(dat)[, cluster := cluster.euc]
+# 2.
+Cl.timeline(copy(dat.euc))
+# 3.
+model.pam.euc <- manova(as.matrix(dat.euc[, 2:49]) ~ dat.euc$cluster)
+summary(as.matrix(dat.euc[, 2:49]) ~ dat.euc$cluster, test = "Wilks")
+summary.aov(model.pam.euc)
+# 4.
+mosaic(copy(data), cluster.euc, title = "PAM WITH EUC")
+
 
 ####### PAM with Manhattan ##################
 diss.pam.manhat <- dissimilarityPAM(copy(datscale), metric = "manhattan", dist = FALSE)
 
-pam_fit <- pam(diss.pam.manhat, diss = TRUE, k = 6)
-cluster_vector <- pam_fit$clustering
-mosaic(copy(data), cluster_vector, title = "PAM WITH MANHATTAN")
+pam.manhat <- pam(diss.pam.manhat, diss = TRUE, k = 6)
+cluster.manhat <- pam.manhat$clustering
+mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHATTAN")
 # sil_width: 0.149
+
+## Measurement 
+# 1.
+sil(pam.manhat, cluster.manhat, diss.pam.manhat, "pam")
+?manova
+dat.manhat <- copy(dat)[, cluster := cluster.manhat]
+# 2.
+Cl.timeline(copy(dat.manhat))
+# 3.
+model.pam.manhat <- manova(as.matrix(dat.manhat[, 2:49]) ~ dat.manhat$cluster)
+summary(as.matrix(dat.manhat[, 2:49]) ~ dat.manhat$cluster, test = "Wilks")
+summary.aov(model.pam.manhat)
+# 4.
+mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
+
+
+####### PAM with Mahalanobis ###############
+diss.pam.mahalanobis <- dist_mahal_scaled
+
+pam.mahal <- pam(diss.pam.mahalanobis, diss = TRUE, k = 4)
+cluster.mahal <- pam.mahal$clustering
+mosaic(copy(data), cluster.mahal, title = "PAM WITH MAHALANOBIS")
+
+for(i in 4:15){
+  pam_fit <- pam(diss.pam.mahalanobis,
+                 diss = TRUE,
+                 k = i)
+  
+  sil_width[i-3] <- pam_fit$silinfo$avg.width
+}
+plot(4:15, sil_width,
+     xlab = "Number of clusters",
+     ylab = "Silhouette Width",)
+lines(4:15, sil_width)
+# silhouette width lower than 0 -> not effective
+
+## Measurement 
+# 1.
+sil(pam.mahal, cluster.mahal, diss.pam.mahalanobis, "pam")
+?manova
+dat.mahal <- copy(dat)[, cluster := cluster.mahal]
+# 2.
+Cl.timeline(copy(dat.mahal))
+
+
 
 ###########################################################################
 ############################# KMEANS ######################################
-
 ?kmeans
 
-km_list <- list()
-wss <- numeric()
+####### KMEANS with Euclidean ###############
+km.list.euc <- list()
+wss.euc <- numeric()
 
 for (k in 1:15){
-  km_list[[k]] <- kmeans(copy(datscale)[, 2:49], centers=k, iter.max = 5000, nstart = 5)
-  wss[k] <- sum(km_list[[k]]$withinss)
+  km.list.euc[[k]] <- kmeans(copy(datscale)[, 2:49], centers=k, iter.max = 5000, nstart = 5)
+  wss.euc[k] <- sum(km.list.euc[[k]]$withinss)
 }
-plot(1:15, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+plot(1:15, wss.euc, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
-kmeans.euc <- kmeans(copy(datscale)[, 2:49], iter.max = 10000, nstart = 5, centers = 7)
+kmeans.euc <- kmeans(copy(datscale)[, 2:49], iter.max = 10000, nstart = 5, centers = 9)
 mosaic(copy(data), kmeans.euc$cluster, "KMEANS WITH EUCLIDEAN")
 
 
+## Measurement 
+# 1.
+sil(kmeans.euc, kmeans.euc$cluster, dist(copy(datscale)[, 2:49]), "kmeans")
+?manova
+dat.kmeans <- copy(dat)[, cluster := kmeans.euc$cluster]
+# 2.
+Cl.timeline(copy(dat.kmeans))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
+
+####### KMEANS with Gower ###################
+
+# geht nicht!
+  
+  
+  
 # dissimilarity als matrix speichern
 infoCluster <- function(data, dissimilarity, cluster_vector) {
   assertDataTable(data)
