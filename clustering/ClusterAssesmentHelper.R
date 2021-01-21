@@ -178,3 +178,36 @@ noiseAllocation <- function(cluster.id, cluster.prob) {
 }
 
 
+# MANOVA function
+# 
+# evaluates, how much each variable contributes to the cluster solution and how 
+# good the cluster solution is; is the variance within a cluster smaller than 
+# the variance between?
+
+# p value < alpha: variance between the cluster > variance within a cluster
+
+
+# input variables: 
+# cluster_vector:  A vector of integers (from 1:k) indicating the cluster to which each point is allocated.
+# data: our data table with the extracted variables that we are clustering with
+
+
+manovaFUN <- function(data,cluster_vector){
+  data <- cbind(cluster_vector,data)
+  data <- as.data.frame(data)
+  print(colnames(data))
+  
+  model <- manova(as.matrix(data[,-1]) ~ data$cluster_vector)
+  print(model)
+  
+  sum_model <- summary(model, test = "Wilks")
+  print(sum_model)
+  
+  aov_model <- summary.aov(model)
+  print(aov_model)
+
+
+}
+
+
+
