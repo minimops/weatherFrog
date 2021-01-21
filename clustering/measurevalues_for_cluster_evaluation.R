@@ -42,11 +42,6 @@ wine1 <- as.data.frame(wine1)
 ###########################################
 #2. MANOVA
 
-# MANOVA: mehrere Zielvariablen
-#ANOVA: eine Zielvariable
-# unabhängige Variable = Einflussvariable ,ist immer factor, ist die Gruppierungsvariable
-# abhängige Variable = Zielvariable, enthält die Messwerte, ist metrisch
-  
 # Multivariate Varianzanalyse
 # Gegeben: Grundgesamtheit, die in g Gruppen partioniert ist
 #Untersuchr Varianz innerhalb einer Gruppe (W) und Varianzen zwischen den Gruppen (B)
@@ -65,28 +60,14 @@ wine_subset <- scale(wine[ , c(2:4)])
 wine_cluster <- kmeans(wine_subset, centers = 3,
                        iter.max = 10,
                        nstart = 25)
-#cluster <- wine_cluster$cluster
-wine1 <- cbind(wine_cluster$cluster,wine_subset)
+cluster <- wine_cluster$cluster
+wine1 <- cbind(cluster,wine_subset)
 wine1 <- as.data.frame(wine1)
-colnames(wine1)[colnames(wine1) == "V1"] <- "cluster_group"
 
 # MANOVA
 #manova(as.matrix(dat[,c("read","math")]) ~ dat$income_cut)
-(model <- manova(as.matrix(wine1[,2:4]) ~ wine1$cluster))
+model <-  manova(as.matrix(wine1[,2:4]) ~ wine1$cluster)
  summary(model, test = "Wilks")
- summary.aov(model)
- 
-
- boxplot(wine1$Alcohol ~ wine1$cluster_group, ylab = colnames(wine1[,2]))
- colnames(wine1)[1]
- boxplot(wine1$Malic ~ wine1$cluster_group, ylab = colnames(wine1[1]))
- boxplot(wine1$Ash ~ wine1$cluster_group)
- 
-for ( i in seq_len(ncol(wine1)) - 1){
-  boxplot(wine1[, i + 1] ~ wine1$cluster_group, ylab = colnames(wine1[i + 1]))
-  
-}
- 
  
 #Bsp 2 aus R file clustermahalanobis K- means
 
