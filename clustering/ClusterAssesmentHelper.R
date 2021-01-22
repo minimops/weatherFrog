@@ -178,7 +178,6 @@ noiseAllocation <- function(cluster.id, cluster.prob) {
 }
 
 
-<<<<<<< HEAD
 # MANOVA function
 # 
 # evaluates, how much each variable contributes to the cluster solution and how 
@@ -209,8 +208,3 @@ manovaFUN <- function(data,cluster_vector){
 
 
 }
-
-
-
-=======
->>>>>>> 348921eada6d98e60517aae9764afb5042c455a1
