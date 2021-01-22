@@ -45,23 +45,32 @@ cluster::clusplot(scale(x[,-1]), res.fcm3$cluster,
                   color = T, labels = 2, lines =2, cex = 2)
 
 # Validation of cluster result: mesure variables extra for fuzzy clustering
+validation_variables <- function(fuzzy_output){
+  measure_vec <- vector()
+  res.FKM.9 <- ppclust2(fuzzy_output,"fclust")
+  #Fuzzy silhouetten index
+  fuzzy.sil <- SIL.F(res.FKM.9$Xca,res.FKM.9$U,alpha = 1)
+  print(paste("Fuzzy Silhouette Index:",fuzzy.sil))
+  
+  #Partition entropy
+  part_ent <- PE(res.FKM.9$U)
+  print(paste("Partition Entropy: ", part_ent))
+  
+  #Partition coefficient
+  part_coef <- PC(res.FKM.9$U)
+  print(paste("Partition Coefficient: ", part_coef))
+  
+  #Modifiet partiton index
+  mod_part_ind <- MPC(res.FKM.9$U)
+  print(paste("Modified Partition Coefficient: ", mod_part_ind))
+  
+  measure_vec <- c(fuzzy.sil,part_ent,part_coef,mod_part_ind)
+  measure_vec
  
-res.fcm4 <- ppclust2(res.fcm6,"fclust")
-#Fuzzy silhouetten index
-SIL.F(res.fcm4$Xca,res.fcm4$U,alpha = 1)
+  
+} 
 
-#Partition entropy
-PE(res.fcm4$U)
-
-#Partition coefficient
-PC(res.fcm4$U)
-
-
-#Modifiet partiton index
-MPC(res.fm$u)
-
-
-
+measure_vec9 <- validation_variables(FKM9)
 
 # fuzzy clustering with cmeans und euclidean metric
 res.fcm6 <- cmeans(extract_data_30[,-1],centers = 6,iter.max = 500)
@@ -93,5 +102,27 @@ FKM1 <- FKM.gk(extract_data_30[,-1], k = 5:10, index = "SIL.F",
 FKM1 <- FKM.gkb(extract_data_30[,-1], k = 5:10, index = "SIL.F",
                RS = 10, seed = 123)
 
+FKM9 <- gk(extract_data_30[,-1], centers = 9)
+# hier bekomme ich sogar mal nach relativ kurzer zeit ein ergebnis. 
+# Nachteil: optimale Clusterzahl muss selbst bestimmt werden 
+# Da die Methode aber aus dem package ppklust ist, kann man die
+#Analyse mit verschiedenen Gruppenzahlen durchlaufen lassen und dann zur Bewertung
+# PC oder silouehtte oder anderes hernehmen
 
+
+validation_variables(FKM9)
+
+bestK <- function(begin, end){
+  vec <- seq(from = begin, to = end, step = 1)
+  measue_mat <- matrix(ncol = 4)
+  measure_mat <- as.data.frame(matrix(ncol = 4))
+  for(i in vec){
+    paste("FKM",i) <- gk(extract_data_30[,-1], centers = i)
+    measure_mat[i,] <- validation_variables(paste("FKM",i))
+    
+    # max von PC usw angeben lassen, um die optimale Clusteranzahl zu bestimmen
+    # das gane als Linienplot visualisieren: x = Clusteranzahl, y = Wert der validierungs variablen
+    
+  }
+}
 
