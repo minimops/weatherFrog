@@ -148,6 +148,21 @@ fviz_nbclust(pca2_cluster, kmeans, method = "wss") +
 #clustering
 k2 <- kmeans(pca2_cluster, centers = 4, nstart = 25)
 
+## Measurement 
+# 1.
+sil(k2, k2$cluster, dist(pca2_cluster), "kmeans")
+?manova
+dat.pca2 <- copy(as.data.table(wide_05))[, cluster := k2$cluster]
+# 2.
+Cl.timeline(copy(dat.pca2))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(as.data.table(wide_05)), k2$cluster, title = "PAM WITH MANHAT")
+
+
 #cluster plot
 fviz_cluster(k2, data = cli_data_pca[, - c(1, 2)], labelsize = 0)
 #cant add labels and this plot is a mess so:
