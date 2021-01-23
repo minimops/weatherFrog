@@ -29,6 +29,8 @@ origdat <- origdat[gwl != "U"]
 source("clustering/Var_Extraction_Method/f_extr_funs.R")
 
 newdat <- attachGwl(scaleNweight(extrapolate(seq(2006, 2010)), weight = T))
+#newdat <- attachGwl(extrapolate(seq(2006, 2010)))
+#newdat <- attachGwl(extrapolate(seq(2006, 2010), "all.pca"))
 #newdat <- attachGwl(extrapolate(seq(2006, 2010), vars = "all.4qm"))
 
 newdat[, ":=" (date = NULL, gwl = as.factor(gwl))]
@@ -68,5 +70,6 @@ predext$score(measure)
 #0.183 4years
 #0.306 random and without gwl "U"
 #0.208 random, without "U" and only 4qm
+#0.271 random, without "U" with pca
 #seems to be doing worse...
 
