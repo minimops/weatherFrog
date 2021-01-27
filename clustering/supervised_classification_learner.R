@@ -30,6 +30,7 @@ source("clustering/Var_Extraction_Method/f_extr_funs.R")
 
 newdat <- attachGwl(scaleNweight(extrapolate(seq(2006, 2010)), weight = T))
 #newdat <- attachGwl(extrapolate(seq(2006, 2010)))
+newdat <- attachGwl(scaleNweight(extrapolate(seq(1971, 2000)), weight = T))
 #newdat <- attachGwl(extrapolate(seq(2006, 2010), "all.pca"))
 #newdat <- attachGwl(extrapolate(seq(2006, 2010), vars = "all.4qm"))
 
@@ -44,6 +45,7 @@ task2 = TaskClassif$new("extrdat", newdat, target = "gwl")
 #randomly pick 75percent of rows
 set.seed(1234)
 train <- sample(seq_len(nrow(origdat)), round(nrow(origdat) * 0.75))
+train <- sample(seq_len(nrow(newdat)), round(nrow(origdat) * 0.75))
 #or pick 4 of 5 years
 train <- seq_len(round(4 / 5 * nrow(origdat)))
 
@@ -69,6 +71,7 @@ predext$score(measure)
 #0.254 random
 #0.183 4years
 #0.306 random and without gwl "U"
+#0.228 random, without "U" and 1971-2000
 #0.208 random, without "U" and only 4qm
 #0.271 random, without "U" with pca
 #seems to be doing worse...
