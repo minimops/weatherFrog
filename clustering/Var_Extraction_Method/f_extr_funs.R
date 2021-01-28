@@ -278,7 +278,7 @@ measures <- function(data) {
   quartile25.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.25))
   
   quartile75.mslp <- apply(data.mslp, 1, function(x) quantile(x, probs = 0.75))
-  quartile75.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.25))
+  quartile75.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.75))
   
   range.mslp <- max.mslp - min.mslp
   range.geopot <- max.geopot - min.geopot
