@@ -33,7 +33,7 @@ rand_distance <- function(x, y) {
 
 #make matrix days as rows, cluster
 data <- readRDS("Data/cli_data_05_avgDay.rds")
-data <- data[format(as.Date(date), "%Y") %in% "2006", ]
+#data <- data[format(as.Date(date), "%Y") %in% "2006", ]
 days <- unique(data[, date])
 newMat <- data.table(matrix(ncol = 160))
 
@@ -45,8 +45,17 @@ for (day in days) {
 }
 
 daysMat <- as.matrix(na.omit(newMat))
+saveRDS(daysMat, "Data/mslp_filtered_05.rds")
+
+
+#daysMat <- readRDS("Data/mslp_filtered_05.rds")
+
 #distance matrix
 distMat <- dist_make(daysMat, rand_distance)
+
+saveRDS(distMat, "Data/mslp_filtered_05_dist.rds")
+
+#distMat <- readRDS("Data/mslp_filtered_05_dist.rds")
 
 library(cluster)
 #clustering
