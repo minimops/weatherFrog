@@ -1,10 +1,3 @@
-# Fuzzy Clustering with extracted variables 
-
-library(ppclust)
-library(factoextra)
-library(cluster)
-library(fclust)
-library(e1071) #for cmeans
 
 
 # generate extracted dataset
@@ -13,136 +6,150 @@ source("clustering/Var_Extraction_Method/f_extr_funs.R")
 # choose 30 years
 extract_data_30 <- extrapolate(seq(1971, 2000))
 
-# ellbow plot for choosing optimal numer of cluster 
-set.seed(123)
-fviz_nbclust(extract_data_30[,-1],kmeans, method ="silhouette")
-# sagt, dass das beste 2 cluster wären....
-
-
-# fuzzy c-means clustering with single start and euclidean metric
-# fcm
-
-res.fcm6 <- fcm(extract_data_30[,-1], centers = 6)
-## dauert zu lange. 30 Minuten gewartet ohne ergebnis bei 30 Jahren
-
-
-
-
-
-
-# cluster plot with fviz_cluster
-res.fcm2 <- ppclust2(res.fcm6,"kmeans")
-factoextra::fviz_cluster(res.fcm2,data = x[,-1],
-                          ellipse.type ="convex",
-                         palette ="jco",
-                         repel = TRUE)
-
-# cluster plot with clustplot nür für inputs von package ppclust
-
-res.fcm3 <- ppclust2(res.fcm6, "fanny")
-cluster::clusplot(scale(x[,-1]), res.fcm3$cluster,
-                  main = "cluster Versuch",
-                  color = T, labels = 2, lines =2, cex = 2)
-
-
-
-
-
-# fuzzy clustering with cmeans und euclidean metric
-res.fcm6 <- cmeans(extract_data_30[,-1],centers = 6,iter.max = 500)
-### juhu, geht sehr schnell zur Abwechslung
-#Problem PC etc. lässt sich nicht berechnen, äre aber wichtig,
-#um die optimale clusterzahl herauszubekommen
-
-#Visualisierung
-fviz_cluster(list(data = extract_data_30[,-1],cluster = res.fcm6$cluster),
-             ellipse.type = "norm",
-             ellipse.level = 0.68,
-             palette("jco"),
-             ggtheme = theme_minimal())
-
-
 
 # Jackpot: Fuzzy k means mit Gustafon-Kessel-Extention
 # benutzt statt eukldischer Distanz die Mahalanobis Distanz 
 # euklidische Dustanz führt zu spherischen Clusterlösungen, dadurch können
 #eventuell die Cluster nicht richtig erkannt werden 
 
-# kann folgend implementiert werden: 
-#FKM.gk im package fclust
-#gk im package ppclust
-
-FKM1 <- FKM.gk(extract_data_30[,-1], k = 5:10, index = "SIL.F",
-               RS = 10, seed = 123)
-
-FKM1 <- FKM.gkb(extract_data_30[,-1], k = 5:10, index = "SIL.F",
-               RS = 10, seed = 123)
-
-FKM9 <- gk(extract_data_30[,-1], centers = 9)
-# hier bekomme ich sogar mal nach relativ kurzer zeit ein ergebnis. 
-# Nachteil: optimale Clusterzahl muss selbst bestimmt werden 
-# Da die Methode aber aus dem package ppklust ist, kann man die
-#Analyse mit verschiedenen Gruppenzahlen durchlaufen lassen und dann zur Bewertung
-# PC oder silouehtte oder anderes hernehmen
 
 
-# Validation of cluster result: mesure variables extra for fuzzy clustering
-validation_variables <- function(fuzzy_output){
-  measure_vec <- vector()
-  res.FKM.9 <- ppclust2(fuzzy_output,"fclust")
-  #Fuzzy silhouetten index maximum
-  fuzzy.sil <- SIL.F(res.FKM.9$Xca,res.FKM.9$U,alpha = 1)
-  print(paste("Fuzzy Silhouette Index:",fuzzy.sil))
-  
-  #Partition entropy minimum
-  part_ent <- PE(res.FKM.9$U)
-  print(paste("Partition Entropy: ", part_ent))
-  
-  #Partition coefficient maximum
-  part_coef <- PC(res.FKM.9$U)
-  print(paste("Partition Coefficient: ", part_coef))
-  
-  #Modifiet partiton index maximum
-  mod_part_ind <- MPC(res.FKM.9$U)
-  print(paste("Modified Partition Coefficient: ", mod_part_ind))
-  
-  measure_vec <- c(fuzzy.sil,part_ent,part_coef,mod_part_ind)
-  measure_vec
-  
-  
-} 
+source("clustering/fuzzyClustering/function_for_fuzzy_clustering.R")
+
+# lieber nicht durchlaufen lassen, dauert ewig, habe aber den output in github hochgeladen
+
+#unscaled_gk_5_26 <- best_cluster_number(5,26,extract_data_30)
+#scaled_gk_5_26 <- best_cluster_number(5,26,extract_data_30,scale = TRUE)
+
+#save(unscaled_gk_5_26,file = "clustering/fuzzyClustering/unscaled_gk_6_26_30.RData")
+#save(scaled_gk_5_26,file = "clustering/fuzzyClustering/scaled_gk_6_26_30.RData")
 
 
-validation_variables(FKM9)
 
-best_cluster <- function(begin, end){
-  vec <- seq(from = begin, to = end, step = 1)
-  measue_mat <- matrix(ncol = 4)
-  measure_mat <- as.data.frame(matrix(ncol = 4))
-  
-  for(i in vec){
-    paste("FKM",i) <- gk(extract_data_30[,-1], centers = i)
-    paste("validation",i) <- validation_variables(paste("FKM",i))
-    measure_mat[i,] <-  paste("validation",i)
-  }
-  
-    measure_mat <- as.data.frame(measure_mat)
-    k <- seq(from = begin, to = end, by = 1)
-    measure_mat <- cbind(k,measure_mat)
-    colnames(measure_mat) <- c("cluster","fuzzy_silhouette","partition_entropy","partition_coef","modified_part_coef")
-    
-    # minimum und maxima of the validation variables for optimal cluster numer
-    which.max(measure_mat[,2])
-    which.min(measure_mat[,3])
-    which.max(measure_mat[,4])
-    which.max(measure_mat[,5])
-    
-    # visualisation of validation variables in a plot
-    plot(measure_mat[,1], measure_mat[,2], col = "red", type = "l")
-         lines(measure_mat[,1], measure_mat[,3], col ="green", type = "l")
-         lines(measure_mat[,1], measure_mat[,4], col ="blue", type = "l")
-         lines(measure_mat[,1], measure_mat[,5], col ="black", type = "l")
-  
-}
+# Validation 
 
-bestCluster(2,3)
+source("clustering/ClusterAssesmentHelper.R")
+
+#attach gwl with data
+
+extract_data_30_gwl <- attachGwl(extract_data_30)
+
+# gk unscaled
+
+# optimale Clusterzahl: 5
+gk5 <- unscaled_gk_5_26[[1]]
+gk8 <- unscaled_gk_5_26[[4]]
+gk11 <- unscaled_gk_5_26[[7]]
+gk15 <- unscaled_gk_5_26[[11]]
+
+
+data <- cbind(gk11$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1", titleAdd = "Clustering gk with cluster number 8",seperated = T)
+sil_fun(gk11,extract_data_30[,-1])
+mosaic(extract_data_30_gwl,gk15$cluster,title = "fuzzy gk unscaled with 8 ")
+#noiseAllocation(gk5$cluster,gk5$u)
+manovaFUN(extract_data_30[,-1],gk5$cluster)
+
+
+
+
+
+# gk scaled
+#optimale Clusterzahl:6
+gk6_scaled <- scaled_gk_5_26[[2]]
+gk11_scaled <- scaled_gk_5_26[[7]]
+
+data <- cbind(gk11_scaled$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1", titleAdd = "Clustering gk with cluster number 6 scaled",seperated = T)
+sil_fun(gk11_scaled,extract_data_30[,-1])
+mosaic(extract_data_30_gwl,gk11_scaled$cluster,title = "fuzzy gk scaled with 6 ")
+#noiseAllocation(gk5$cluster,gk5$u)
+manovaFUN(extract_data_30[,-1],gk5$cluster)
+
+
+# Fuzzy clustering with eucledeam distance
+
+# Achtung: nicht durchlaufen lassen, sondern entsprechende R Objekte laden
+
+#fcm_unscaled_6 <- fcm(extract_data_30[,-1],6, iter.max = 500) 
+#fcm_unscaled_8 <- fcm(extract_data_30[,-1],8, iter.max = 500)
+#fcm_unscaled_9 <- fcm(extract_data_30[,-1],9, iter.max = 500) 
+#fcm_unscaled_10 <- fcm(extract_data_30[,-1],10, iter.max = 500)
+#fcm_unscaled_11 <- fcm(extract_data_30[,-1],11, iter.max = 500)
+#fcm_unscaled_15 <- fcm(extract_data_30[,-1],15, iter.max = 500)
+#fcm_unscaled_list <- list(fcm_unscaled_6,fcm_unscaled_8,fcm_unscaled_9,fcm_unscaled_10,fcm_unscaled_11, fcm_unscaled_15)
+#name <- c("fcm6","fcm8","fcm9","fcm10","fcm11","fcm15")
+#names(fcm_unscaled_list) <- name
+
+#save(fcm_unscaled_list,file = "clustering/fuzzyClustering/unscaled_fcm_6_26_30.RData")
+
+
+
+#validation variables for best cluster number
+
+fcm_unscaled_6 <- fcm_unscaled_list[[1]]
+fcm_unscaled_8 <- fcm_unscaled_list[[2]]
+fcm_unscaled_9 <- fcm_unscaled_list[[3]]
+fcm_unscaled_10 <- fcm_unscaled_list[[4]]
+fcm_unscaled_11 <- fcm_unscaled_list[[5]]
+fcm_unscaled_15 <- fcm_unscaled_list[[6]]
+
+
+valid_fcm_unscaled_6 <- validation_variables(fcm_unscaled_6)
+valid_fcm_unscaled_8 <- validation_variables(fcm_unscaled_8)
+valid_fcm_unscaled_9 <- validation_variables(fcm_unscaled_9)
+valid_fcm_unscaled_10 <- validation_variables(fcm_unscaled_10)
+valid_fcm_unscaled_11 <- validation_variables(fcm_unscaled_11)
+valid_fcm_unscaled_15 <- validation_variables(fcm_unscaled_15)
+cluster_number <- c(6,8,9,10,11,15)
+valid_fcm <- as.data.frame(rbind(valid_fcm_unscaled_6,valid_fcm_unscaled_8,valid_fcm_unscaled_9,valid_fcm_unscaled_10,valid_fcm_unscaled_11,valid_fcm_unscaled_15))
+valid_fcm <- cbind(cluster_number,valid_fcm)
+colnames(valid_fcm) <- c("cluster_number","fuzzy_silhouette","partition_entropy","partition_coef","modified_part_coef")
+
+
+
+plot(valid_fcm$cluster_number,valid_fcm$fuzzy_silhouette,  type = "b", main = "fuzzy silhouette")
+plot(valid_fcm$cluster_number,valid_fcm$partition_entropy,  type = "b", main = "partition_entropy")
+plot(valid_fcm$cluster_number,valid_fcm$partition_coef, type = "b", main = "partition coefficient")
+plot(valid_fcm$cluster_number,valid_fcm$modified_part_coef,  type = "b",main = "modified partition coefficient")
+
+
+# validation of cluster
+
+# 9 cluster
+data <- cbind(fcm_unscaled_9$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1", titleAdd = "Clustering fuzzy with cluster number 9 scaled",seperated = T)
+sil_fun(fcm_unscaled_9,extract_data_30[,-1])
+mosaic(extract_data_30_gwl,fcm_unscaled_9$cluster,title = "fuzzy  scaled with 9 ")
+#noiseAllocation(gk5$cluster,gk5$u)
+manovaFUN(extract_data_30[,-1],fcm_unscaled_9$cluster)
+
+# 15 cluster
+data <- cbind(fcm_unscaled_15$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1", titleAdd = "Clustering fuzzy with cluster number 9 scaled",seperated = T)
+sil_fun(fcm_unscaled_15,extract_data_30[,-1])
+mosaic(extract_data_30_gwl,fcm_unscaled_15$cluster,title = "fuzzy  scaled with 9 ")
+#noiseAllocation(gk5$cluster,gk5$u)
+manovaFUN(extract_data_30[,-1],fcm_unscaled_15$cluster)
+
+
+# Cluster Plots ( werden eventuell später noch benötigt)
+
+# cluster plot with fviz_cluster
+#res.fcm2 <- ppclust2(res.fcm6,"kmeans")
+#factoextra::fviz_cluster(res.fcm2,data = x[,-1],
+#                          ellipse.type ="convex",
+#                         palette ="jco",
+#                         repel = TRUE)
+
+
+
+# cluster plot with clustplot nür für inputs von package ppclust
+
+#res.fcm3 <- ppclust2(res.fcm6, "fanny")
+#cluster::clusplot(scale(x[,-1]), res.fcm3$cluster,
+#                 main = "cluster Versuch",
+#                color = T, labels = 2, lines =2, cex = 2)
+
+
+
