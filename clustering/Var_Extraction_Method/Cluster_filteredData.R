@@ -200,6 +200,7 @@ plot(1:15, wss.euc.weighted, type="b", xlab="Number of Clusters", ylab="Within g
 kmeans.euc.weighted <- kmeans(scaleNweight(copy(data), weight = TRUE)[, 2:49], iter.max = 10000, nstart = 5, centers = 9)
 mosaic(copy(data), kmeans.euc.weighted$cluster, "KMEANS WITH EUCLIDEAN")
 
+?daisy
 
 ## Measurement 
 # 1.

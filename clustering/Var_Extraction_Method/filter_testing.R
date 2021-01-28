@@ -62,7 +62,7 @@ library(cluster)
 pam_fit <- pam(distMat, diss = TRUE, k = 7)
 
 #attatch GWL and such
-dates <- readRDS("Data/cli_data_05_avgDay_wide.rds")[format(as.Date(date), "%Y") %in% 2006, date]
+dates <- readRDS("Data/cli_data_05_avgDay_wide.rds")[, date]
 newDat <- attachGwl(data.table(date = dates, cluster = pam_fit$clustering))
 
 Cl.timeline(newDat)
