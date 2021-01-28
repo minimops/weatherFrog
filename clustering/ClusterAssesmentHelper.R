@@ -4,6 +4,7 @@ library(data.table)
 library(ggplot2)
 library(cluster)
 library(factoextra)
+
 #function to attach gwl to a dataset with date column
 attachGwl <- function(data) {
   assertDataTable(data)
