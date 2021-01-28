@@ -110,7 +110,7 @@ scaleNweight <- function(data, weight = FALSE, weights = c(rep(c(1/9, 1/9, 1/6, 
   assertDataTable(data)
   assertSubset("date", colnames(data)[1])
   assertLogical(weight)
-  assertNumeric(weights, len = ncol(data) - 1)
+  assertNumeric(weights, null.ok = TRUE)
   
   date <- data[, .(date)]
   cols <- colnames(data)[2:ncol(data)]
