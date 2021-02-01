@@ -19,17 +19,23 @@ require(stringr)
 ```{r 0 functions}
 
 #subsets certain yearspan
+#TODO this is such a mess
 subsetYears <- function(data, years) {
-  assertDataTable(data)
+  assertDataTable(as.data.table(data))
   assert_vector(years)
   tryCatch(assertSubset(years, seq(1900, 2010)),
            error = function(cond) {
              assertSubset(years, as.character(seq(1900, 2010)))
              })
-  
-  tryCatch(data[format(as.Date(date),"%Y") %in% years, ],
+  tryCatch({
+    assertSubset("time", names(data))
+    data[format(as.Date(substring(data$time, 1, 10)),"%Y") %in% years, ]
+        },
            error = function(cond) {
-             data[year %in% years, ]
+            tryCatch(data[format(as.Date(date),"%Y") %in% years, ],
+                     error = function(cond) {
+                       data[year %in% years, ]
+                     })
            })
 }
 

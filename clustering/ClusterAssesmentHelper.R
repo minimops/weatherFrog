@@ -169,7 +169,7 @@ noiseAllocation <- function(cluster.id, cluster.prob) {
   #rows where no probability is greater than 35%
   low.Prob.rows <- which(!apply(cluster.prob, 1, function(r) any(r > 0.35)))
   #rows where probility greater than 50percent to more than one cluster
-  mult.high.Prob.rows <- which(apply(y, 1, function(r) sum(r > 0.5)) > 1)
+  mult.high.Prob.rows <- which(apply(cluster.prob, 1, function(r) sum(r > 0.5)) > 1)
   
   #give these observations the cluster id 99 
   #TODO maybe NA instead of 99?
