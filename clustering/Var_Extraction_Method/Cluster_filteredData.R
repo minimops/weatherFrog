@@ -67,6 +67,7 @@ mosaic(copy(data), cluster.gower, title = "PAM WITH GOWER")
 # 1.
 sil(pam.gower, cluster.gower, diss.pam.gower, "pam")
 ?manova
+dat <- copy(data)
 dat.gower <- copy(dat)[, cluster := cluster.gower]
 # 2.
 Cl.timeline(copy(dat.gower))
@@ -197,7 +198,8 @@ for (k in 1:15){
 }
 plot(1:15, wss.euc.weighted, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
-kmeans.euc.weighted <- kmeans(scaleNweight(copy(data), weight = TRUE)[, 2:49], iter.max = 10000, nstart = 5, centers = 9)
+kmeans.euc.weighted <- kmeans(scaleNweight(copy(data), weight = TRUE)[, 2:49], iter.max = 10000, 
+                              nstart = 5, centers = 9)
 mosaic(copy(data), kmeans.euc.weighted$cluster, "KMEANS WITH EUCLIDEAN")
 
 ?daisy
