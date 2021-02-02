@@ -50,8 +50,8 @@ system.time({
 #2455 seconds (41 min)
 
 #Read always after saved once
-#testM <- readRDS("Data/filter/clusID_mslp_05.rds")
-#testG <- readRDS("Data/filter/clusID_geopot_05.rds")
+testM <- readRDS("Data/filter/clusID_mslp_05.rds")
+testG <- readRDS("Data/filter/clusID_geopot_05.rds")
 
 library(data.table)
 library(zoo)
@@ -64,6 +64,8 @@ setnames(geopot_05_filter, "V161", "date")
 
 
 ###distance functions
+
+library(fossil)
 
 rand_distance <- function(x, y) {
   rand.index(x, y)
@@ -122,4 +124,94 @@ fviz_dist(distMat_both)
 
 source("clustering/PAM_NumCL_finder.R")
 
-bestClustNumber(distMat_both1)
+bestClustNumber(distMat_both)
+bestClustNumber(distMat_geopot)
+bestClustNumber(distMat_mslp)
+
+library(cluster)
+source("clustering/ClusterAssesmentHelper.R")
+
+#both custom
+pam_both <- pam(distMat_both, diss = TRUE, k = 6)
+
+sil(pam_both, pam_both$clustering, distMat_both, "pam")
+
+both_data <- data.table(date = mslp_05_filter$date, cluster = pam_both$clustering)
+Cl.timeline(both_data)
+
+data_both_gwl <- attachGwl(both_data)
+mosaic(data_both_gwl, data_both_gwl$cluster)
+
+
+#both rand.index
+#This takes way too long in single threaded mode
+distMat_mslp_rand <- dist_make(as.matrix(copy(mslp_05_filter)[, date := NULL]),
+                          rand_distance)
+
+distMat_geopot_rand <- dist_make(as.matrix(copy(geopot_05_filter)[, date := NULL]),
+                            rand_distance)
+
+distMat_both_rand <- distMat_geopot_rand + distMat_mslp_rand
+
+bestClustNumber(distMat_both)
+bestClustNumber(distMat_geopot)
+bestClustNumber(distMat_mslp)
+###end
+
+#adding to extrapolate dataset
+source("clustering/Var_Extraction_Method/f_extr_funs.R")
+
+data <- extrapolate(seq(2006, 2010))
+data <- scaleNweight(data)
+
+library(parallelDist)
+
+distMat_data <- parDist(as.matrix(copy(data)[, date := NULL]), method = "manhattan")
+bestClustNumber(distMat_data)
+# use 6
+pam_data <- pam(distMat_data, diss = TRUE, k = 6)
+
+sil(pam_data, pam_data$clustering, distMat_data, "pam")
+
+data_data <- data.table(date = mslp_05_filter$date, cluster = pam_data$clustering)
+Cl.timeline(data_data)
+
+data_data_gwl <- attachGwl(data_data)
+mosaic(data_data_gwl, data_data_gwl$cluster)
+
+
+#just add them as is because:
+head(distMat_data)
+head(distMat_both)
+
+distMat_all <- distMat_both + distMat_data
+head(distMat_all)
+
+bestClustNumber(distMat_all)
+#deffo reduces our silhouette like this
+
+pam_all_data <- pam(distMat_all, diss = TRUE, k = 6)
+
+sil(pam_all_data, pam_all_data$clustering, distMat_all, "pam")
+
+data_all <- data.table(date = mslp_05_filter$date, cluster = pam_all_data$clustering)
+Cl.timeline(data_all)
+
+data_all_gwl <- attachGwl(data_all)
+mosaic(data_all_gwl, data_all_gwl$cluster)
+
+
+#differences?
+#just filtering to extr data clustering
+rand.index(pam_data$clustering, pam_both$clustering)
+#0.742
+#extr data to all data
+rand.index(pam_data$clustering, pam_all_data$clustering)
+#0.958
+
+
+#test with higher weight
+distMat_all_high <- 4 * distMat_both + distMat_data
+bestClustNumber(distMat_all_high)
+
+
