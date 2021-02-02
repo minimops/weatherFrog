@@ -61,16 +61,58 @@ cli_gwl_1971 <- cli_gwl_1971 %>%
                                 month %in% c("03", "04", "05") ~ "Fruehling",
                                 month %in% c("06", "07", "08") ~ "Sommer",
                                 month %in% c("09", "10", "11") ~ "Herbst") )
-setcolorder(cli_gwl_1971,c("index_length_gwl","id","Jahreszeit")) 
 
-#Laenge der GWLs nach Jahreszeit gruppiert berechnen
+setcolorder(cli_gwl_1971,c("index_length_gwl","id","Jahreszeit"))
+
+# Alternative: nur 2 Jahreszeiten:
+#Winterzeit: 16.10 bis 15.4 
+#Sommerzeit: 16.4 bis 15.10
+
+cli_gwl_1971_Month_Day <- cli_gwl_1971
+cli_gwl_1971_Month_Day$Month_Day <- format(cli_gwl_1971_Month_Day$date, "%m-%d")
+
+day_16_to_31 <- seq(from = 16, to = 31, by = 1)
+day_16_to_30 <- seq(from = 16, to = 30, by = 1)
+day_1_to_9 <- seq(from = 1, to = 9, by = 1)
+day_1_to_9 <- paste0(0, day_1_to_9)
+day_10_to_15 <- seq(from = 10, to = 15, by = 1)
+day_1_to_15 <- c(day_1_to_9,day_10_to_15)
+
+month_10_day_16_31 <- paste(10,day_16_to_31,sep = "-")
+month_4_day_1_15 <- paste("04",day_1_to_15,sep = "-")
+month_4_day_16_30 <- paste("04",day_16_to_30,sep = "-")
+month_10_day_1_15 <- paste(10,day_1_to_15,sep = "-")
+
+
+
+
+ cli_gwl_1971_Month_Day <- cli_gwl_1971_Month_Day %>%
+   mutate(Jahreszeit = case_when(month %in% c("11","12","01","02","03") ~ "Winterzeit",
+                                 month %in% c("05","06","07","08","09") ~ "Sommerzeit",
+                                 Month_Day %in% month_10_day_16_31 ~ "Winterzeit",
+                                 Month_Day %in% month_4_day_1_15 ~ "Winterzeit",
+                                 Month_Day %in% month_4_day_16_30 ~ "Sommerzeit",
+                                 Month_Day %in% month_10_day_1_15 ~ "Sommerzeit"))
+
+setcolorder(cli_gwl_1971_Month_Day,c("index_length_gwl","id","Jahreszeit"))
+cli_gwl_1971_Month_Day <- cli_gwl_1971_Month_Day[,-329]
+ 
+#Laenge der GWLs nach den 4 Jahreszeiten gruppiert berechnen
 
 cli_gwl_1971 <- as.data.table(cli_gwl_1971)
 gwlNachJahreszeit <- cli_gwl_1971[,(rle(gwl)), by = Jahreszeit]
 table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)
 colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit))
 
-# Anzahl der GWLs gruppiert nach Jahreszeit
+#Laenge der GWLs nach den 2 Jahreszeiten gruppiert berechnen
+
+gwlNachJahreszeit2 <- cli_gwl_1971_Month_Day[,(rle(gwl)), by = Jahreszeit]
+table(gwlNachJahreszeit2$values,gwlNachJahreszeit2$Jahreszeit)
+colSums(table(gwlNachJahreszeit2$values,gwlNachJahreszeit2$Jahreszeit))
+
+
+
+# Anzahl der GWLs gruppiert nach  den 4 Jahreszeiten
 
 GWLJahreszeiten <- as.data.table(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit))
 barplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = terrain.colors(4))
@@ -78,30 +120,64 @@ mosaicplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col 
 
 
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GWLsJahreszeiten.jpeg")
-mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der Jahreszeiten",
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GWLs4Jahreszeiten.jpeg")
+mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der  4Jahreszeiten",
            cex.axis = 1.0)
 dev.off()
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWLgesamtanzahlGWLs.jpeg")
-barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der Jhreszeiten",
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWLgesamtanzahlGWLs4.jpeg")
+barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der 4 Jahreszeiten",
         ylab = "Anzahl", ylim = c(0,800),cex.main = 1.5,cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
 
 
-# Verteilung der Messwerte von Mslp und Geopot ueber Jahreszeiten
+# Anzahl der GWLs gruppiert nach  den 2 Jahreszeiten
+
+
+jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GWLs_2_Jahreszeiten.jpeg")
+mosaicplot(table(gwlNachJahreszeit2$values,gwlNachJahreszeit2$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der  2Jahreszeiten",
+           cex.axis = 1.0)
+dev.off()
+
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWLgesamtanzahlGWLs_2_Jahreszeiten.jpeg")
+barplot(colSums(table(gwlNachJahreszeit2$values,gwlNachJahreszeit2$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der 2 Jahreszeiten",
+        ylab = "Anzahl", ylim = c(0,1700),cex.main = 1.5,cex.axis = 1.5, cex.lab = 1.5)
+dev.off()
+
+
+
+
+
+
+# Verteilung der Messwerte von Mslp und Geopot ueber 4 Jahreszeiten
 
 cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 328])))
 cli_gwl_long_mslp <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 168])))
 cli_gwl_long_geo <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,169 : 328])))
 
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/MslpRangeJahreszeiten.jpeg")
-boxplot(cli_gwl_long_mslp$value ~ cli_gwl_long_mslp$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der Jahreszeiten",
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/MslpRange4Jahreszeiten.jpeg")
+boxplot(cli_gwl_long_mslp$value ~ cli_gwl_long_mslp$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der  4 Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GeopotentailRangeJahreszeiten.jpeg")
-boxplot(cli_gwl_long_geo$value ~ cli_gwl_long_geo$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der Jahreszeiten",
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GeopotentailRange4Jahreszeiten.jpeg")
+boxplot(cli_gwl_long_geo$value ~ cli_gwl_long_geo$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der  4 Jahreszeiten",
+        xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
+dev.off()
+
+# Verteilung der Messwerte von Mslp und Geopot ueber 2 Jahreszeiten
+
+cli_gwl_long2 <- melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,9 : 328])))
+cli_gwl_long_mslp2 <- melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,9 : 168])))
+cli_gwl_long_geo2 <- melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,169 : 328])))
+
+
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/MslpRange2Jahreszeiten.jpeg")
+boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der 2 Jahreszeiten",
+        xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
+dev.off()
+jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GeopotentailRange2Jahreszeiten.jpeg")
+boxplot(cli_gwl_long_geo2$value ~ cli_gwl_long_geo2$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der 2 Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
 
@@ -112,7 +188,7 @@ dev.off()
 
 gwlUeberJahreszeit <- function(GWL){
   # cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 328])))
-  dataTable <- cli_gwl_long_mslp[cli_gwl_long_mslp$gwl == GWL,]
+  dataTable <- cli_gwl_long_mslp2[cli_gwl_long_mslp2$gwl == GWL,]
   boxplot(dataTable$value ~ dataTable$Jahreszeit,ylab = GWL, main = "Mslp")
 }
 
