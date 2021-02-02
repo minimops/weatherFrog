@@ -18,7 +18,7 @@ bestClustNumber <- function(distMat) {
     pam_fit$silinfo$avg.width
   }
   
-  sil_width <- unlist(clusterApply(cl, 4:15, PamSilFun, distM = distMat_both))
+  sil_width <- unlist(clusterApply(cl, 4:15, PamSilFun, distM = distMat))
   stopCluster(cl)
   
   plot(4:15, sil_width,
