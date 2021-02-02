@@ -123,21 +123,18 @@ fviz_dist(distMat_both)
 library(ggplot2)
 library(parallel)
 
-cl <- makeCluster(detectCores())
+cl <- makeCluster(detectCores() - 1)
 
-PamSilFun <- function(i) {
+PamSilFun <- function(i, distM) {
   library(cluster)
-  
-  distMat_both_date <- readRDS("Data/filter/distMat_05_date.rds")
-  distMat_both <- as.dist(distMat_both_date[, -1827])
-  
-  pam_fit <- pam(distMat_both,
+
+  pam_fit <- pam(distM,
                  diss = TRUE,
                  k = i)
   pam_fit$silinfo$avg.width
 }
 
-sil_width <- unlist(clusterApply(cl, 4:15, PamSilFun))
+sil_width <- unlist(clusterApply(cl, 4:15, PamSilFun, distM = distMat_both))
 stopCluster(cl)
 
 plot(4:15, sil_width,
