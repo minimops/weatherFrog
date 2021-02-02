@@ -138,7 +138,7 @@ PamSilFun <- function(i) {
 }
 
 sil_width <- unlist(clusterApply(cl, 4:15, PamSilFun))
-
+stopCluster(cl)
 
 plot(4:15, sil_width,
      xlab = "Number of clusters",
