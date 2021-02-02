@@ -120,26 +120,6 @@ fviz_dist(distMat_both)
 
 ##copy from Cluster_filteredData,R
 
-library(ggplot2)
-library(parallel)
+source("clustering/PAM_NumCL_finder.R")
 
-cl <- makeCluster(detectCores() - 1)
-
-PamSilFun <- function(i, distM) {
-  library(cluster)
-
-  pam_fit <- pam(distM,
-                 diss = TRUE,
-                 k = i)
-  pam_fit$silinfo$avg.width
-}
-
-sil_width <- unlist(clusterApply(cl, 4:15, PamSilFun, distM = distMat_both))
-stopCluster(cl)
-
-plot(4:15, sil_width,
-     xlab = "Number of clusters",
-     ylab = "Silhouette Width",)
-lines(4:15, sil_width)
-print(sil_width)
-##end copy
+bestClustNumber(distMat_both1)
