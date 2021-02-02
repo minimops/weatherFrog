@@ -27,3 +27,13 @@ bestClustNumber <- function(distMat) {
   lines(4:15, sil_width)
   print(sil_width)  
 }
+
+
+
+
+
+
+
+
+
+
