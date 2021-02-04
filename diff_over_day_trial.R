@@ -29,3 +29,27 @@ ggplot(as.data.frame(Change_day_gwl), aes(x = diff)) +
   facet_wrap(~ gwl)
 #doesnt really seem to have any distribution differences
 
+
+#per season
+
+#function to get winter/summer
+getWinSum <- function(DATES) {
+  W <- as.Date("2012-10-16", format = "%Y-%m-%d") # Winter Solstice
+  S <- as.Date("2012-4-16",  format = "%Y-%m-%d") # Summer Solstice
+  
+  # Convert dates from any year to 2012 dates
+  d <- as.Date(strftime(DATES, format="2012-%m-%d"))
+  
+  ifelse (d >= W | d < S, "W", "S")
+}
+
+#attach season
+Change_day_gwl_season <- copy(Change_day_gwl)[, season := getWinSum(date)]
+
+ggplot(as.data.frame(Change_day_gwl_season), aes(x = diff)) +
+  ggtitle("Verteilung Änderung über den Tag pro GWL pro Saison") +
+  geom_histogram(aes(y=..density.., color = season, fill = season),
+                 bins = 30, alpha = 0.4) +
+  facet_wrap(~ gwl)
+
+
