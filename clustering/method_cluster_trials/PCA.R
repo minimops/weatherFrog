@@ -52,6 +52,22 @@ mydata <- data.frame(comp, fit$cluster)
 mydata <- data.frame(mydata, wide_05$gwl)
 
 
+
+## Measurement 
+# 1.
+sil(fit, fit$cluster, dist(comp), "kmeans")
+?manova
+dat.pca <- copy(as.data.table(wide_05))[, cluster := fit$cluster]
+# 2.
+Cl.timeline(copy(dat.pca))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(as.data.table(wide_05)), fit$cluster, title = "PAM WITH MANHAT")
+
+
 #which proportion of GWL x is in which cluster
 (clust_table_1 <- round(
   prop.table(table(mydata$wide_05.gwl, mydata$fit.cluster), margin = 1), 2))
@@ -131,6 +147,21 @@ fviz_nbclust(pca2_cluster, kmeans, method = "wss") +
   geom_vline(xintercept = 4, linetype = 2)
 #clustering
 k2 <- kmeans(pca2_cluster, centers = 4, nstart = 25)
+
+## Measurement 
+# 1.
+sil(k2, k2$cluster, dist(pca2_cluster), "kmeans")
+?manova
+dat.pca2 <- copy(as.data.table(wide_05))[, cluster := k2$cluster]
+# 2.
+Cl.timeline(copy(dat.pca2))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(as.data.table(wide_05)), k2$cluster, title = "PAM WITH MANHAT")
+
 
 #cluster plot
 fviz_cluster(k2, data = cli_data_pca[, - c(1, 2)], labelsize = 0)

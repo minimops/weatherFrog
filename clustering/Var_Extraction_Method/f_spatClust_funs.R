@@ -12,6 +12,7 @@ library(dbscan)
 library(e1071)
 
 source("clustering/dayDrawer.R")
+source("clustering/Var_Extraction_Method/filter_funs.R")
 
 #this function spatial clusters a day with the a given algorythm
 #inputs: a date (string or date class)
@@ -19,13 +20,15 @@ source("clustering/dayDrawer.R")
 #        weights = a numeric of length 4 to give params different weights
 #
 filterDayData <- function(day, algo, type = "both", 
-                          weights = c(1.5, 1.5, 1, 1), out = "grob", 
+                          weights = c(1, 1, 1, 1), out = "grob", 
                           noPlot = FALSE) {
   assertDate(as.Date(day))
   assertSubset(type, c("both", "mslp", "geopot"))
   assertSubset(out, c("grob", "raw"))
   assertNumeric(weights, len = 4)
-  assertSubset(algo, c("dbscan", "fuzzy"))
+  assertSubset(algo, c("dbscan", "fuzzy", "custom"))
+  
+  if(type == "both" && algo == "custom") stop("doesn't work atm.")
   
   #subset day
   oneDay <- readRDS("Data/cli_data_2k_avgDay.rds")[date %in% as.Date(day), ]
@@ -46,7 +49,8 @@ filterDayData <- function(day, algo, type = "both",
   #run algo
   switch (algo,
           "dbscan" = result <- runDBSCAN(oneDay),
-          "fuzzy" = result <- runFUZZY(oneDay)
+          "fuzzy" = result <- runFUZZY(oneDay),
+          "custom" = result <- filterDay(oneDay, paste0("avg_", type))
   )
   
   #attach clusterinfo to result dt
@@ -98,7 +102,7 @@ filterDayData <- function(day, algo, type = "both",
 save.DayFilter.Output <- function(dates, algo, filename ,onePage = FALSE, 
                           path = "documentation/plots", 
                           pathext  = NULL, type = "both", 
-                          weights = c(1.5, 1.5, 1, 1)) {
+                          weights = c(1, 1, 1, 1)) {
   lapply(list(dates), function (x) assertDate(as.Date(x)))
   assertLogical(onePage)
   assertString(filename)

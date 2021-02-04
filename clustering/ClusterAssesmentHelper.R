@@ -110,7 +110,7 @@ scaleNweight <- function(data, weight = FALSE, weights = c(rep(c(1/9, 1/9, 1/6, 
   assertDataTable(data)
   assertSubset("date", colnames(data)[1])
   assertLogical(weight)
-  assertNumeric(weights, len = ncol(data) - 1)
+  assertNumeric(weights, null.ok = TRUE)
   
   date <- data[, .(date)]
   cols <- colnames(data)[2:ncol(data)]
@@ -169,7 +169,7 @@ noiseAllocation <- function(cluster.id, cluster.prob) {
   #rows where no probability is greater than 35%
   low.Prob.rows <- which(!apply(cluster.prob, 1, function(r) any(r > 0.35)))
   #rows where probility greater than 50percent to more than one cluster
-  mult.high.Prob.rows <- which(apply(y, 1, function(r) sum(r > 0.5)) > 1)
+  mult.high.Prob.rows <- which(apply(cluster.prob, 1, function(r) sum(r > 0.5)) > 1)
   
   #give these observations the cluster id 99 
   #TODO maybe NA instead of 99?
@@ -201,7 +201,7 @@ manovaFUN <- function(data,cluster_vector){
   model <- manova(as.matrix(data[,-1]) ~ data$cluster_vector)
   print(model)
   
-  sum_model <- summary(model, test = "Wilks")
+  sum_model <- summary(model,test = "Wilks")
   print(sum_model)
   
   aov_model <- summary.aov(model)
@@ -209,6 +209,3 @@ manovaFUN <- function(data,cluster_vector){
 
 
 }
-
-
-

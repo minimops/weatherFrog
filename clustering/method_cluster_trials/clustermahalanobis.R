@@ -81,10 +81,41 @@ for (k in 1:10){
 par(mfrow = c(1,1))
 plot(1:10, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
-clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers=3, iter.max=1000)
+clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers=8, iter.max=10000)
 clusterpam <- pam(as.dist(dist_mahal_scaled), k = 9, diss = TRUE)
 clusterpam$silinfo
 ?pam
+
+
+## Measurement 
+# 1.
+sil(clusterkmeans, clusterkmeans$cluster, as.dist(dist_mahal_scaled), "kmeans")
+?manova
+dat.kmeans.mahal <- copy(data.wide)[, cluster := clusterkmeans$cluster]
+# 2.
+Cl.timeline(copy(dat.kmeans.mahal))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
+
+
+
+## Measurement 
+# 1.
+sil(clusterpam, clusterpam$cluster, as.dist(dist_mahal_scaled), "pam")
+?manova
+dat.pam.mahal <- copy(data.wide)[, cluster := clusterpam$cluster]
+# 2.
+Cl.timeline(copy(dat.pam.mahal))
+# 3.
+model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
+summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
+summary.aov(model.kmeans.euc)
+# 4.
+mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
 
 data.scaled <- as.data.table(data.scaled)
 data.scaled <- data.scaled[, date := data.wide[, .(date)]]

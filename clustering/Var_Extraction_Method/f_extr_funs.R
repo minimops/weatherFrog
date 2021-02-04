@@ -12,7 +12,7 @@ extrapolate <- function(yearspan, vars = "all") {
   assertNumeric(yearspan, lower = 1900, upper = 2010)
   #TODO insert all possible var creations
   #TODO handling
-  assertSubset(vars, c("all", "all.4qm", "season", "min", "max", 
+  assertSubset(vars, c("all", "all.4qm", "all.pca", "season", "min", "max", 
                        "intensity", "location",
                        "range", "distance"))
   
@@ -74,6 +74,12 @@ extrapolate <- function(yearspan, vars = "all") {
   #intensity
   intensity <- intensity(data_wide_avgDay, data_long_avg)
   
+  #pca
+  if(vars == "all.pca"){
+    pca <- getPCA(copy(data_wide_avgDay), 3)
+    Qmeans <- Reduce(merge, list(Qmeans, pca))
+  }
+  
   #return new dataset
   out <- Reduce(merge, list(distMeasures, 
                      max_mins_location[, grep("latitude|longitude$", 
@@ -91,7 +97,8 @@ extrapolate <- function(yearspan, vars = "all") {
                      "euclidean.maxDiff", "maxGeopot.verID", "maxGeopot.horID",
                      "minGeopot.verID", "minGeopot.horID", "euclidean.geopot",
                      "euclidean.minDiff", grep("meanMslp", names(out), value = TRUE),
-                     grep("meanGeopot", names(out), value = TRUE)
+                     grep("meanGeopot", names(out), value = TRUE), 
+                     grep("PC", names(out), value = TRUE)
   ))
   
   out
@@ -271,7 +278,7 @@ measures <- function(data) {
   quartile25.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.25))
   
   quartile75.mslp <- apply(data.mslp, 1, function(x) quantile(x, probs = 0.75))
-  quartile75.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.25))
+  quartile75.geopot <- apply(data.geopot, 1, function(x) quantile(x, probs = 0.75))
   
   range.mslp <- max.mslp - min.mslp
   range.geopot <- max.geopot - min.geopot
@@ -386,4 +393,12 @@ quadrantMean <- function(data) {
 }
 
 
-
+##function that return a certain number of principle components
+getPCA <- function(data, number = 3) {
+  assertDataTable(data)
+  assertSubset("date", names(data))
+  assertNumber(number, lower = 1, upper = ncol(data))
+  
+  data.table(date = data$date, 
+        prcomp(as.data.frame(copy(data)[, date := NULL]))[["x"]][, seq(1, number)])
+}
