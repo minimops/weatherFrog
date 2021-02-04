@@ -8,6 +8,7 @@ source("dataset_mutate_funs.R")
 
 cli_data_30 <- subsetYears(cli_data, seq(1971, 2000))
 
+
 wideTime_30 <- longToWide(cli_data_30, id = c("date", "time"),
                 col = c("longitude", "latitude"),
                 vars = c("mslp", "geopotential"))
@@ -53,3 +54,44 @@ ggplot(as.data.frame(Change_day_gwl_season), aes(x = diff)) +
   facet_wrap(~ gwl)
 
 
+
+#per param
+
+
+cli_data_val <- melt(cli_data_30, id.vars = c("date", "time", "longitude", "latitude"),
+                     measure.vars = c("mslp", "geopotential"), variable.name = "type",
+                     value.name = "value")
+
+wideTime_val <- longToWide(cli_data_val, id = c("date", "time", "type"),
+                           col = c("longitude", "latitude"),
+                           vars = c("value"))
+
+cols2 <- names(wideTime_val)[-c(1, 2, 3)]
+maxChange_tile_day_val <- copy(wideTime_val)[, (cols2) := lapply(.SD, function(x) max(x) - min(x)),
+                                        by = c("date", "type"), .SDcols = cols2][, .SD[1], by = c("date", "type")][, time := NULL] 
+
+Change_day_val <- copy(maxChange_tile_day_val)[, .(diff = sum(.SD)), by = c("date", "type"), .SDcols = cols2]
+
+ggplot(as.data.frame(Change_day_val), aes(x = diff)) +
+  ggtitle("Verteilung Änderung über den Tag pro Messwert") +
+  geom_histogram(aes(y=..density..),
+                 bins = 30) +
+  facet_wrap(~ type)
+
+
+Change_day_val_gwl <- attachGwl(Change_day_val)
+
+ggplot(as.data.frame(Change_day_val_gwl), aes(x = diff)) +
+  ggtitle("Verteilung Änderung über den Tag pro GWL pro Messwert") +
+  geom_histogram(aes(y=..density.., fill = type), bins = 30) +
+  facet_wrap(~ gwl)
+
+
+#attach season
+Change_day_val_gwl_season <- copy(Change_day_val_gwl)[, season := getWinSum(date)][, seasonType := paste0(season, type)]
+
+ggplot(as.data.frame(Change_day_val_gwl_season), aes(x = diff)) +
+  ggtitle("Verteilung Änderung über den Tag pro GWL pro Saison * Messwert") +
+  geom_histogram(aes(y=..density.., fill = seasonType),
+                 bins = 30) +
+  facet_wrap(~ gwl)
