@@ -29,20 +29,20 @@ diss.pam.manhat.30.all <- readRDS("Data/diss.pam.manhat.30.all.rds")
 
 pam.manhat.30 <- pam(diss.pam.manhat.30.all, diss = TRUE, k = 6)
 saveRDS(pam.manhat.30, "Data/pam.manhat.30.rds" )
-
+pam.manhat.30 <- readRDS("Data/pam.manhat.30.rds")
 cluster.manhat.30 <- pam.manhat.30$clustering
-mosaic(copy(data), cluster.manhat.30, title = "PAM WITH MANHATTAN")
+
 # sil_width: 0.147
 
 ## Measurement 
 # 1.
 sil(pam.manhat.30, cluster.manhat.30, diss.pam.manhat.30.all, "pam")
-?manova
+
 dat.manhat.30 <- copy(data)[, cluster := cluster.manhat.30]
 # 2.
 Cl.timeline(copy(dat.manhat.30))
 # 3.
-
+manova.fun(copy(data), cluster.manhat.30)
 # 4.
 mosaic(copy(data), cluster.manhat.30, title = "PAM WITH MANHAT - 30 YEARS")
 
@@ -53,22 +53,24 @@ mosaic(copy(data), cluster.manhat.30, title = "PAM WITH MANHAT - 30 YEARS")
 diss.pam.manhat.30.all.weighted <- dissimilarityPAM(scaleNweight(copy(data), weight = TRUE),
                                            dist = FALSE, metric = "manhattan")
 
-diss.pam.manhat.30.all.weighted <- daisy(scaled[, 2:ncol(scaled)], metric = "manhattan", 
-                                weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
-                                            rep(1/6, 12), rep(1/18, 18)))
-diss.pam.manhat.30.all.weighted2 <- daisy(scaleNweight(copy(data), weight = TRUE)[, 2:ncol(data)], metric = "manhattan") 
+diss.pam.manhat.30.all.weighted <- daisy(scaled[, 2:ncol(scaled)], 
+                                         metric = "manhattan", 
+                                         weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
+                                                     rep(1/6, 12), rep(1/18, 18)))
+
                                          
 saveRDS(diss.pam.manhat.30.all.weighted, "Data/diss.pam.manhat.30.all.weighted.rds")
-?daisy
+diss.pam.manhat.30.all.weighted <- readRDS("Data/diss.pam.manhat.30.all.weighted.rds")
 pam.manhat.30.weighted <- pam(diss.pam.manhat.30.all.weighted, diss = TRUE, k = 8)
+saveRDS(pam.manhat.30.weighted, "Data/pam.manhat.30.weighted.rds")
 cluster.manhat.30.weighted <- pam.manhat.30.weighted$clustering
-mosaic(copy(data), cluster.manhat.30.weighted, title = "PAM WITH MANHATTAN")
-# sil_width: 0.147
+
+# sil_width: 0.096
 
 ## Measurement 
 # 1.
 sil(pam.manhat.30.weighted, cluster.manhat.30.weighted, diss.pam.manhat.30.all.weighted, "pam")
-?manova
+
 dat.manhat.30.weighted <- copy(data)[, cluster := cluster.manhat.30.weighted]
 # 2.
 Cl.timeline(copy(dat.manhat.30.weighted))
@@ -78,35 +80,37 @@ manova.manhat.30.weighted <- manova.fun(copy(data), cluster.manhat.30.weighted)
 mosaic(copy(data), cluster.manhat.30.weighted, title = "PAM WITH MANHAT - 30 YEARS")
 
 ####### PAM with Manhattan - weighted in scaleNweight ##################
-diss.pam.manhat.30.all.weighted2 <- daisy(scaleNweight(copy(data), weight = TRUE)[, 2:ncol(data)], metric = "manhattan") 
+diss.pam.manhat.30.all.weighted2 <- daisy(scaleNweight(copy(data), weight = TRUE)[, 2:ncol(data)], 
+                                          metric = "manhattan") 
 
 saveRDS(diss.pam.manhat.30.all.weighted, "Data/diss.pam.manhat.30.all.weighted.rds")
 ?daisy
 pam.manhat.30.weighted2 <- pam(diss.pam.manhat.30.all.weighted2, diss = TRUE, k = 8)
-cluster.manhat.30.weighted <- pam.manhat.30.weighted$clustering
-mosaic(copy(data), cluster.manhat.30.weighted, title = "PAM WITH MANHATTAN")
-# sil_width: 0.147
+cluster.manhat.30.weighted2 <- pam.manhat.30.weighted2$clustering
+saveRDS(pam.manhat.30.weighted2, "Data/pam.manhat.30.weighted2.rds")
+# sil_width: 0.106
 
 ## Measurement 
 # 1.
-sil(pam.manhat.30.weighted, cluster.manhat.30.weighted, diss.pam.manhat.30.all.weighted, "pam")
-?manova
-dat.manhat.30.weighted <- copy(data)[, cluster := cluster.manhat.30.weighted]
+sil(pam.manhat.30.weighted2, cluster.manhat.30.weighted2, diss.pam.manhat.30.all.weighted2, "pam")
+
+dat.manhat.30.weighted2 <- copy(data)[, cluster := cluster.manhat.30.weighted2]
 # 2.
-Cl.timeline(copy(dat.manhat.30.weighted))
+Cl.timeline(copy(dat.manhat.30.weighted2), seperated = TRUE)
 # 3.
-manova.manhat.30.weighted <- manova.fun(copy(data), cluster.manhat.30.weighted)
+manova.manhat.30.weighted2 <- manova.fun(copy(data), cluster.manhat.30.weighted2)
 # 4.
-mosaic(copy(data), cluster.manhat.30.weighted, title = "PAM WITH MANHAT - 30 YEARS")
+mosaic(copy(data), cluster.manhat.30.weighted2, title = "PAM WITH MANHAT - 30 YEARS - weighted")
 
 ####### PAM with MANHATTAN - allpca ########################
 
 diss.pam.manhat.30.allpca <- dissimilarityPAM(scaleNweight(copy(data)), 
-                                                           dist = FALSE, metric = "manhattan",
+                                              dist = FALSE, 
+                                              metric = "manhattan",
                                               weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
                                                           rep(1/6, 12), rep(1/21, 21)))
 
-#dist.allpca <- readRDS("Data/diss.pam.manhat.30.rds")
+dist.allpca <- readRDS("Data/diss.pam.manhat.30.rds")
 #saveRDS(diss.pam.manhat.30, "Data/diss.pam.manhat.30.rds")
 
 pam.manhat.30.allpca <- pam(diss.pam.manhat.30.allpca, diss = TRUE, k = 6)
@@ -118,7 +122,7 @@ cluster.manhat.30.allpca <- pam.manhat.30.allpca$clustering
 ## Measurement 
 # 1.
 sil(pam.manhat.30.allpca, cluster.manhat.30.allpca, dist.allpca, "pam")
-?manova
+
 dat.manhat.30.allpca <- copy(data)[, cluster := cluster.manhat.30.allpca]
 # 2.
 Cl.timeline(copy(dat.manhat.30.allpca))
@@ -130,10 +134,14 @@ mosaic(copy(data), cluster.gower.30.allpca, title = "PAM WITH MANHAT - 30 YEARS 
 
 ####### PAM with MANHATTAN - allpca - weighted ########################
 
-diss.pam.manhat.30.allpca.weighted <- dissimilarityPAM(scaleNweight(copy(data), weight = TRUE),
-                                                       weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
-                                                                   rep(1/6, 12), rep(1/21, 21)),
-                                                       dist = FALSE, metric = "manhattan")
+diss.pam.manhat.30.allpca.weighted <- dissimilarityPAM(scaleNweight(copy(data), 
+                                                                    weight = TRUE),
+                                                                    weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 
+                                                                                  1/18, 1/18, 1/9, 1/9, 1/9), 2), 
+                                                                                rep(1/6, 12), rep(1/21, 21)),
+                                                       weights = NULL,
+                                                       dist = FALSE, 
+                                                       metric = "manhattan")
 
 weighted <- scaleNweight(copy(data), weight = TRUE, 
                          weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
@@ -252,6 +260,15 @@ Cl.timeline(copy(dat.gower.30.allpca))
 mosaic(copy(data), cluster.gower.30.allpca, title = "GOWER - 30 YEARS - allpca")
 
 
+### 3. try EUCLIDEAN 
+diss.pam.euc <- dissimilarityPAM(scaleNweight(copy(data)), 
+                                 weights = NULL, 
+                                 metric = "euclidean", 
+                                 dist = FALSE)
+saveRDS(diss.pam.euc, "Data/diss.pam.euc.rds")
+
+
+## sil von 0.09 bei 5 Clustern
 
 
 ############################### Nicht extrahierte Daten ##################################################
