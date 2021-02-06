@@ -60,8 +60,8 @@ saveRDS(PAMhelper(copy(dataCategorial),
                               rep(1/8, 4), rep(1/18, 18), rep(1/8, 4)),
                   metric = "gower",
                   dist = FALSE,
-                  fname = "PAM_gower_categorical"), 
-        "diss.pam.gower.cat.rds")
+                  fname = "PAM_gower_categorical_9-12"), 
+        "diss.pam.gower.cat9-12.rds")
 
 
 ## WEIGHTS: die Gruppen mit Verteilung, mean in Quadranten so gelassen, euclidean und quadranten zusammengefasst
