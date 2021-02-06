@@ -179,33 +179,53 @@ noiseAllocation <- function(cluster.id, cluster.prob) {
 }
 
 
-# MANOVA function
-# 
-# evaluates, how much each variable contributes to the cluster solution and how 
-# good the cluster solution is; is the variance within a cluster smaller than 
-# the variance between?
+#MANOVA
 
-# p value < alpha: variance between the cluster > variance within a cluster
+# data: data frame/data table, that are used for clustering, for example our extract_varaibles_data
+#       only contains the variable "date" and variables, that have been clustered
+# cluster_vector: cluster vector of the cluster solution, usually cluster_object$cluster or something like that
+# data_variable: column name of the date variable, default is "date"
 
-
-# input variables: 
-# cluster_vector:  A vector of integers (from 1:k) indicating the cluster to which each point is allocated.
-# data: our data table with the extracted variables that we are clustering with
-
-
-manovaFUN <- function(data,cluster_vector){
-  data <- cbind(cluster_vector,data)
-  data <- as.data.frame(data)
-  print(colnames(data))
+manova.fun <- function(data,cluster_vector,date_variable = date){
   
-  model <- manova(as.matrix(data[,-1]) ~ data$cluster_vector)
-  print(model)
+  cluster <- cluster_vector
+  data_for_manova <- cbind(cluster,data)
+  data_for_manova <- subset(data_for_manova, select = -date)
   
-  sum_model <- summary(model,test = "Wilks")
-  print(sum_model)
+  # maova
+  man <- manova(as.matrix(data_for_manova[,-1]) ~ data_for_manova$cluster)
+  print(man)
+  #print(summary(man, tol = 0,fit = "Wilks"))
+  man.aov <- summary.aov(man)
   
-  aov_model <- summary.aov(model)
-  print(aov_model)
-
-
+  
+  # gather the output og summary.aov in one data.frame
+  res_mat <- as.data.frame(matrix(ncol = 5))
+  res_mat_residuals <- as.data.frame(matrix(ncol = 5))
+  for ( i in seq_len(ncol(data_for_manova)-1)){
+    res_mat[i,] <- man.aov[[i]][1,]
+    res_mat_residuals[i,] <- man.aov[[i]][2,]
+  }
+  colnames(res_mat) <- colnames(man.aov[[1]])
+  res_mat_residuals <- res_mat_residuals[,-c(4,5)]
+  colnames(res_mat_residuals) <- c("residuals_df","residuals_sum_sq","residuals_mean_sq")
+  rownames(res_mat) <- seq(1,ncol(data_for_manova)-1,by = 1)
+  rownames(res_mat_residuals) <- seq(1,ncol(data_for_manova)-1,by = 1)
+  variable <- colnames(data_for_manova[,-1])
+  res_mat <- cbind(variable,res_mat,res_mat_residuals)
+  
+  # creating a colum, that shows, if a single variable contributes to the cluster solution/is significant
+  # if p < alpha = 0.05 : yes, significant if p > alpha: no / not significant
+  
+  res_mat$significance <- "NA"
+  for(i in seq_len(nrow(res_mat))) {
+    if(res_mat[i,6] < 0.05){
+      res_mat[i,10] = "yes"
+    }
+    else{
+      res_mat[i,10] = "no"
+    }
+  }
+  
+  return(res_mat)
 }
