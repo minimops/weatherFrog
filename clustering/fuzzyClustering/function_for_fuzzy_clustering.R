@@ -4,7 +4,10 @@ library(cluster)
 library(fclust)
 
 
-# Validation of cluster result: mesure variables extra for fuzzy clustering
+
+
+# Validation of cluster result: measure variables extra for fuzzy clustering
+# for evaluating the otimal cluster number
 validation_variables <- function(fuzzy_output){
   measure_vec <- vector()
   res.FKM.9 <- ppclust2(fuzzy_output,"fclust")
@@ -33,18 +36,21 @@ validation_variables <- function(fuzzy_output){
 
 # silhouette ( silhouetten function did not work, i have to convert the fuzzy output
 # to another output with ppclust 2 in order to plot a silhouette)
-sil_fun <- function(cluster_output, data){
-  a <- ppclust2(cluster_output,"kmeans")
-  sil <- silhouette(a$cluster, dist(data))
+sil_fun <- function(cluster_output, data,distance = "euclidean"){
+  a <- ppclust2(cluster_output,"fclust")
+  sil <- silhouette(cluster_output$cluster, (dist(data,distance))^2)
   fviz_silhouette(sil)
+  
+  #b <- silhouette(cluster_output$cluster,dist(data))
+  #plot(b)
+#}
+
   
   #b <- silhouette(cluster_output$cluster,dist(data))
   #plot(b)
 }
 
-
-
-# Function for selecting the optimal cluster number in fuzzy clustering
+# Function for selecting the optimal cluster number in fuzzy clustering: gustavon kessel
 
 #Anmerkung: in dieser function wurde validation function verwendet:
 # wenn ich weis, wo ich validation fkt. abspeichere, kann ich es mit require
@@ -119,3 +125,69 @@ best_cluster_number <- function(begin,end,x,scale = FALSE){
 }
 
 
+# Select best cluster number of different cluster solution
+
+#Anmerkung: in dieser function wurde validation function verwendet:
+# wenn ich weis, wo ich validation fkt. abspeichere, kann ich es mit require
+#hier aufrufen
+
+# cluster_object: list, that contains cluster outputs for different clster numbers
+# cluster_number: numeric vector with clusternumber 
+
+finding_optimal_cluster_number <- function(cluster_object, cluster_number){
+  
+  #Defining some objects
+  
+  measure_mat <- as.data.frame(matrix(ncol = 4))
+  colnames(measure_mat) <- c("fuzzy_silhouette","partition_entropy","partition_coef","modified_part_coef")
+  
+  
+  #calculation of silhouette,partition entropy etc.
+  
+  validation <- lapply(cluster_object, validation_variables)
+  names(validation) <- names(cluster_object)
+  validation_mat <- as.data.frame(matrix(ncol = 4))
+  colnames(validation_mat) <- c("fuzzy_silhouette","partition_entropy","partition_coef","modified_part_coef")
+  
+  for(i in 1 : length(validation)){
+    validation_mat[i,] <- validation[[i]]
+  }
+
+  
+  validation_mat <- cbind(cluster_number,validation_mat)
+  
+  # finding minimum or maximum for best cluster number (rownumber)
+  rownumber <- vector()
+  
+  rownumber <- which.max(validation_mat[,2])
+  rownumber <- c(rownumber,which.min(validation_mat[,3]))
+  rownumber <- c(rownumber,which.max(validation_mat[,4]))
+  rownumber <- c(rownumber,which.max(validation_mat[,5]))
+  
+  print (paste("Best cluster solution in row",rownumber))
+  
+  # visualsation of the for validation measures
+  
+  
+  plot(validation_mat[,1],validation_mat$fuzzy_silhouette,  type = "b", main = "fuzzy silhouette")
+  plot(validation_mat[,1],validation_mat$partition_entropy,  type = "b", main = "partition_entropy")
+  plot(validation_mat[,1],validation_mat$partition_coef, type = "b", main = "partition coefficient")
+  plot(validation_mat[,1],validation_mat$modified_part_coef,  type = "b",main = "modified partition coefficient")
+  
+  
+  
+  cluster_object[[length(cluster_object) + 1]] <- validation_mat
+  return(cluster_object)
+  
+}
+
+# return vector with fuzzy silhouette and silhouette of a cluster solution
+
+silhoette_fun <- function(cluster_solution){
+sil <- ppclust2(cluster_solution,"fclust")
+fuzzy.sil <- SIL.F(sil$Xca,sil$U,alpha = 1)
+sil <- SIL(sil$Xca,sil$U)
+sil_vec <- c(fuzzy.sil, sil$sil)
+names(sil_vec) <- c("fuzzy_sil","sil")
+return(sil_vec)
+}
