@@ -43,9 +43,12 @@ sil_fun <- function(cluster_output, data,distance = "euclidean"){
   
   #b <- silhouette(cluster_output$cluster,dist(data))
   #plot(b)
+#}
+
+  
+  #b <- silhouette(cluster_output$cluster,dist(data))
+  #plot(b)
 }
-
-
 
 # Function for selecting the optimal cluster number in fuzzy clustering: gustavon kessel
 

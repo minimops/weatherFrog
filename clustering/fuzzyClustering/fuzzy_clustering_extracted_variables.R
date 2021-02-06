@@ -4,7 +4,7 @@
 source("clustering/Var_Extraction_Method/f_extr_funs.R")
 source("clustering/fuzzyClustering/function_for_fuzzy_clustering.R")
 source("clustering/ClusterAssesmentHelper.R")
-
+source("clustering/manova_function.R")
 
 
 
@@ -172,105 +172,59 @@ save(fcm_squared_scaled_list,file = "clustering/fuzzyClustering/squared_scaled_f
 fcm_squared_scaled <- finding_optimal_cluster_number(fcm_squared_scaled_list,c(6,7,8,9,10,11,12,13,14,15))
 
 
-#MANOVA
-
-# data: data frame/data table, that are used for clustering, for example our extract_varaibles_data
-#       only contains the variable "date" and variables, that have been clustered
-# cluster_vector: cluster vector of the cluster solution, usually cluster_object$cluster or something like that
-# data_variable: column name of the date variable, default is "date"
-
-manova.fun <- function(data,cluster_vector,date_variable = date){
-
-cluster <- cluster_vector
-data_for_manova <- cbind(cluster,data)
-data_for_manova <- subset(data_for_manova, select = -date)
-
-# maova
-man <- manova(as.matrix(data_for_manova[,-1]) ~ data_for_manova$cluster)
-print(man)
-#print(summary(man, tol = 0,fit = "Wilks"))
- man.aov <- summary.aov(man)
- 
- 
-# gather the output og summary.aov in one data.frame
-res_mat <- as.data.frame(matrix(ncol = 5))
-res_mat_residuals <- as.data.frame(matrix(ncol = 5))
-for ( i in seq_len(ncol(data_for_manova)-1)){
- res_mat[i,] <- man.aov[[i]][1,]
- res_mat_residuals[i,] <- man.aov[[i]][2,]
-}
-colnames(res_mat) <- colnames(man.aov[[1]])
-res_mat_residuals <- res_mat_residuals[,-c(4,5)]
-colnames(res_mat_residuals) <- c("residuals_df","residuals_sum_sq","residuals_mean_sq")
-rownames(res_mat) <- seq(1,ncol(data_for_manova)-1,by = 1)
-rownames(res_mat_residuals) <- seq(1,ncol(data_for_manova)-1,by = 1)
-variable <- colnames(data_for_manova[,-1])
-res_mat <- cbind(variable,res_mat,res_mat_residuals)
-
-# creating a colum, that shows, if a single variable contributes to the cluster solution/is significant
-# if p < alpha = 0.05 : yes, significant if p > alpha: no / not significant
-
-res_mat$significance <- "NA"
-for(i in seq_len(nrow(res_mat))) {
-  if(res_mat[i,6] < 0.05){
-    res_mat[i,10] = "yes"
-  }
-  else{
-    res_mat[i,10] = "no"
-  }
-}
-
-return(res_mat)
-}
 
 test <- manova.fun(extract_data_30,fcm_scaled_6$cluster)
 # eventl doch noch mit 6?
 
+barplot(table(fcm_squared_scaled_list[[1]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_squared_scaled_list[[1]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_squared_scaled_list[[1]])
+sil_fun(fcm_squared_scaled_list[[1]],extract_data_30[,-1])
+mosaic(extract_data_30_gwl,fcm_squared_scaled_list[[1]]$cluster,title = "mosaic")
+
+
 
 # 7 cluster
-# cluster nr. 1 nicht dabei
 
 fcm_squared_scaled_7 <- fcm_squared_scaled_list[[2]]
 
-
+barplot(table(fcm_squared_scaled_7$cluster), main = "number of observations in each cluster")
 data <- cbind(fcm_squared_scaled_7$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1",seperated = F)
 silhoette_fun(fcm_squared_scaled_7)
 sil_fun(fcm_squared_scaled_7,extract_data_30_scaled[,-1])
 mosaic(extract_data_30_gwl,fcm_squared_scaled_7$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_scaled_7$cluster,fcm_squared_scaled_7$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
+manova_squared_scaled_7 <- manova.fun(data = extract_data_30_scaled,fcm_squared_scaled_7$cluster)
+manova_squared_scaled_7[c(which(manova_squared_scaled_7$significance == "no")),1]
+save(manova_squared_scaled_7,file = "clustering/fuzzyClustering/manova_squared_scaled_7.RData")
 
 # 8 cluster
-# eigentlich nur 6 cluster
-fcm_squared_scaled_8  <- fcm_squared_scaled_list[[2]]
+# eigentlich nur 5 cluster
 
-
-data <- cbind(fcm_squared_scaled_8$cluster,extract_data_30_gwl)
+barplot(table(fcm_squared_scaled_list[[3]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_squared_scaled_list[[3]]$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1",seperated = F)
-silhoette_fun(fcm_squared_scaled_8)
-sil_fun(fcm_squared_scaled_8,extract_data_30_scaled[,-1])
-mosaic(extract_data_30_gwl,fcm_squared_scaled_8$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_scaled_9$cluster,fcm_squared_scaled_9$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
-
-
-
+silhoette_fun(fcm_squared_scaled_list[[3]])
+sil_fun(fcm_squared_scaled_list[[3]],extract_data_30_scaled[,-1])
+mosaic(extract_data_30_gwl,fcm_squared_scaled_list[[3]]$cluster,title = "mosaic")
+manova_squared_scaled_8 <- manova.fun( extract_data_30_scaled,fcm_squared_scaled_list[[3]]$cluster)
+manova_squared_scaled_8[c(which(manova_squared_scaled_8$significance == "no")),1]
+save(manova_squared_scaled_8,file = "clustering/fuzzyClustering/manova_squared_scaled_8.RData")
 
 
 # 9 cluster
-# nur 7 cluster
 
-fcm_squared_scaled_9  <- fcm_squared_scaled_list[[4]]
-
-
-data <- cbind(fcm_squared_scaled_9$cluster,extract_data_30_gwl)
+barplot(table(fcm_squared_scaled_list[[4]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_squared_scaled_list[[4]]$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1",seperated = F)
-silhoette_fun(fcm_squared_scaled_9)
-sil_fun(fcm_squared_scaled_9,extract_data_30_scaled[,-1])
-mosaic(extract_data_30_gwl,fcm_squared_scaled_9$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_scaled_9$cluster,fcm_squared_scaled_9$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
+silhoette_fun(fcm_squared_scaled_list[[4]])
+sil_fun(fcm_squared_scaled_list[[4]],extract_data_30_scaled[,-1])
+mosaic(extract_data_30_gwl,fcm_squared_scaled_list[[4]]$cluster,title = "mosaic")
+manova_squared_scaled_9 <- manova.fun( extract_data_30_scaled,fcm_squared_scaled_list[[4]]$cluster)
+manova_squared_scaled_9[c(which(manova_squared_scaled_9$significance == "no")),1]
+save(manova_squared_scaled_9,file = "clustering/fuzzyClustering/manova_squared_scaled_9.RData")
+
 
 
 #squared scaled weighted
@@ -293,33 +247,57 @@ save(fcm_squared_scaled_weighted_list,file = "clustering/fuzzyClustering/squared
 
 fcm_squared_scaled_weighted <- finding_optimal_cluster_number(fcm_squared_scaled_weighted_list,c(6,7,8,9,10,11,12,13,14,15))
 
-#6,7,10,15
+
 
 # 6 cluster 
+barplot(table(fcm_squared_scaled_weighted_list[[1]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_squared_scaled_weighted_list[[1]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_squared_scaled_weighted_list[[1]])
+sil_fun(fcm_squared_scaled_weighted_list[[1]],extract_data_30_scaled_weighted[,-1])
+mosaic(extract_data_30_gwl,fcm_squared_scaled_weighted_list[[1]]$cluster,title = "mosaic")
+manova_squared_scaled_weighted_6 <- manova.fun( extract_data_30_scaled,fcm_squared_scaled_weighted_list[[1]]$cluster)
+manova_squared_scaled_weighted_6[c(which(manova_squared_scaled_weighted_6$significance == "no")),1]
+save(manova_squared_scaled_weighted_6,file = "clustering/fuzzyClustering/manova_squared_scaled_weighted_6.RData")
 
-fcm_squared_scaled_weighted_6 <- fcm(extract_data_30_scaled_weighted[,-1],6)
-save(fcm_squared_scaled_weighted_6,file = "clustering/fuzzyClustering/fcm_squared_scaled_weighted_6.RData" )
+# 7 cluster 
+barplot(table(fcm_squared_scaled_weighted_list[[2]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_squared_scaled_weighted_list[[2]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_squared_scaled_weighted_list[[2]])
+sil_fun(fcm_squared_scaled_weighted_list[[2]],extract_data_30_scaled_weighted[,-1])
+mosaic(extract_data_30_gwl,fcm_squared_scaled_weighted_list[[2]]$cluster,title = "mosaic")
+manova_squared_scaled_weighted_7 <- manova.fun( extract_data_30_scaled,fcm_squared_scaled_weighted_list[[2]]$cluster)
+manova_squared_scaled_weighted_7[c(which(manova_squared_scaled_weighted_7$significance == "no")),1]
+save(manova_squared_scaled_weighted_7,file = "clustering/fuzzyClustering/manova_squared_scaled_weighted_7.RData")
+
+# cluster 9
+
+barplot(table(fcm_squared_scaled_weighted_list[[4]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_squared_scaled_weighted_list[[4]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_squared_scaled_weighted_list[[4]])
+sil_fun(fcm_squared_scaled_weighted_list[[4]],extract_data_30_scaled_weighted[,-1])
+mosaic(extract_data_30_gwl,fcm_squared_scaled_weighted_list[[4]]$cluster,title = "mosaic")
+manova_squared_scaled_weighted_9 <- manova.fun( extract_data_30_scaled,fcm_squared_scaled_weighted_list[[4]]$cluster)
+manova_squared_scaled_weighted_9[c(which(manova_squared_scaled_weighted_9$significance == "no")),1]
+save(manova_squared_scaled_weighted_9,file = "clustering/fuzzyClustering/manova_squared_scaled_weighted_9.RData")
 
 
-data <- cbind(fcm_squared_scaled_weighted_6$cluster,extract_data_30_gwl)
-Cl.timeline(data, "V1",seperated = T)
-sil_fun(fcm_squared_scaled_weighted_6,extract_data_30_scaled_weighted[,-1])
-mosaic(extract_data_30_gwl,fcm_squared_scaled_weighted_6$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_scaled_weighted_6$cluster,fcm_squared_scaled_weighted6$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
 
-#8 cluster
-#########
-fcm_squared_scaled_weighted_8 <- fcm(extract_data_30_scaled_weighted[,-1],8)
-save(fcm_squared_scaled_weighted_8,file = "clustering/fuzzyClustering/fcm_squared_scaled_weighted_8.RData" )
+# cluster 10
 
+# 10 
+barplot(table(fcm_squared_scaled_weighted_list[[5]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_squared_scaled_weighted_list[[5]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_squared_scaled_weighted_list[[5]])
+sil_fun(fcm_squared_scaled_weighted_list[[5]],extract_data_30_scaled_weighted[,-1])
+mosaic(extract_data_30_gwl,fcm_squared_scaled_weighted_list[[5]]$cluster,title = "mosaic")
+manova_squared_scaled_weighted_10 <- manova.fun( extract_data_30_scaled,fcm_squared_scaled_weighted_list[[5]]$cluster)
+manova_squared_scaled_weighted_10[c(which(manova_squared_scaled_weighted_10$significance == "no")),1]
+save(manova_squared_scaled_weighted_10,file = "clustering/fuzzyClustering/manova_squared_scaled_weighted_10.RData")
 
-data <- cbind(fcm_squared_scaled_weighted_8$cluster,extract_data_30_gwl)
-Cl.timeline(data, "V1",seperated = T)
-sil_fun(fcm_squared_scaled_weighted_8,extract_data_30_scaled_weighted[,-1])
-mosaic(extract_data_30_gwl,fcm_squared_scaled_weighted_8$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_scaled_weighted_8$cluster,fcm_squared_scaled_weighted_8$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
 
 
 ################
@@ -459,11 +437,33 @@ names(fcm_scaled_cor_list) <- name
 
 get.dmetrics(dmt = "all")
 
-save(fcm_scaled_cor_list,file = "clustering/fuzzyClustering/scaled_cor_fcm_6_26_30.RData")
+save(fcm_scaled_cor_list,file = "clustering/fuzzyClustering/scaled_cor_list.RData")
 
 fcm_scaled_cor <- finding_optimal_cluster_number(fcm_scaled_cor_list,c(6,7,8,9,10,11,12,13,14,15))
 
+# cluster 8 
+
+barplot(table(fcm_scaled_cor_list[[3]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_scaled_cor_list[[3]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_scaled_cor_list[[3]])
+sil_fun(fcm_scaled_cor_list[[3]],extract_data_30_scaled[,-1])
+mosaic(extract_data_30_gwl,fcm_scaled_cor_list[[3]]$cluster,title = "mosaic")
+manova_scaled_cor_8 <- manova.fun( extract_data_30_scaled,fcm_scaled_cor_list[[3]]$cluster)
+manova_scaled_cor_8[c(which(manova_scaled_cor_8$significance == "no")),1]
+save(manova_scaled_cor_8,file = "clustering/fuzzyClustering/manova_scaled_cor_8.RData")
+
 # cluster 10 
+
+barplot(table(fcm_scaled_cor_list[[5]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_scaled_cor_list[[5]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_scaled_cor_list[[5]])
+sil_fun(fcm_scaled_cor_list[[5]],extract_data_30_scaled[,-1])
+mosaic(extract_data_30_gwl,fcm_scaled_cor_list[[5]]$cluster,title = "mosaic")
+manova_scaled_cor_10 <- manova.fun( extract_data_30_scaled,fcm_scaled_cor_list[[5]]$cluster)
+manova_scaled_cor_10[c(which(manova_scaled_cor_10$significance == "no")),1]
+save(manova_scaled_cor_10,file = "clustering/fuzzyClustering/manova_scaled_cor_10.RData")
 
 
 
@@ -483,17 +483,40 @@ fcm_scaled_weighted_cor_list <- list(fcm_scaled_weighted_cor6,fcm_scaled_weighte
 name <- c("fcm6","fcm7","fcm8","fcm9","fcm10","fcm11","fcm12","fcm13","fcm14","fcm15")
 names(fcm_scaled_weighted_cor_list) <- name
 
-save(fcm_scaled_weighted_cor_list,file = "clustering/fuzzyClustering/scaled_weighted_cor_fcm_6_26_30.RData")
+save(fcm_scaled_weighted_cor_list,file = "clustering/fuzzyClustering/scaled_weighted_cor_list.RData")
 
-fcm_scaled_weighted_cor <- finding_optimal_cluster_number(fcm_scaled_weighted_list,c(6,7,8,9,10,11,12,13,14,15))
+fcm_scaled_weighted_cor <- finding_optimal_cluster_number(fcm_scaled_weighted_cor_list,c(6,7,8,9,10,11,12,13,14,15))
 
-# Cluster 11 (eventuell 12,13, 14 anschauen)
+# Cluster 6 und 7
+
+# cluster 6
+barplot(table(fcm_scaled_weighted_cor_list[[1]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_scaled_weighted_cor_list[[1]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_scaled_weighted_cor_list[[1]])
+sil_fun(fcm_scaled_weighted_cor_list[[1]],extract_data_30_scaled_weighted[,-1])
+mosaic(extract_data_30_gwl,fcm_scaled_weighted_cor_list[[1]]$cluster,title = "mosaic")
+manova_scaled_weighted_cor_6 <- manova.fun( extract_data_30_scaled,fcm_scaled_weighted_cor_list[[1]]$cluster)
+manova_scaled_weighted_cor_6[c(which(manova_scaled_weighted_cor_6$significance == "no")),1]
+save(manova_scaled_weighted_cor_6,file = "clustering/fuzzyClustering/manova_scaled_weighted_cor_6.RData")
+
+# cluster 7
+barplot(table(fcm_scaled_weighted_cor_list[[2]]$cluster), main = "number of observations in each cluster")
+data <- cbind(fcm_scaled_weighted_cor_list[[2]]$cluster,extract_data_30_gwl)
+Cl.timeline(data, "V1",seperated = F)
+silhoette_fun(fcm_scaled_weighted_cor_list[[2]])
+sil_fun(fcm_scaled_weighted_cor_list[[2]],extract_data_30_scaled_weighted[,-1])
+mosaic(extract_data_30_gwl,fcm_scaled_weighted_cor_list[[2]]$cluster,title = "mosaic")
+manova_scaled_weighted_cor_7 <- manova.fun( extract_data_30_scaled,fcm_scaled_weighted_cor_list[[2]]$cluster)
+manova_scaled_weighted_cor_7[c(which(manova_scaled_weighted_cor_7$significance == "no")),1]
+save(manova_scaled_weighted_cor_7,file = "clustering/fuzzyClustering/manova_scaled_weighted_cor_7.RData")
+
 
 ############### Manhattan
 
 # unscaled manhattan
 
-fcm_man_unscaled_6 <- fcm(extract_data_30[,-1],6, iter.max = 500,dmetric = "manhattan") 
+fcm_man_unscaled_6 <- fcm(extract_data_30[,-1],6,dmetric = "manhattan") 
 fcm_man_unscaled_8 <- fcm(extract_data_30[,-1],8, iter.max = 500, dmetric = "manhattan")
 fcm_man_unscaled_9 <- fcm(extract_data_30[,-1],9, iter.max = 500, dmetric = "manhattan") 
 fcm_man_unscaled_10 <- fcm(extract_data_30[,-1],10, iter.max = 500, dmetric = "manhattan")
@@ -509,56 +532,46 @@ fcm_man_unscaled <- finding_optimal_cluster_number(fcm_man_unscaled_list,c(6,8,9
 
 
 # scaled manhattan
-
-fcm_man_scaled_6 <- fcm(extract_data_30_scaled[,-1],6, iter.max = 500,dmetric = "manhattan") 
-fcm_man_scaled_8 <- fcm(extract_data_30_scaled[,-1],8, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_9 <- fcm(extract_data_30_scaled[,-1],9, iter.max = 500, dmetric = "manhattan") 
-fcm_man_scaled_10 <- fcm(extract_data_30_scaled[,-1],10, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_11 <- fcm(extract_data_30_scaled[,-1],11, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_15 <- fcm(extract_data_30_scaled[,-1],15, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_list <- list(fcm_man_scaled_6,fcm_man_scaled_8,fcm_man_scaled_9,fcm_man_scaled_10,fcm_man_scaled_11,fcm_man_scaled_15)
-name <- c("fcm6","fcm8","fcm9","fcm10","fcm11","fcm15")
+barplot(table(fcm_man_scaled_8$cluster))
+fcm_man_scaled_6 <- fcm(extract_data_30_scaled[,-1],6,dmetric = "manhattan") 
+fcm_man_scaled_7 <- fcm(extract_data_30_scaled[,-1],7,dmetric = "manhattan") 
+fcm_man_scaled_8 <- fcm(extract_data_30_scaled[,-1],8, dmetric = "manhattan")
+fcm_man_scaled_9 <- fcm(extract_data_30_scaled[,-1],9, dmetric = "manhattan") 
+fcm_man_scaled_10 <- fcm(extract_data_30_scaled[,-1],10,  dmetric = "manhattan")
+fcm_man_scaled_11 <- fcm(extract_data_30_scaled[,-1],11,  dmetric = "manhattan")
+fcm_man_scaled_12 <- fcm(extract_data_30_scaled[,-1],12,dmetric = "manhattan") 
+fcm_man_scaled_13 <- fcm(extract_data_30_scaled[,-1],13,dmetric = "manhattan") 
+fcm_man_scaled_14 <- fcm(extract_data_30_scaled[,-1],14,dmetric = "manhattan") 
+fcm_man_scaled_15 <- fcm(extract_data_30_scaled[,-1],15,  dmetric = "manhattan")
+fcm_man_scaled_list <- list(fcm_man_scaled_6,fcm_man_scaled_7,fcm_man_scaled_8,fcm_man_scaled_9,fcm_man_scaled_10,fcm_man_scaled_11,fcm_man_scaled_12,fcm_man_scaled_13,fcm_man_scaled_14,fcm_man_scaled_15)
+name <- c("fcm6","fcm7","fcm8","fcm9","fcm10","fcm11","fcm12","fcm13","fcm14","fcm15")
 names(fcm_man_scaled_list) <- name
 
-save(fcm_man_scaled_list,file = "clustering/fuzzyClustering/scaled_man_fcm_6_26_30.RData")
+save(fcm_man_scaled_list,file = "clustering/fuzzyClustering/fcm_man_scaled_list.RData")
 
-fcm_man_scaled <- finding_optimal_cluster_number(fcm_man_scaled_list,c(6,8,9,10,11,15))
-
-
-# unscaled weighted manhattan
-
-fcm_man_unscaled_weighted_6 <- fcm(extract_data_30_weighted[,-1],6, iter.max = 500,dmetric = "manhattan") 
-fcm_man_unscaled_weighted_8 <- fcm(extract_data_30_weighted[,-1],8, iter.max = 500, dmetric = "manhattan")
-fcm_man_unscaled_weighted_9 <- fcm(extract_data_30_weighted[,-1],9, iter.max = 500, dmetric = "manhattan") 
-fcm_man_unscaled_weighted_10 <- fcm(extract_data_30_weighted[,-1],10, iter.max = 500, dmetric = "manhattan")
-fcm_man_unscaled_weighted_11 <- fcm(extract_data_30_weighted[,-1],11, iter.max = 500, dmetric = "manhattan")
-fcm_man_unscaled_weighted_15 <- fcm(extract_data_30_weighted[,-1],15, iter.max = 500, dmetric = "manhattan")
-fcm_man_unscaled_weighted_list <- list(fcm_man_unscaled_weighted_6,fcm_man_unscaled_weighted_8,fcm_man_unscaled_weighted_9,fcm_man_unscaled_weighted_10,fcm_man_unscaled_weighted_11,fcm_man_unscaled_weighted_15)
-name <- c("fcm6","fcm8","fcm9","fcm10","fcm11","fcm15")
-names(fcm_man_unscaled_weighted_list) <- name
-
-save(fcm_man_unscaled_weighted_list,file = "clustering/fuzzyClustering/unscaled_weighted_fcm_man_6_26_30.RData")
-
-fcm_man_unscaled_weighted <- finding_optimal_cluster_number(fcm_unscaled_weighted_list,c(6,8,9,10,11,15))
-
+fcm_man_scaled <- finding_optimal_cluster_number(fcm_man_scaled_list,c(6,7,8,9,10,11,12,13,14,15))
 
 
 
 # scaled weighted mahattan
 
-fcm_man_scaled_weighted_6 <- fcm(extract_data_30_scaled_weighted[,-1],6, iter.max = 500,dmetric = "manhattan") 
-fcm_man_scaled_weighted_8 <- fcm(extract_data_30_scaled_weighted[,-1],8, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_weighted_9 <- fcm(extract_data_30_scaled_weighted[,-1],9, iter.max = 500, dmetric = "manhattan") 
-fcm_man_scaled_weighted_10 <- fcm(extract_data_30_scaled_weighted[,-1],10, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_weighted_11 <- fcm(extract_data_30_scaled_weighted[,-1],11, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_weighted_15 <- fcm(extract_data_30_scaled_weighted[,-1],15, iter.max = 500, dmetric = "manhattan")
-fcm_man_scaled_weighted_list <- list(fcm_man_scaled_weighted_6,fcm_man_scaled_weighted_8,fcm_man_scaled_weighted_9,fcm_man_scaled_weighted_10,fcm_man_scaled_weighted_11,fcm_man_scaled_weighted_15)
-name <- c("fcm6","fcm8","fcm9","fcm10","fcm11","fcm15")
+fcm_man_scaled_weighted_6 <- fcm(extract_data_30_scaled_weighted[,-1],6,dmetric = "manhattan") 
+fcm_man_scaled_weighted_7 <- fcm(extract_data_30_scaled_weighted[,-1],7,dmetric = "manhattan") 
+fcm_man_scaled_weighted_8 <- fcm(extract_data_30_scaled_weighted[,-1],8, dmetric = "manhattan")
+fcm_man_scaled_weighted_9 <- fcm(extract_data_30_scaled_weighted[,-1],9,  dmetric = "manhattan") 
+fcm_man_scaled_weighted_10 <- fcm(extract_data_30_scaled_weighted[,-1],10, dmetric = "manhattan")
+fcm_man_scaled_weighted_11 <- fcm(extract_data_30_scaled_weighted[,-1],11, dmetric = "manhattan")
+fcm_man_scaled_weighted_12 <- fcm(extract_data_30_scaled_weighted[,-1],12,dmetric = "manhattan") 
+fcm_man_scaled_weighted_13 <- fcm(extract_data_30_scaled_weighted[,-1],13,dmetric = "manhattan") 
+fcm_man_scaled_weighted_14 <- fcm(extract_data_30_scaled_weighted[,-1],14,dmetric = "manhattan") 
+fcm_man_scaled_weighted_15 <- fcm(extract_data_30_scaled_weighted[,-1],15,  dmetric = "manhattan")
+fcm_man_scaled_weighted_list <- list(fcm_man_scaled_weighted_6,fcm_man_scaled_weighted_7,fcm_man_scaled_weighted_8,fcm_man_scaled_weighted_9,fcm_man_scaled_weighted_10,fcm_man_scaled_weighted_11,fcm_man_scaled_weighted12,fcm_man_scaled_weighted_13,fcm_man_scaled_weighted_14,fcm_man_scaled_weighted_15)
+name <- c("fcm6","fcm7","fcm8","fcm9","fcm10","fcm11","fcm12","fcm13","fcm14","fcm15")
 names(fcm_man_scaled_weighted_list) <- name
 
-save(fcm_man_scaled_weighted_list,file = "clustering/fuzzyClustering/scaled_weighted_man_fcm_6_26_30.RData")
+save(fcm_man_scaled_weighted_list,file = "clustering/fuzzyClustering/fcm_man_scaled_weighted_list.RData")
 
-fcm_man_scaled_weighted <- finding_optimal_cluster_number(fcm_scaled_weighted_list,c(6,8,9,10,11,15))
+fcm_man_scaled_weighted <- finding_optimal_cluster_number(fcm_scaled_weighted_list,c(6,7,8,9,10,11,12,13,14,15))
 
 
 # Cluster Plots ( werden eventuell später noch benötigt)
