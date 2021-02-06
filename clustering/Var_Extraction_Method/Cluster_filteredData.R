@@ -28,17 +28,17 @@ dissimilarityPAM <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1
   }
   
   sil_width <- c(NA)
-  for(i in 4:15){
+  for(i in 5:9){
     pam_fit <- pam(dissimilarity,
                    diss = TRUE,
                    k = i)
     
-    sil_width[i-3] <- pam_fit$silinfo$avg.width
+    sil_width[i-4] <- pam_fit$silinfo$avg.width
   }
-  plot(4:15, sil_width,
+  plot(5:9, sil_width,
        xlab = "Number of clusters",
        ylab = "Silhouette Width",)
-  lines(4:15, sil_width)
+  lines(5:9, sil_width)
   print(sil_width)
   return(dissimilarity)
 }
