@@ -247,3 +247,5 @@ sil(pam.euc.preweighted.diff, pam.euc.preweighted.diff$clustering, diss.pam.euc.
 data.euc.preweighted.diff <- copy(data)[, cluster := pam.euc.preweighted.diff$clustering]
 Cl.timeline(copy(data.euc.preweighted.diff))
 mosaic(copy(data), pam.euc.preweighted.diff$clustering, "Euclidean, preweighted, diff")
+
+

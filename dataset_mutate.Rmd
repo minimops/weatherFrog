@@ -6,14 +6,14 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-require(data.table)
-require(checkmate)
-require(stringr)
-require(rnaturalearth)
-require(rnaturalearthdata)
-require(ggplot2)
-require(tidyverse)
-require(stringr)
+library(data.table)
+library(checkmate)
+library(stringr)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggplot2)
+library(tidyverse)
+library(stringr)
 ```
 
 ```{r 0 functions}
