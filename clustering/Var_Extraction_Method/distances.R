@@ -167,6 +167,7 @@ saveRDS(PAMhelper(scaleNweight(copy(data),
 diss.pam.manhat.preweighted2 <- readRDS("Data/diss_pam_manhat_weighted2.rds")
 pam.manhat.preweighted.diff <- pam(diss.pam.manhat.preweighted2, diss = TRUE, k = 7)
 saveRDS(pam.manhat.preweighted.diff, "Data/pam.manhat.preweighted.diff.rds")
+pam.manhat.preweighted.diff <- readRDS("Data/pam.manhat.preweighted.diff.rds")
 
 sil(pam.manhat.preweighted.diff, pam.manhat.preweighted.diff$clustering, diss.pam.manhat.preweighted2, "pam")
 data.manhat.preweighted.diff <- copy(data)[, cluster := pam.manhat.preweighted.diff$clustering]
@@ -242,6 +243,7 @@ saveRDS(PAMhelper(scaleNweight(copy(data),
 diss.pam.euc.preweighted.diff <- readRDS("Data/diss_pam_euc_weighted2.rds")
 pam.euc.preweighted.diff <- pam(diss.pam.euc.preweighted.diff, diss = TRUE, k = 5)
 saveRDS(pam.euc.preweighted.diff, "Data/pam.euc.preweighted.diff.rds")
+pam.euc.preweighted.diff <- readRDS("Data/pam.euc.preweighted.diff")
 
 sil(pam.euc.preweighted.diff, pam.euc.preweighted.diff$clustering, diss.pam.euc.preweighted.diff, "pam")
 data.euc.preweighted.diff <- copy(data)[, cluster := pam.euc.preweighted.diff$clustering]
