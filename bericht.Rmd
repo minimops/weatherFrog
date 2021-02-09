@@ -1,8 +1,15 @@
 ---
 title: |
   ![](lmu.jpg)
-  Clusteranalyse von Wetterdaten zur Identifikation von Wetterlagetypen
-subtitle: "Bericht zum Statistischen Praktikum im WS 2020/21"
+  Clusteranalyse von Wetterdaten zur Identifikation von Wetterlagetypen  
+subtitle: |
+  | Bericht zum Statistischen Praktikum im WS 2020/21
+  |
+  |
+  | Betreuer: Prof. Dr. Helmut Küchenhoff
+  | Projektpartner: Maximilian Weigert und Magdalena Mittermeier 
+  |
+  |
 author: "Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto"
 date: "01. März 2021"
 output: 
@@ -17,7 +24,7 @@ header-includes:
   - \usepackage{float}
   - \setlength{\parskip}{0em}
   - \usepackage[font={small,it}, labelfont={bf}]{caption}
-bibliography: 
+bibliography: references.bib
 abstract: |
   to be written.
 geometry: margin=2.5cm
@@ -56,8 +63,10 @@ longrun = FALSE # set to TRUE to rerun all code
 
 ```{r abbreviations, echo=FALSE}
 data.table(
-  Term = c("Großwetterlage"),
-  Abbreviation = c("GWL")) %>%
+  Term = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids",
+           "Density-Based Spatial Clustering of Applications with Noise", "Ludwig-Maximilians-Universität"),
+  Abbreviation = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU")) %>%
   arrange(Term) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -70,6 +79,18 @@ data.table(
 \pagenumbering{arabic} 
 
 # Einleitung
+Der Klimawandel bringt viele Veränderungen mit sich. Magdalena Mittermeier vom Department für Geografie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich auch das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert. 
+
+Im Rahmen des Statistischen Praktikums unterstützen wir dieses Projekt, indem wir beobachtete Wetterdaten auf täglicher Basis in Cluster einteilen.
+
+## Großwetterlagen
+Es gibt mehrere Systeme, die Wettertypen klassifizieren. Die uns zur Verfügung gestellte Einteilung in Großwetterlagen beruht auf dem Katalog nach Hess und Brezowsky, der im Jahr 1952 veröffentlicht wurde. Es wurden 29 Großwetterlagen über Europa und dem Atlantik definiert. Zudem gibt es die Kategorie Unbestimmt (U), die angegeben wurde, wenn sich ein Tag keiner GWL zuordnen ließ (siehe @pik119). Die jeweiligen Tage lassen sich anhand von mehreren Variablen einteilen (TODO nachschauen wonach die eingeteilt werden!) 
+
+
+## Daten
+Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Außerdem ist uns die GWL für jeden Tag im Zeitraum von 1900 bis 2010 bekannt. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert.
+
+ 
 ## Cluster
 ## Distanzmetriken
 
@@ -86,6 +107,7 @@ data.table(
 #### Kmeans
 #### Fuzzy
 ## Analyse der Clusterergebnisse
-
-
 # Schluss
+
+
+# Referenzen
