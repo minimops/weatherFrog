@@ -14,7 +14,7 @@ anova.fun <- function(data,cluster_vector,date_variable = date){
   # aova
   anova_solution <- aov(cluster ~., data = data_for_anova )
   anova_mat <- summary(anova_solution)[[1]]
-  anova_mat <- na.omit(anova_mat)
+
   
 
   
