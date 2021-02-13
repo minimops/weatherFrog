@@ -39,18 +39,16 @@ getCategorical <- function(dataLong, data) {
 }
 
 
-getEvaluation <- function(clustering, distance, data, title = "PAM", on = "sil") {
+getEvaluation <- function(clustering, distance, data, title = "PAM") {
   assertDataTable(data)
   assertString(title)
-  assertString(on)
-  assertSubset(on, choices = c("sil", "timeline", "mosaic"))
-  clusterVector <- clustering$clustering
   
+  clusterVector <- clustering$clustering
   dataTimeline <- copy(data)[, cluster := clusterVector]
   
-  ifelse(on == "sil", sil(clustering, clusterVector, distance, "pam"),
-         ifelse(on == "timeline",  Cl.timeline(copy(dataTimeline)),
-         mosaic(copy(data), clusterVector, title = title)))
+  sil(clustering, clusterVector, distance, "pam")
+  Cl.timeline(copy(dataTimeline))
+  mosaic(copy(data), clusterVector, title)
 }
 
 
