@@ -9,19 +9,28 @@ data <- extrapolate(seq(1971, 2000))
 datagwl <- attachGwl(copy(data))
 datagwl
 
-getSeason2 <- function(dates) {
+separateBySeason <- function(data, Season = "Summer") {
+  assertDataTable(data)
+  assertSubset("date", names(data))
+  assertString(Season)
+  assertSubset(Season, choices = c("Summer", "Winter"))
+  
   WS <- as.Date("2012-10-16", format = "%Y-%m-%d")
   SS <- as.Date("2012-04-16", format = "%Y-%m-%d")
   
-  d <- as.Date(strftime(dates, format = "2012-%m-%d"))
+  d <- as.Date(strftime(data$date, format = "2012-%m-%d"))
+  d <- ifelse(d >= SS & d < WS, "Summer", "Winter")
   
-  ifelse(d >= SS & d < WS, "Summer", "Winter")
+  dataSeason <- copy(data)[, season := d]
+  
+  ifelse(Season == "Summer", return(dataSeason[season == "Summer"][, season := NULL]), 
+                             return(dataSeason[season == "Winter"][, season := NULL]))
 }
 
 season <- getSeason2(datagwl$date)
 datagwl <- datagwl[, season := season]
-
-
+dataSummer <- separateBySeason(copy(data))
+dataWinter <- separateBySeason(copy(data), "Winter")
 
 ################# just for saving the plots!!! ####################
 
