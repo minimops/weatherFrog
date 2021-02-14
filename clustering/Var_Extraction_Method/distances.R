@@ -38,6 +38,20 @@ getCategorical <- function(dataLong, data) {
   dataCate
 }
 
+
+getEvaluation <- function(clustering, distance, data, title = "PAM") {
+  assertDataTable(data)
+  assertString(title)
+  
+  clusterVector <- clustering$clustering
+  dataTimeline <- copy(data)[, cluster := clusterVector]
+  
+  sil(clustering, clusterVector, distance, "pam")
+  Cl.timeline(copy(dataTimeline))
+  mosaic(copy(data), clusterVector, title)
+}
+
+
 ### 1. Gower with categorial quadrants without PCA
 data <- extrapolate(seq(1971, 2000))
 #data <- extrapolate(seq(2000, 2010))
@@ -62,6 +76,11 @@ saveRDS(PAMhelper(copy(dataCategorial),
                   dist = FALSE,
                   fname = "PAM_gower_categorical_9-12"), 
         "diss.pam.gower.cat9-12.rds")
+
+diss.pam.gower.cat <- readRDS("Data/diss_pam_gower_cat.rds")
+pam.gower.cat <- pam(diss.pam.gower.cat, diss = TRUE, k = 7)
+# saveRDS(pam.gower.cat, "Data/pam.gower.cat.rds")
+getEvaluation(pam.gower.cat, diss.pam.gower.cat, dataCategorial, "GOWER with CATEGORIAL QUADRANTS")
 
 
 ## WEIGHTS: die Gruppen mit Verteilung, mean in Quadranten so gelassen, euclidean und quadranten zusammengefasst
@@ -90,6 +109,16 @@ saveRDS(PAMhelper(copy(dataCategorialPCA),
                   fname = "PAM_gower_categorical_pca_9-12"), 
         "diss.pam.gower.cat.pca9-12.rds")
 
+diss.pam.gower.cat.pca <- readRDS("Data/diss_pam_gower_cat_pca.rds")
+pam.gower.cat.pca <- pam(diss.pam.gower.cat.pca, diss = TRUE, k = 8)
+saveRDS(pam.gower.cat.pca, "Data/pam.gower.cat.pca.rds")
+
+
+sil(pam.gower.cat.pca, pam.gower.cat.pca$clustering, diss.pam.gower.cat.pca, "pam")
+data.gower.cat.pca <- copy(dataCategorialPCA)[, cluster := pam.gower.cat.pca$clustering]
+Cl.timeline(copy(data.gower.cat.pca))
+mosaic(copy(dataCategorialPCA), pam.gower.cat.pca$clustering, "Gower, PCA, Quadrant Categories")
+
 
 ### 3. MANHATTAN weighted in scaleNweight
 diss.pam.manhat.weighted <- dissimilarityPAM(scaleNweight(copy(data), weight = TRUE),
@@ -104,6 +133,14 @@ saveRDS(PAMhelper(scaleNweight(copy(data), weight = TRUE),
           fname = "PAM_Manhattan_preweighted_default"), 
         "diss.pam.manhat.weighted.rds")
 
+diss.pam.manhat.weighted <- readRDS("Data/diss_pam_manhat_weighted.rds")
+pam.manhat.preweighted <- pam(diss.pam.manhat.weighted, diss = TRUE, k = 8)
+saveRDS(pam.manhat.preweighted, "Data/pam.manhat.preweighted.rds")
+
+sil(pam.manhat.preweighted, pam.manhat.preweighted$clustering, diss.pam.manhat.weighted, "pam")
+data.manhat.preweighted <- copy(data)[, cluster := pam.manhat.preweighted$clustering]
+Cl.timeline(copy(data.manhat.preweighted))
+mosaic(copy(data), pam.manhat.preweighted$clustering, "Manhattan, preweighted")
 
 
 ### 4. MANHATTAN weighted in scaleNweight, different weights (mean und min,max höher gewichtet als restliche verteilungssachen)
@@ -125,6 +162,15 @@ saveRDS(PAMhelper(scaleNweight(copy(data),
                   fname = "PAM_Manhattan_preweighted_diff"), 
         "diss.pam.manhat.weighted2.rds")
 
+diss.pam.manhat.preweighted2 <- readRDS("Data/diss_pam_manhat_weighted2.rds")
+pam.manhat.preweighted.diff <- pam(diss.pam.manhat.preweighted2, diss = TRUE, k = 7)
+saveRDS(pam.manhat.preweighted.diff, "Data/pam.manhat.preweighted.diff.rds")
+pam.manhat.preweighted.diff <- readRDS("Data/pam.manhat.preweighted.diff.rds")
+
+sil(pam.manhat.preweighted.diff, pam.manhat.preweighted.diff$clustering, diss.pam.manhat.preweighted2, "pam")
+data.manhat.preweighted.diff <- copy(data)[, cluster := pam.manhat.preweighted.diff$clustering]
+Cl.timeline(copy(data.manhat.preweighted.diff))
+mosaic(copy(data), pam.manhat.preweighted.diff$clustering, "Manhattan, preweighted, diff")
 
 ### 5. MANHATTAN weighted in scaleNweight with PCA
 diss.pam.manhat.30.allpca.weighted <- dissimilarityPAM(scaleNweight(copy(dataPCA), 
@@ -192,6 +238,7 @@ saveRDS(PAMhelper(scaleNweight(copy(data),
         "diss.pam.euc.weighted2.rds")
 
 
+<<<<<<< HEAD
 
 ###9 trial of just mslp vars
 
@@ -214,3 +261,16 @@ saveRDS(PAMhelper(scaleNweight(copy(dat_geopot)),
                   dist = FALSE,
                   fname = "PAM_Manhattan_justGeo"), 
         "diss_pam_man_justGeo.rds")
+=======
+diss.pam.euc.preweighted.diff <- readRDS("Data/diss_pam_euc_weighted2.rds")
+pam.euc.preweighted.diff <- pam(diss.pam.euc.preweighted.diff, diss = TRUE, k = 5)
+saveRDS(pam.euc.preweighted.diff, "Data/pam.euc.preweighted.diff.rds")
+pam.euc.preweighted.diff <- readRDS("Data/pam.euc.preweighted.diff")
+
+sil(pam.euc.preweighted.diff, pam.euc.preweighted.diff$clustering, diss.pam.euc.preweighted.diff, "pam")
+data.euc.preweighted.diff <- copy(data)[, cluster := pam.euc.preweighted.diff$clustering]
+Cl.timeline(copy(data.euc.preweighted.diff))
+mosaic(copy(data), pam.euc.preweighted.diff$clustering, "Euclidean, preweighted, diff")
+
+
+>>>>>>> 4e57cd00fb231aea8af49af2b385c7299a5b3ade
