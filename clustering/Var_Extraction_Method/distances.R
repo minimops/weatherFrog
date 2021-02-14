@@ -238,7 +238,6 @@ saveRDS(PAMhelper(scaleNweight(copy(data),
         "diss.pam.euc.weighted2.rds")
 
 
-<<<<<<< HEAD
 
 ###9 trial of just mslp vars
 
@@ -261,7 +260,9 @@ saveRDS(PAMhelper(scaleNweight(copy(dat_geopot)),
                   dist = FALSE,
                   fname = "PAM_Manhattan_justGeo"), 
         "diss_pam_man_justGeo.rds")
-=======
+
+
+
 diss.pam.euc.preweighted.diff <- readRDS("Data/diss_pam_euc_weighted2.rds")
 pam.euc.preweighted.diff <- pam(diss.pam.euc.preweighted.diff, diss = TRUE, k = 5)
 saveRDS(pam.euc.preweighted.diff, "Data/pam.euc.preweighted.diff.rds")
@@ -273,4 +274,3 @@ Cl.timeline(copy(data.euc.preweighted.diff))
 mosaic(copy(data), pam.euc.preweighted.diff$clustering, "Euclidean, preweighted, diff")
 
 
->>>>>>> 4e57cd00fb231aea8af49af2b385c7299a5b3ade
