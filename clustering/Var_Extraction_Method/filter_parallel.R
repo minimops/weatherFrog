@@ -1,10 +1,11 @@
 #paralleling filtering
 
 library(parallel)
+library(data.table)
 
-fillFunkyPerDay <- function(day) {
+fillFunkyPerDay <- function(day, data) {
   library(data.table)
-  data <- readRDS("Data/cli_data_05_avgDay.rds")[date %in% day, ]
+  data <- data[date %in% day, ]
   source("clustering/Var_Extraction_Method/filter_funs.R")
   
   return(cbind(t(filterDay(data[, date := NULL], "avg_mslp")$cluster), day))
@@ -13,7 +14,7 @@ fillFunkyPerDay <- function(day) {
 
 fillFunkyPerYear1 <- function(year) {
   library(data.table)
-  data <- readRDS("Data/cli_data_05_avgDay.rds")[format(date, "%Y") %in% year, ]
+  data <- readRDS("Data/cli_data_30_avgDay.rds")[format(date, "%Y") %in% year, ]
   days <- unique(data[, date])
   source("clustering/Var_Extraction_Method/filter_funs.R")
   
@@ -24,7 +25,7 @@ fillFunkyPerYear1 <- function(year) {
 
 fillFunkyPerYear2 <- function(year) {
   library(data.table)
-  data <- readRDS("Data/cli_data_05_avgDay.rds")[format(date, "%Y") %in% year, ]
+  data <- readRDS("Data/cli_data_30_avgDay.rds")[format(date, "%Y") %in% year, ]
   days <- unique(data[, date])
   source("clustering/Var_Extraction_Method/filter_funs.R")
   
@@ -38,12 +39,12 @@ fillFunkyPerYear2 <- function(year) {
 ### CAUTION: Runtime very high!!!
 system.time({
   #TODO dynamic cluster size
-  cl <- makeCluster(5)
+  cl <- makeCluster(8)
   
-  testM <- as.data.table(clusterApply(cl, seq(2006, 2010), fun = fillFunkyPerYear1))
-  saveRDS(testM, "Data/filter/clusID_mslp_05.rds")
-  testG <- as.data.table(clusterApply(cl, seq(2006, 2010), fun = fillFunkyPerYear2))
-  saveRDS(testG, "Data/filter/clusID_geopot_05.rds")
+  testM <- as.data.table(clusterApply(cl, seq(1971, 2000), fun = fillFunkyPerYear1))
+  saveRDS(testM, "Data/filter/clusID_mslp_30.rds")
+  testG <- as.data.table(clusterApply(cl, seq(1971, 2000), fun = fillFunkyPerYear2))
+  saveRDS(testG, "Data/filter/clusID_geopot_30.rds")
   
   stopCluster(cl)
 })
@@ -62,6 +63,11 @@ setnames(mslp_05_filter, "V161", "date")
 geopot_05_filter <- as.data.table(t(testG))[, V161 := as.Date(V161)]
 setnames(geopot_05_filter, "V161", "date")
 
+
+mslp_30_filter <- as.data.table(t(testM))[, V161 := as.Date(V161)]
+setnames(mslp_30_filter, "V161", "date")
+geopot_30_filter <- as.data.table(t(testG))[, V161 := as.Date(V161)]
+setnames(geopot_30_filter, "V161", "date")
 
 ###distance functions
 
@@ -94,14 +100,17 @@ custom_distance <- function(x, y) {
 
 library(usedist)
 
-system.time(
-  distMat_mslp <- dist_make(as.matrix(copy(mslp_05_filter)[, date := NULL]),
+
+#system.time(
+    distMat_mslp <- dist_make(as.matrix(copy(mslp_30_filter)[, date := NULL]),
                             custom_distance)
-)
-system.time(
-  distMat_geopot <- dist_make(as.matrix(copy(geopot_05_filter)[, date := NULL]),
+    saveRDS(distMat_mslp, "Data/filter/distMat_mslp_30.rds")
+#)
+#system.time(
+  distMat_geopot <- dist_make(as.matrix(copy(geopot_30_filter)[, date := NULL]),
                               custom_distance)
-)
+  saveRDS(distMat_geopot, "Data/filter/distMat_geopot_30.rds")
+#)
 #85 seconds each
 #this can be parralelized with library parallelDist, 
 #but custom distance function needs to be in C++ for that.
@@ -111,10 +120,10 @@ system.time(
 #add distMatrix of both parameters together
 distMat_both <- distMat_mslp + distMat_geopot
 
-saveRDS(cbind(as.matrix(distMat_both), date = mslp_05_filter$date),
-        "Data/filter/distMat_05_date.rds")
-#distMat_both_date <- readRDS("Data/filter/distMat_05_date.rds")
-#distMat_both <- as.dist(distMat_both_date[, -1827])
+saveRDS(cbind(as.matrix(distMat_both), date = mslp_30_filter$date),
+        "Data/filter/distMat_30_date.rds")
+distMat_both_date <- readRDS("Data/filter/distMat_30_date.rds")
+distMat_both <- as.dist(distMat_both_date[, -ncol(distMat_both_date)])
 
 library(factoextra)
 
@@ -153,7 +162,7 @@ distMat_geopot_rand <- dist_make(as.matrix(copy(geopot_05_filter)[, date := NULL
 
 distMat_both_rand <- distMat_geopot_rand + distMat_mslp_rand
 
-bestClustNumber(distMat_both)
+bestClustNumber(distMat_both, "manhattan", "filter_both")
 bestClustNumber(distMat_geopot)
 bestClustNumber(distMat_mslp)
 ###end

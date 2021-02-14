@@ -190,3 +190,27 @@ saveRDS(PAMhelper(scaleNweight(copy(data),
                   dist = FALSE,
                   fname = "PAM_Euclid_preweighted_diff"), 
         "diss.pam.euc.weighted2.rds")
+
+
+
+###9 trial of just mslp vars
+
+dat <- extrapolate(seq(1971, 2000))
+mslpIndex <- c(1, grep("mslp", names(dat), ignore.case = TRUE))
+geoIndex <- c(1, grep("geopot", names(dat), ignore.case = TRUE))
+dat_mslp <- dat[,..mslpIndex]
+dat_geopot <- dat[,..geoIndex]
+
+saveRDS(PAMhelper(scaleNweight(copy(dat_mslp)),
+                  metric = "manhattan",
+                  weights = NULL,
+                  dist = FALSE,
+                  fname = "PAM_Manhattan_justMslp"), 
+        "diss_pam_man_justMslp.rds")
+
+saveRDS(PAMhelper(scaleNweight(copy(dat_geopot)),
+                  metric = "manhattan",
+                  weights = NULL,
+                  dist = FALSE,
+                  fname = "PAM_Manhattan_justGeo"), 
+        "diss_pam_man_justGeo.rds")

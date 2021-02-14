@@ -6,10 +6,15 @@ library(ggplot2)
 library(parallel)
 library(parallelDist)
 
-bestClustNumber <- function(distMat, metric, fname) {
-  assert_class(distMat, "dist")
+source("clustering/ClusterAssesmentHelper.R")
 
-  cl <- makeCluster(4)
+bestClustNumber <- function(distMat, metric, fname, range) {
+  assert_class(distMat, "dist")
+  assertNumeric(range)
+  if(length(range) > 5) stop("A range greater than 5 will likely result 
+                             in your pc crashing.")
+  
+  cl <- makeCluster(min(c(detectCores() - 1, length(range))))
   
   PamSilFun <- function(i, distM) {
     library(cluster)
@@ -20,27 +25,28 @@ bestClustNumber <- function(distMat, metric, fname) {
     pam_fit$silinfo$avg.width
   }
   
-  sil_width <- unlist(clusterApply(cl, 9:12, PamSilFun, distM = distMat))
+  sil_width <- unlist(clusterApply(cl, range, PamSilFun, distM = distMat))
   stopCluster(cl)
   
   jpeg(file= paste0("documentation/plots/PAMtrial/"
                     , fname, ".jpeg"))
   
-  plot(9:12, sil_width,
+  plot(range, sil_width,
        xlab = "Number of clusters",
        ylab = "Silhouette Width",
        main = paste("PAM", metric))
-  lines(9:12, sil_width)
+  lines(range, sil_width)
   
   dev.off()
 
+  return(range[which(sil_width == max(sil_width))])
 }
 
 
 PAMhelper <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 
                                               1/9, 1/9), 2), 
                                         rep(1/6, 12), rep(1/18, 18)), 
-                      metric = "euclidean", dist = TRUE, fname) {
+                      metric = "euclidean", dist = TRUE, fname, range = 5:9) {
   
   assertDataTable(data)
   assertNumeric(weights, null.ok = TRUE)
@@ -48,6 +54,7 @@ PAMhelper <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/
   assertSubset(metric, choices = c("euclidean", "gower", "manhattan"))
   assertLogical(dist)
   assertString(fname)
+  assertNumeric(range)
   
   
   ifelse(metric == "gower",
@@ -61,18 +68,48 @@ PAMhelper <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/
                                     threads = detectCores() - 2)
     }
   )
+
   
   if (dist) {
     return(dissimilarity)
   }
   
-  bestClustNumber(dissimilarity, metric, fname)
+  bestCNum <- bestClustNumber(dissimilarity, metric, fname, range)
   
-  return(dissimilarity)
+  clusterAssesment(data, pam(dissimilarity, bestCNum, diss = TRUE), metric,
+                   dissimilarity, fname)
 }
 
 
-
+clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
+  assert_class(distance, "dist")
+  assertCharacter(fname)
+  assertString(metric)
+  
+  path <- "documentation/plots/PAMtrial/"
+  
+  jpeg(file= paste0(path
+                    , paste("mosaic", metric, fname, sep = "_"), ".jpeg"))
+  par(mfrow=c(2,1))
+  mosaic(data, clusterRes$clustering, title = paste(metric, fname))
+  dev.off()
+  
+  jpeg(file= paste0(path
+                    , paste("timeline", metric, fname, sep = "_"), ".jpeg"))
+  
+  capture.output(Cl.timeline(cbind(data, cluster = clusterRes$clustering),
+              titleAdd = paste(metric, fname, sep = "_")), 
+              file = paste0(path, paste("output", metric, fname, sep = "_")),
+              append = TRUE)
+  dev.off()
+  
+  jpeg(file= paste0(path
+                    , paste("sil", metric, fname, sep = "_"), ".jpeg"))
+  capture.output(sil(clusterRes, clusterRes$clustering, distance, "pam"),
+                 file = paste0(path, paste("output", metric, fname, sep = "_")),
+                 append = TRUE)
+  dev.off()
+}
 
 
 

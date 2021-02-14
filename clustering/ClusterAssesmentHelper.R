@@ -23,7 +23,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
   assertDataTable(data)
   assertString(cluster)
   assertString(titleAdd)
-  assertSubset(c("date", cluster), names(data))
+  assertSubset(c("date", get(cluster)), names(data))
   assertLogical(seperated)
   
   #this is next level stupid,i cant figure out a different way to extract the
