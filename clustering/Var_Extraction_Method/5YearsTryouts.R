@@ -171,6 +171,7 @@ together_preweighted <- doPAM(dataList, weight = TRUE)
 summer_preweighted <- doPAM(dataListSummer, names = c("71Summer", "84Summer", "96Summer", "05Summer"), weight = TRUE)
 winter_preweighted <- doPAM(dataListWinter, names = c("71Winter", "84Winter", "96Winter", "05Winter"), weight = TRUE)
 
+
 clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
   assert_class(distance, "dist")
   assertCharacter(fname)
@@ -263,6 +264,7 @@ ClusterAssessmentList(togetherPCA_preweighted, dataListPCA, "manhatten", "PCA_pr
 
 
 
-
+pams <- c("together_unweighted", "together_preweighted", "summer_unweighted", "summer_preweighted",
+          "winter_unweighted", "winter_preweighted", "togetherPCA_unweighted", "togetherPCA_preweighted")
 
 
