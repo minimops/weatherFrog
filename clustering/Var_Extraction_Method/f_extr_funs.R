@@ -19,7 +19,9 @@ extrapolate <- function(yearspan, vars = "all") {
   #available datasets:
   #sort these smaller to larger
   avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010), 
-                     "30" = seq(1971, 2000), "full" = seq(1900, 2010))
+                     "30" = seq(1971, 2000), "full" = seq(1900, 2010),
+                     "71" = seq(1971, 1975), "84" = seq(1984, 1988),
+                     "96" = seq(1996, 2000))
   
   for (setNum in seq_len(length(avail.sets))) {
     if(all(yearspan %in% avail.sets[[setNum]])){
