@@ -112,7 +112,9 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
 }
 
 
-
+weightDistMat <- function(weights, dist) {
+  dist / sum(weights)
+}
 
 
 
