@@ -46,9 +46,10 @@ bestClustNumber <- function(distMat, metric, fname, range) {
 PAMhelper <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 
                                               1/9, 1/9), 2), 
                                         rep(1/6, 12), rep(1/18, 18)), 
-                      metric = "euclidean", dist = TRUE, fname, range = 5:9) {
+                      metric = "euclidean", dist = TRUE, fname, range = 5:9, diss = FALSE) {
   
-  assertDataTable(data)
+  ifelse(diss, assertMultiClass(data, c("dist", "matrix")),
+         assertDataTable(data))
   assertNumeric(weights, null.ok = TRUE)
   assertSubset("date", colnames(data)[1])
   assertSubset(metric, choices = c("euclidean", "gower", "manhattan"))
@@ -56,7 +57,9 @@ PAMhelper <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/
   assertString(fname)
   assertNumeric(range)
   
-  
+  ifelse(diss, 
+         dissimilarity <- as.dist(data[, 2:ncol(data)]),
+         {
   ifelse(metric == "gower",
     dissimilarity <- daisy(data[, 2:ncol(data)], metric = metric, weights = weights)
     ,
@@ -68,6 +71,7 @@ PAMhelper <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/
                                     threads = detectCores() - 2)
     }
   )
+         })
 
   
   if (dist) {
@@ -91,13 +95,13 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
   jpeg(file= paste0(path
                     , paste("mosaic", metric, fname, sep = "_"), ".jpeg"))
   par(mfrow=c(2,1))
-  mosaic(data, clusterRes$clustering, title = paste(metric, fname))
+  mosaic(as.data.table(data), clusterRes$clustering, title = paste(metric, fname))
   dev.off()
   
   jpeg(file= paste0(path
                     , paste("timeline", metric, fname, sep = "_"), ".jpeg"))
   
-  capture.output(Cl.timeline(cbind(data, cluster = clusterRes$clustering),
+  capture.output(Cl.timeline(cbind(as.data.table(data), cluster = clusterRes$clustering),
               titleAdd = paste(metric, fname, sep = "_")), 
               file = paste0(path, paste("output", metric, fname, sep = "_")),
               append = TRUE)

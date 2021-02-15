@@ -263,8 +263,136 @@ togetherPCA_preweighted <- doPAM(dataListPCA, names = c("71PCA", "84PCA", "96PCA
 ClusterAssessmentList(togetherPCA_preweighted, dataListPCA, "manhatten", "PCA_preweighted")
 
 
+######
+
 
 pams <- c("together_unweighted", "together_preweighted", "summer_unweighted", "summer_preweighted",
           "winter_unweighted", "winter_preweighted", "togetherPCA_unweighted", "togetherPCA_preweighted")
 
+source("clustering/Var_Extraction_Method/f_extr_funs.R")
+#load change over day
+change_day <- readRDS("Data/change_day.rds")
+
+extr <- extrapolate(seq(1971, 2010))
+
+
+dataChange <- copy(extr)[copy(change_day), ]
+
+
+yearspans <- list(seq(1971, 1975), seq(1984, 1988), seq(1996, 2000), seq(2006, 2010))
+
+source("clustering/PAM_NumCL_finder.R")
+source("dataset_mutate_funs.R")
+
+#plus diffday
+for (span in yearspans) {
+  years <- unlist(span)
+  data <- subsetYears(dataChange, years)
+  data <- cbind(date = data[, date], as.data.table(scale(copy(data)[, date := NULL])))
+  PAMhelper(data, weights = NULL, dist = FALSE, metric = "manhattan",
+            range = 5:9, fname = paste0("extr+change", years[1]))
+  }
+
+#just plain extr
+for (span in yearspans) {
+  years <- unlist(span)
+  data <- subsetYears(extr, years)
+  data <- cbind(date = data[, date], as.data.table(scale(copy(data)[, date := NULL])))
+  PAMhelper(data, weights = NULL, dist = FALSE, metric = "manhattan",
+            range = 5:9, fname = paste0("extr", years[1]))
+}
+
+
+
+#justfilter
+distMat_30_date <- readRDS("Data/filter/distMat_30_date.rds")
+
+library(zoo)
+
+x <- as.Date(distMat_30_date[, ncol(distMat_30_date)])
+
+for (span in yearspans[1:3]) {
+  years <- unlist(span)
+  index <- which(format(as.Date(x), "%Y") %in% years)
+  data <- distMat_30_date[index, index]
+  data <- cbind(date = x[index], data)
+  PAMhelper(data, weights = NULL, dist = FALSE, metric = "manhattan",
+            range = 5:9, fname = paste0("justfilter", years[1]), diss = TRUE)
+}
+
+distMat_05_date <- readRDS("clusData/filter/distMat_05_date.rds")
+x2 <- as.Date(distMat_05_date[, ncol(distMat_05_date)])
+
+years <- unlist(yearspans[4])
+index <- which(format(as.Date(x2), "%Y") %in% years)
+data <- distMat_05_date[index, index]
+data <- cbind(date = x[index], data)
+PAMhelper(data, weights = NULL, dist = FALSE, metric = "manhattan",
+          range = 5:9, fname = paste0("justfilter", years[1]), diss = TRUE)
+
+
+
+#filterattached simple addition
+for (span in yearspans[1:3]) {
+  years <- unlist(span)
+  data <- subsetYears(extr, years)
+  data <- cbind(date = data[, date], as.data.table(scale(copy(data)[, date := NULL])))
+  dist1 <- as.matrix(PAMhelper(data, weights = NULL, dist = TRUE, metric = "manhattan",
+            range = 5:9, fname = paste0("extr", years[1])))
+  index <- which(format(as.Date(x), "%Y") %in% years)
+  dist2 <- distMat_30_date[index, index]
+  dist <- dist1 + dist2
+  distIn <- cbind(date  = x[index], dist)
+  PAMhelper(distIn, weights = NULL, dist = FALSE, metric = "manhattan",
+            range = 5:9, fname = paste0("filterattached", years[1]), diss = TRUE)
+}
+
+years <- unlist(yearspans[4])
+data <- subsetYears(extr, years)
+data <- cbind(date = data[, date], as.data.table(scale(copy(data)[, date := NULL])))
+dist1 <- as.matrix(PAMhelper(data, weights = NULL, dist = TRUE, metric = "manhattan",
+                             range = 5:9, fname = paste0("extr", years[1])))
+index <- which(format(as.Date(x2), "%Y") %in% years)
+dist2 <- distMat_05_date[index, index]
+dist <- dist1 + dist2
+distIn <- cbind(date  = x[index], dist)
+PAMhelper(distIn, weights = NULL, dist = FALSE, metric = "manhattan",
+          range = 5:9, fname = paste0("filterattached", years[1]), diss = TRUE)
+
+
+
+
+#all
+
+
+extrpca <- extrapolate(seq(1971, 2010), vars = "all.pca")
+
+dataChange2 <- copy(extrpca)[copy(change_day), ]
+
+#filterattached simple addition
+for (span in yearspans[1:3]) {
+  years <- unlist(span)
+  data <- subsetYears(dataChange2, years)
+  data <- cbind(date = data[, date], as.data.table(scale(copy(data)[, date := NULL])))
+  dist1 <- as.matrix(PAMhelper(data, weights = NULL, dist = TRUE, metric = "manhattan",
+                               range = 5:9, fname = paste0("all", years[1])))
+  index <- which(format(as.Date(x), "%Y") %in% years)
+  dist2 <- distMat_30_date[index, index]
+  dist <- dist1 + dist2
+  distIn <- cbind(date  = x[index], dist)
+  PAMhelper(distIn, weights = NULL, dist = FALSE, metric = "manhattan",
+            range = 5:9, fname = paste0("allofit", years[1]), diss = TRUE)
+}
+
+years <- unlist(yearspans[4])
+data <- subsetYears(dataChange2, years)
+data <- cbind(date = data[, date], as.data.table(scale(copy(data)[, date := NULL])))
+dist1 <- as.matrix(PAMhelper(data, weights = NULL, dist = TRUE, metric = "manhattan",
+                             range = 5:9, fname = paste0("all", years[1])))
+index <- which(format(as.Date(x2), "%Y") %in% years)
+dist2 <- distMat_05_date[index, index]
+dist <- dist1 + dist2
+distIn <- cbind(date  = x[index], dist)
+PAMhelper(distIn, weights = NULL, dist = FALSE, metric = "manhattan",
+          range = 5:9, fname = paste0("allofit", years[1]), diss = TRUE)
 
