@@ -145,12 +145,12 @@ for(i in seq_along(dataList)) {
 ## make clusters - unweighted
 
 
-doPAM <- function(dataList, names = c("71", "84", "96", "05")) {
+doPAM <- function(dataList, names = c("71", "84", "96", "05"), weight = FALSE) {
   assertList(dataList)
   
   pamList <- list()
   for(i in seq_along(dataList)) {
-    pamList[[i]] <- pam(daisy(scaleNweight(copy(dataList[[i]]))[, 2:ncol(dataList[[i]])], metric = "manhattan"), 
+    pamList[[i]] <- pam(daisy(scaleNweight(copy(dataList[[i]]), weight = weight)[, 2:ncol(dataList[[i]])], metric = "manhattan"), 
                         diss = TRUE, k = 5)
   }
   names(pamList) <- names
@@ -162,18 +162,9 @@ together_unweighted <- doPAM(dataList)
 summer_unweighted <- doPAM(dataListSummer, names = c("71Summer", "84Summer", "96Summer", "05Summer"))
 winter_unweighted <- doPAM(dataListWinter, names = c("71Winter", "84Winter", "96Winter", "05Winter"))
 
-ClusterAssessmentList <- function(pamList, dataList, metric, fname) {
-  names <-  c("71", "84", "96", "05")
-  for (i in seq_along(pamList)) {
-    clusterAssesment(dataList[[i]], pamList[[i]], metric, 
-                     distance = daisy(scaleNweight(copy(dataList[[i]]))[, 2:ncol(dataList[[i]])], metric = "manhattan"),
-                     paste0(names[i], fname))
-  }
-}
-
-ClusterAssessmentList(together_unweighted, dataList, "manhatten", "_unweighted")
-ClusterAssessmentList(summer_unweighted, dataListSummer, "manhatten", "Summer_unweighted")
-ClusterAssessmentList(winter_unweighted, dataListWinter, "manhatten", "Winter_unweighted")
+together_preweighted <- doPAM(dataList, weight = TRUE)
+summer_preweighted <- doPAM(dataListSummer, names = c("71Summer", "84Summer", "96Summer", "05Summer"), weight = TRUE)
+winter_preweighted <- doPAM(dataListWinter, names = c("71Winter", "84Winter", "96Winter", "05Winter"), weight = TRUE)
 
 clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
   assert_class(distance, "dist")
@@ -206,8 +197,34 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
 }
 
 
+ClusterAssessmentList <- function(pamList, dataList, metric, fname) {
+  names <-  c("71", "84", "96", "05")
+  for (i in seq_along(pamList)) {
+    clusterAssesment(dataList[[i]], pamList[[i]], metric, 
+                     distance = daisy(scaleNweight(copy(dataList[[i]]))[, 2:ncol(dataList[[i]])], metric = "manhattan"),
+                     paste0(names[i], fname))
+  }
+}
+
+ClusterAssessmentList(together_unweighted, dataList, "manhatten", "_unweighted")
+ClusterAssessmentList(summer_unweighted, dataListSummer, "manhatten", "Summer_unweighted")
+ClusterAssessmentList(winter_unweighted, dataListWinter, "manhatten", "Winter_unweighted")
+
+ClusterAssessmentList(together_preweighted, dataList, "manhatten", "_preweighted")
+ClusterAssessmentList(summer_preweighted, dataListSummer, "manhatten", "Summer_preweighted")
+ClusterAssessmentList(winter_preweighted, dataListWinter, "manhatten", "Winter_preweighted")
 
 
+
+
+################## PCA ######################
+
+dataListPCA <- list()
+
+for (i in seq_along(yearsList)) {
+  dataListPCA[[i]] <- extrapolate(yearsList[[i]], vars = "all.pca")
+}
+names(dataListPCA) <- names
 
 
 
