@@ -142,6 +142,7 @@ append.QuadrantID <- function(data, amount = 9) {
   ifelse(amount == 9,
          {
   #messy, but i dont have the patience rn
+           # sortieren 
   out[latitude %in% unique(latitude)[seq(1,3)], ":=" (verID = 3, verChar = "South")]
   out[latitude %in% unique(latitude)[seq(4,5)], ":=" (verID = 2, verChar = "Center")]
   out[latitude %in% unique(latitude)[seq(6,8)], ":=" (verID = 1, verChar = "North")]
