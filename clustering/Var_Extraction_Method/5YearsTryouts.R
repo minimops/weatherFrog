@@ -20,7 +20,7 @@ bestClustNumber <- function(distMat, metric, fname, range) {
   sil_width <- unlist(clusterApply(cl, range, PamSilFun, distM = distMat))
   stopCluster(cl)
   
-  jpeg(file= paste0("documentation/plots/PAMtrial/5Years/PCA/"
+  jpeg(file= paste0("documentation/plots/PAMtrial/5YearsEuc/PCA/"
                     , fname, ".jpeg"))
   
   plot(range, sil_width,
@@ -155,7 +155,7 @@ doPAM <- function(dataList, names = c("71", "84", "96", "05"), k = 5, weight = F
   for(i in seq_along(dataList)) {
     pamList[[i]] <- pam(daisy(scaleNweight(copy(dataList[[i]]), 
                                            weight = weight,
-                                           weights = weights)[, 2:ncol(dataList[[i]])], metric = "manhattan"), 
+                                           weights = weights)[, 2:ncol(dataList[[i]])], metric = "euclidean"), 
                         diss = TRUE, k = k)
   }
   names(pamList) <- names
@@ -177,7 +177,7 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
   assertCharacter(fname)
   assertString(metric)
   
-  path <- "documentation/plots/PAMtrial/5Years/PCA/"
+  path <- "documentation/plots/PAMtrial/5YearsEuc/PCA/"
   
   jpeg(file= paste0(path
                     , paste("mosaic", metric, fname, sep = "_"), ".jpeg"))
@@ -203,22 +203,26 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
 }
 
 
-ClusterAssessmentList <- function(pamList, dataList, metric, fname) {
+ClusterAssessmentList <- function(pamList, dataList, metric, fname, weight = FALSE, 
+                                  weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
+                                              rep(1/6, 12), rep(1/18, 18))) {
   names <-  c("71", "84", "96", "05")
   for (i in seq_along(pamList)) {
     clusterAssesment(dataList[[i]], pamList[[i]], metric, 
-                     distance = daisy(scaleNweight(copy(dataList[[i]]))[, 2:ncol(dataList[[i]])], metric = "manhattan"),
+                     distance = daisy(scaleNweight(copy(dataList[[i]]),
+                                                   weight = weight, 
+                                                   weights = weights)[, 2:ncol(dataList[[i]])], metric = "euclidean"),
                      paste0(names[i], fname))
   }
 }
 
-ClusterAssessmentList(together_unweighted, dataList, "manhatten", "_unweighted")
-ClusterAssessmentList(summer_unweighted, dataListSummer, "manhatten", "Summer_unweighted")
-ClusterAssessmentList(winter_unweighted, dataListWinter, "manhatten", "Winter_unweighted")
+ClusterAssessmentList(together_unweighted, dataList, "euclidean", "_unweighted")
+ClusterAssessmentList(summer_unweighted, dataListSummer, "euclidean", "Summer_unweighted")
+ClusterAssessmentList(winter_unweighted, dataListWinter, "euclidean", "Winter_unweighted")
 
-ClusterAssessmentList(together_preweighted, dataList, "manhatten", "_preweighted")
-ClusterAssessmentList(summer_preweighted, dataListSummer, "manhatten", "Summer_preweighted")
-ClusterAssessmentList(winter_preweighted, dataListWinter, "manhatten", "Winter_preweighted")
+ClusterAssessmentList(together_preweighted, dataList, "euclidean", "_preweighted", weight = TRUE)
+ClusterAssessmentList(summer_preweighted, dataListSummer, "euclidean", "Summer_preweighted", weight = TRUE)
+ClusterAssessmentList(winter_preweighted, dataListWinter, "euclidean", "Winter_preweighted", weight = TRUE)
 
 
 
@@ -235,8 +239,8 @@ names(dataListPCA) <- names
 
 names <- c("71PCA", "84PCA", "96PCA", "05PCA")
 for(i in seq_along(dataListPCA)) {
-  bestClustNumber(daisy(scaleNweight(copy(dataListPCA[[i]]))[, 2:ncol(dataListPCA[[i]])], metric = "manhattan"),
-                  "manhattan", 
+  bestClustNumber(daisy(scaleNweight(copy(dataListPCA[[i]]))[, 2:ncol(dataListPCA[[i]])], metric = "euclidean"),
+                  "euclidean", 
                   names[i], 
                   range = seq(5, 9))
 }
@@ -246,21 +250,24 @@ for(i in seq_along(dataListPCA)) {
                                      weight = TRUE,
                                      weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
                                                  rep(1/6, 12), rep(1/21, 21)))[, 2:ncol(dataListPCA[[i]])], 
-                  metric = "manhattan"),
-                  "manhattan", 
+                  metric = "euclidean"),
+                  "euclidean", 
                   paste0(names[i], "preweighted"), 
                   range = seq(5, 9))
 }
 
 
 togetherPCA_unweighted <- doPAM(dataListPCA, names = c("71PCA", "84PCA", "96PCA", "05PCA"))
-ClusterAssessmentList(togetherPCA_unweighted, dataListPCA, "manhatten", "PCA_unweighted")
+ClusterAssessmentList(togetherPCA_unweighted, dataListPCA, "euclidean", "PCA_unweighted")
 
 togetherPCA_preweighted <- doPAM(dataListPCA, names = c("71PCA", "84PCA", "96PCA", "05PCA"), weight = TRUE,
                                  weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 
                                                    1/9, 1/9), 2), 
                                              rep(1/6, 12), rep(1/21, 21)))
-ClusterAssessmentList(togetherPCA_preweighted, dataListPCA, "manhatten", "PCA_preweighted")
+ClusterAssessmentList(togetherPCA_preweighted, dataListPCA, "euclidean", "PCA_preweighted", weight = TRUE,
+                      weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 
+                                        1/9, 1/9), 2), 
+                                  rep(1/6, 12), rep(1/21, 21)))
 
 
 ######
@@ -268,6 +275,9 @@ ClusterAssessmentList(togetherPCA_preweighted, dataListPCA, "manhatten", "PCA_pr
 
 pams <- c("together_unweighted", "together_preweighted", "summer_unweighted", "summer_preweighted",
           "winter_unweighted", "winter_preweighted", "togetherPCA_unweighted", "togetherPCA_preweighted")
+
+
+
 
 source("clustering/Var_Extraction_Method/f_extr_funs.R")
 #load change over day

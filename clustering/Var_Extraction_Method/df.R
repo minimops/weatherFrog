@@ -92,8 +92,24 @@ dt2 <- unique(dt[, ":=" (avg.sil = mean(silhouette),
                  avg.day2 = mean(TlDay2),
                  avg.day3 = mean(TlDay3),
                  avg.Last = mean(TlLastDay)), by = id][, c(2, 9:13)])
-dt2 <- dt2[, names := c("together unweighted", "together preweighted", "summer unweighted", "summer preweighted",
-                        "winter unweighted", "winter preweighted", "togetherPCA unweighted", "togetherPCA preweighted")]
+dt2 <- dt2[, names := c("together unweighted euc", "together preweighted euc", "summer unweighted euc", "summer preweighted euc",
+                        "winter unweighted euc", "winter preweighted euc", "togetherPCA unweighted euc", "togetherPCA preweighted euc")]
 dt2
-saveRDS(dt2, "Data/manhattanSummaryAvg.rds")
-saveRDS(df, "Data/manhattanSummary.rds")
+saveRDS(dt2, "Data/euclideanSummaryAvg.rds")
+saveRDS(df, "Data/euclideanSummary.rds")
+
+eucSumAvg <- readRDS("Data/euclideanSummaryAvg.rds")
+eucSum <- readRDS("Data/euclideanSummary.rds")
+manhatSumAvg <- readRDS("Data/manhattanSummaryAvg.rds")
+manhatSum <- readRDS("Data/manhattanSummary.rds")
+
+eucSumAvg
+manhatSumAvg
+a <- copy(manhatSumAvg)[, "sil: man>euc" := avg.sil > eucSumAvg$avg.sil]
+a <- copy(a)[, "day1: man<euc" := avg.day1 < eucSumAvg$avg.day1]
+a <- copy(a)[, "day2: man<euc" := avg.day2 < eucSumAvg$avg.day2]
+a <- copy(a)[, "day3: man>euc" := avg.day3 > eucSumAvg$avg.day3]
+a <- copy(a)[, "lastD: man<euc" := avg.Last < eucSumAvg$avg.Last]
+
+compared <- a[, 7:12]
+
