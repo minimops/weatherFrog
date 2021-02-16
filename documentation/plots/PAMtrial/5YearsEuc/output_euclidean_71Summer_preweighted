@@ -1,0 +1,45 @@
+[1] "Table of Cluster frequencies:"
+
+  1   2   3   4   5 
+118 252 260 133 152 
+[1] "distribution of runLengths:"
+
+  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  18 
+129  72  31  18  10  12   8   7   4   7   1   2   2   2   2   1 
+[1] 0.0709383
+  cluster size ave.sil.width
+1       1  118          0.08
+2       2  252          0.04
+3       3  260          0.08
+4       4  133          0.01
+5       5  152          0.16
+[1] "Table of Cluster frequencies:"
+
+  1   2   3   4   5 
+118 252 260 133 152 
+[1] "distribution of runLengths:"
+
+  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  18 
+129  72  31  18  10  12   8   7   4   7   1   2   2   2   2   1 
+[1] 0.09202985
+  cluster size ave.sil.width
+1       1  118          0.07
+2       2  252          0.04
+3       3  260          0.12
+4       4  133          0.03
+5       5  152          0.19
+[1] "Table of Cluster frequencies:"
+
+  1   2   3   4   5 
+118 252 260 133 152 
+[1] "distribution of runLengths:"
+
+  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  18 
+129  72  31  18  10  12   8   7   4   7   1   2   2   2   2   1 
+[1] 0.09202985
+  cluster size ave.sil.width
+1       1  118          0.07
+2       2  252          0.04
+3       3  260          0.12
+4       4  133          0.03
+5       5  152          0.19
