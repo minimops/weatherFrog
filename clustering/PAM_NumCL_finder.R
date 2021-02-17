@@ -28,7 +28,7 @@ bestClustNumber <- function(distMat, metric, fname, range) {
   sil_width <- unlist(clusterApply(cl, range, PamSilFun, distM = distMat))
   stopCluster(cl)
   
-  jpeg(file= paste0("documentation/plots/PAMtrial/"
+  jpeg(file= paste0("documentation/plots/PAMtrial/wide/"
                     , fname, ".jpeg"))
   
   plot(range, sil_width,
@@ -90,7 +90,7 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
   assertCharacter(fname)
   assertString(metric)
   
-  path <- "documentation/plots/PAMtrial/"
+  path <- "documentation/plots/PAMtrial/wide/"
   
   jpeg(file= paste0(path
                     , paste("mosaic", metric, fname, sep = "_"), ".jpeg"))
