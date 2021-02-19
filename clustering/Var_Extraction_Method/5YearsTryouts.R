@@ -312,6 +312,19 @@ for (span in yearspans) {
             range = 5:9, fname = paste0("extr", years[1]))
 }
 
+#diffday plus pca
+extrpca <- extrapolate(seq(1971, 2010), "all.pca")
+
+dataChangepca <- copy(extrpca)[copy(change_day), ]
+
+for (span in yearspans) {
+  years <- unlist(span)
+  data <- subsetYears(dataChangepca, years)
+  data <- cbind(date = data[, date], as.data.table(scale(copy(data)[, date := NULL])))
+  PAMhelper(data, weights = NULL, dist = FALSE, metric = "manhattan",
+            range = 5:9, fname = paste0("extrPCA+change", years[1]))
+}
+
 
 
 #justfilter

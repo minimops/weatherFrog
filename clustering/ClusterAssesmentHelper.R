@@ -42,12 +42,17 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
              print(paste("distribution of runLengths", "Cluster:", i))
              print(table(length.runLengths.part))
              
-             print(ggplot(data = as.data.frame(table(length.runLengths.part)), 
+             data <- data.table(table(length.runLengths.part))
+             colnames(data) <- c("length", "count")
+             
+             print(Tl.weight.fun(data))
+             
+             ggplot(as.data.frame(data), 
                     aes(x= length.runLengths.part, y = Freq)) +
                geom_col() +
                labs(x = "Length", 
                     title = paste("Occurence frequencies of lengths", 
-                                  paste(titleAdd, "Cluster:", i))))
+                                  paste(titleAdd, "Cluster:", i)))
            }
          } else{
           runLengths <- rle(use[["ClustID"]])
@@ -55,8 +60,15 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           print("distribution of runLengths:")
           print(table(runLengths$lengths))
           
-          ggplot(data = as.data.frame(table(runLengths$lengths)), 
-                 aes(x= Var1, y = Freq)) +
+          data <- data.table(table(runLengths$lengths))
+          colnames(data) <- c("length", "count")
+          data[, ":=" (length = as.numeric(length))]
+          
+          print("timeline Value:")
+          print(Tl.weight.fun(data))
+          
+          ggplot(as.data.frame(data), 
+                 aes(x= length, y = count)) +
             geom_col() +
             labs(x = "Length", 
                  title = paste("Occurence frequencies of lengths", titleAdd))
@@ -252,5 +264,20 @@ separateBySeason <- function(data, Season = "Summer") {
   
   ifelse(Season == "Summer", return(dataSeason[season == "Summer"][, season := NULL]), 
          return(dataSeason[season == "Winter"][, season := NULL]))
+}
+
+
+Tl.weight.fun <- function(timeline){
+  assertDataTable(timeline)
+  
+  #weights
+  x <- data.table(length = seq(1, 30), 
+                  weight = c(0,0, seq(3, 9), seq(9, 0, by = -9/20)))
+  #plot(x)
+  
+  data <- timeline[length <= 30, ]
+  
+  joined <- x[data, on = "length"]
+  sum(joined$weight * joined$count)
 }
 
