@@ -85,13 +85,85 @@ mean_mslp <- cbind(cluster,mean_mslp)
 ggplot(mean_mslp) +
   geom_bar( aes(x = cluster, y=mean), stat="identity", fill=col_vector, alpha=0.7, width=0.5) +
   geom_errorbar( aes(x = cluster, ymin = mean - SD, ymax = mean + SD), width=0.4, colour="black", alpha=0.9, size=1) +
-  theme_ipsum() +
   theme(
     legend.position="none",
-    plot.title = element_text(size=11)
-  ) +
+    plot.title = element_text(size = 12)) +
   ggtitle("mean mslp in every cluster") +
   xlab("cluster number")
+
+# minimum mlsp
+
+min_max_mlsp <- as.data.table(clusterDescription[,3:4,])
+min_max_mlsp$value <- as.numeric(min_max_mlsp$value)
+min_max_mlsp <- min_max_mlsp[min_max_mlsp$V3 == "mean",]
+
+
+library(ggplot2)
+
+
+# Grouped
+ggplot(min_max_mlsp, aes(fill=V2, y=value, x=V1)) + 
+  geom_bar(position="dodge", stat="identity")
+
+# stacked
+ggplot(min_max_mlsp, aes(fill=V2, y=value, x=V1)) + 
+  geom_bar(position="stack", stat="identity")
+
+# boxplot and density of some extracted variables
+
+#data_cluster
+
+# density plot of mean_ mlsp
+
+data <- data.frame(
+  type = c( rep("edge peak", 1000), rep("comb", 1000), rep("normal", 1000), rep("uniform", 1000), rep("bimodal", 1000), rep("skewed", 1000) ),
+  value = c( rnorm(900), rep(3, 100), rnorm(360, sd=0.5), rep(c(-1,-0.75,-0.5,-0.25,0,0.25,0.5,0.75), 80), rnorm(1000), runif(1000), rnorm(500, mean=-2), rnorm(500, mean=2), abs(log(rnorm(1000))) )
+)
+
+# Represent it
+data_cluster %>%
+  ggplot( aes(x=mean.mslp)) +
+  geom_histogram(fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+  facet_wrap(~cluster, scale="free_x") +
+  theme(
+    panel.spacing = unit(0.1, "lines"),
+    axis.title.x=element_blank(),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank()
+  )
+
+# boxplot of mean.mslp
+
+data_cluster %>%
+  #mutate(class = fct_reorder(class, hwy, .fun='length' )) %>%
+  ggplot( aes(x=as.factor(cluster), y=mean.mslp, fill=as.factor(cluster))) + 
+  geom_boxplot() +
+  xlab("cluster") +
+  theme(legend.position="none") +
+  xlab("") +
+  xlab("")
+
+# boxplot grouped min max of mslp
+min_max_boxplot <- data_cluster[,c(1,5,6)]
+min_max_boxplot <- melt(min_max_boxplot, id.vars = "cluster", measure.vars = c("min.mslp", "max.mslp"))
+
+min_max_boxplot %>%
+  #mutate(class = fct_reorder(class, hwy, .fun='length' )) %>%
+  ggplot( aes(x=as.factor(cluster), y=value, fill= variable)) + 
+  geom_boxplot() +
+  xlab("cluster") +
+  theme(legend.position="none") +
+  xlab("") +
+  xlab("")
+
+ggplot(min_max_boxplot, aes(x=as.factor(cluster), y=value, fill=variable)) + 
+  geom_boxplot()
+
+# plotting original data geopotential and mslp boxplot and histogram for each cluster
+
+
+
+
 
 # it woulf be insane plotting all 49 variables...
 # instead of plotting them, it would be nicer just to plot the "original"
