@@ -3,7 +3,7 @@
 library(data.table)
 library(checkmate)
 library(ggplot2)
-
+library(gridExtra)
 
 #This funcion draws the local world map with a specified fill. 
 #you can also choose if you wish a legend 
@@ -59,3 +59,25 @@ drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
     )
   return(plot)
 }
+
+
+multDays <- function(dates, param) {
+  assertSubset(param, c("mslp", "geopot"))
+  ifelse(param == "mslp", negParam <- "avg_geopot", negParam <- "avg_mslp")
+  
+  data <- readRDS("Data/cli_data_30_avgDay.rds")
+  plist <- list()
+  i <- 0
+  for (day in dates) {
+    i <- i + 1
+    oneDay <- copy(data)[date %in% as.Date(day), ][, ":=" (avg_mslp = NULL,
+                                                           date = NULL)]
+    plot <- drawDay(as.data.frame(oneDay), 
+                    whichFill = paste0("avg_", param),
+                    showGuide = FALSE, discrete = F)
+    plist[[i]] <- plot
+  }
+  grid.arrange(grobs = plist, nrow = ceiling(sqrt(length(plist))))
+  
+}
+
