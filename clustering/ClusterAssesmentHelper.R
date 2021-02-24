@@ -98,9 +98,13 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   }
   sil <- silhouette(x = cluster.vector, dist = distance)
   print(mean(sil[, 3]))
-  fviz_silhouette(sil.obj = sil)
-  
+  output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1") + theme_bw() 
+  output$layers[[2]]$aes_params$colour <- "black"
+  output
 }
+library(factoextra)
+?fviz_silhouette
+
 # an example:
 #sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
 
