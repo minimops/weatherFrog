@@ -23,7 +23,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
   assertDataTable(data)
   assertString(cluster)
   assertString(titleAdd)
-  assertSubset(c("date", get(cluster)), names(data))
+  assertSubset(c("date"), names(data))
   assertLogical(seperated)
   
   #this is next level stupid,i cant figure out a different way to extract the
@@ -106,8 +106,7 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   output$layers[[2]]$aes_params$colour <- "black"
   output
 }
-library(factoextra)
-?fviz_silhouette
+
 
 # an example:
 #sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
