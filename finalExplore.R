@@ -15,7 +15,7 @@ res_dat1sw <- pam(dist_dat1sw, 5, diss = TRUE)
 mean(silhouette(x = res_dat1sw$clustering, dist = dist_dat1sw)[, 3])
 
 #well acc seems to be the same
-
+#so we dont have to regulariz any dist matrizes
 
 #new finer id values better?
 
