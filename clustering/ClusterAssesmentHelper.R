@@ -35,7 +35,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
   print(table(use$ClustID))
   if(seperated){
            runLengths <- rle(use[["ClustID"]])
-           
+           plots <- list()
            for (i in unique(use[["ClustID"]])) {
              
              length.runLengths.part <- runLengths$lengths[which(runLengths$values == i)]
@@ -45,21 +45,28 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
              data <- data.table(table(length.runLengths.part))
              colnames(data) <- c("length", "count")
              
-             print(Tl.weight.fun(data))
+             # print(Tl.weight.fun(data))
              
+           
+             #data2 <- data[order(as.numeric(length))]
+             dataOver30 <- copy(data)[as.numeric(length) > 30]
+             cutoffs <- sum(as.numeric(dataOver30$length) * dataOver30$count)
              colVector <- RColorBrewer::brewer.pal(8, "Set1")
-             ggplot(as.data.frame(data), 
-                    aes(x= length.runLengths.part, y = Freq)) +
-               geom_col(col = "black", fill = colVector[i]) +
+             
+             p <- ggplot(as.data.frame(data), 
+                    aes(x= as.numeric(length), y = count)) +
+               geom_col(fill = colVector[i], col = "black") +
                labs(x = "Länge", 
-                    title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                    title = paste("Cluster ", i),
                     y = "Anzahl") +
-               ylim(0, 600) +
-               scale_x_continuous(breaks = seq(1, 23)) +
-               theme_bw()+
-               theme(axis.title.x = element_text(size=15),
-                     axis.title.y = element_text(size=15))
+               ylim(0, 30) +
+               scale_x_continuous(limits = c(0, 30), breaks = seq(1, 30, by = 2)) +
+               theme_bw() +
+               geom_text(x=23, y=20, label= paste0("Abgeschnitten: ", cutoffs),
+                         size = 4)
+             plots[[i]] <- p
            }
+           grid.arrange(grobs = plots)
          } else{
           runLengths <- rle(use[["ClustID"]])
           
@@ -81,21 +88,22 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           }
           
           ggplot(as.data.frame(data), 
-                 aes(x= length, y = count)) +
+                 aes(x= as.numeric(length), y = count)) +
             geom_col(col = "black", fill = "gray77") +
             labs(x = "Länge", 
-                 title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                 title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd),
                  y = "Anzahl") +
-            ylim(0, 600) +
-            scale_x_continuous(breaks = seq(1, 23)) +
+            ylim(0, 800) +
+            
+            scale_x_continuous(breaks = c(seq(0, 23))) +
             theme_bw()+
             theme(axis.title.x = element_text(size=15),
-                  axis.title.y = element_text(size=15))
+                 axis.title.y = element_text(size=15))
         
             
          }
 }
-
+Cl.timeline(copy(data.cluster), seperated = FALSE)
 
 # this function is to get the silhouette coefficient. 
 # INPUT: - cluster.fittet: Result of a clustering
@@ -122,13 +130,16 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1",
                   main = "Silhouette plot", 
                   submain = paste0("Average Silhouette Width: ", round(mean(sil[, 3]), 3)),
-                  legend.title = "Cluster") + theme_bw()
+                  legend.title = "Cluster") + theme_bw() +
+                  theme(axis.text.x = element_blank(),
+                        axis.text.x.bottom = element_blank(),
+                        axis.ticks.x = element_blank())
    
   output$layers[[2]]$aes_params$colour <- "black"
   output
 }
 
-
+sil(pam.manhat, pam.manhat$clustering, dist, "pam")
 # an example:
 #sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
 
