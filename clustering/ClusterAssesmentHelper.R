@@ -23,7 +23,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
   assertDataTable(data)
   assertString(cluster)
   assertString(titleAdd)
-  assertSubset(c("date", get(cluster)), names(data))
+  assertSubset(c("date"), names(data))
   assertLogical(seperated)
   
   #this is next level stupid,i cant figure out a different way to extract the
@@ -47,12 +47,18 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
              
              print(Tl.weight.fun(data))
              
+             colVector <- RColorBrewer::brewer.pal(8, "Set1")
              ggplot(as.data.frame(data), 
                     aes(x= length.runLengths.part, y = Freq)) +
-               geom_col() +
-               labs(x = "Length", 
-                    title = paste("Occurence frequencies of lengths", 
-                                  paste(titleAdd, "Cluster:", i)))
+               geom_col(col = "black", fill = colVector[i]) +
+               labs(x = "Länge", 
+                    title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                    y = "Anzahl") +
+               ylim(0, 600) +
+               scale_x_continuous(breaks = seq(1, 23)) +
+               theme_bw()+
+               theme(axis.title.x = element_text(size=15),
+                     axis.title.y = element_text(size=15))
            }
          } else{
           runLengths <- rle(use[["ClustID"]])
@@ -67,11 +73,26 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           print("timeline Value:")
           print(Tl.weight.fun(data))
           
+          if (cluster == "cluster") {
+            mainAdd <- "Cluster"
+          }
+          else {
+            mainAdd <- "GWL"
+          }
+          
           ggplot(as.data.frame(data), 
                  aes(x= length, y = count)) +
-            geom_col() +
-            labs(x = "Length", 
-                 title = paste("Occurence frequencies of lengths", titleAdd))
+            geom_col(col = "black", fill = "gray77") +
+            labs(x = "Länge", 
+                 title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                 y = "Anzahl") +
+            ylim(0, 600) +
+            scale_x_continuous(breaks = seq(1, 23)) +
+            theme_bw()+
+            theme(axis.title.x = element_text(size=15),
+                  axis.title.y = element_text(size=15))
+        
+            
          }
 }
 
@@ -98,12 +119,15 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   }
   sil <- silhouette(x = cluster.vector, dist = distance)
   print(mean(sil[, 3]))
-  output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1") + theme_bw() 
+  output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1",
+                  main = "Silhouette plot", 
+                  submain = paste0("Average Silhouette Width: ", round(mean(sil[, 3]), 3)),
+                  legend.title = "Cluster") + theme_bw()
+   
   output$layers[[2]]$aes_params$colour <- "black"
   output
 }
-library(factoextra)
-?fviz_silhouette
+
 
 # an example:
 #sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")

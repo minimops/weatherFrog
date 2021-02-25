@@ -38,13 +38,13 @@ significance
 
 
 
-
-
-
-
-
-
-
+gwl <- readRDS("Data/gwl.rds") 
+gwl <- gwl[order(date)]
+gwl
+gwl30 <- subsetYears(copy(gwl), seq(1971, 2000))
+any(is.na(gwl30$gwl))
+Cl.timeline(copy(gwl30), cluster = "gwl")
+Cl.timeline()
 
 
 
