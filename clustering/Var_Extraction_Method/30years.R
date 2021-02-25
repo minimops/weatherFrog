@@ -19,9 +19,7 @@ diss.pam.manhat.30.all <- dissimilarityPAM(scaleNweight(copy(data)),
                                        dist = FALSE, metric = "manhattan")
 
 ####### PAM with Manhattan ##################
-diss.pam.manhat.30.all <- daisy(scaled[, 2:ncol(scaled)], metric = "manhattan", 
-                                weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
-                                            rep(1/6, 12), rep(1/18, 18)))
+diss.pam.manhat.30.all <- daisy(scaled[, 2:ncol(scaled)], metric = "manhattan")
 
 
 saveRDS(diss.pam.manhat.30.all, "Data/diss.pam.manhat.30.all.rds")

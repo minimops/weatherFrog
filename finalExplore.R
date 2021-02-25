@@ -80,7 +80,7 @@ PAMhelper(scaleNweight(copy(datadiff)),
           metric = "manhattan", 
           dist = FALSE,
           fname = "scaled",
-          diss = )
+          diss = FALSE)
 #### skalierst du da??
 
 ## 2.scaled and weighted
@@ -90,7 +90,7 @@ PAMhelper(scaleNweight(copy(datadiff)),
           metric = "manhattan",
           dist = FALSE,
           fname = "scaledNweighted",
-          diss =
+          diss = FALSE
           )
 
 ## 3. without range
@@ -102,7 +102,7 @@ PAMhelper(scaleNweight(copy(dataNoRange)),
           metric = "manhattan",
           dist = FALSE,
           fname = "scaledNweighted.noRange",
-          diss =
+          diss = FALSE
 )
 #create final plots
 
