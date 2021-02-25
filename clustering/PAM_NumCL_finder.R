@@ -28,7 +28,7 @@ bestClustNumber <- function(distMat, metric, fname, range) {
   sil_width <- unlist(clusterApply(cl, range, PamSilFun, distM = distMat))
   stopCluster(cl)
   
-  jpeg(file= paste0("documentation/plots/PAMtrial/wide/"
+  jpeg(file= paste0("documentation/plots/PAMfinal/"
                     , fname, ".jpeg"))
   
   plot(range, sil_width,
@@ -58,7 +58,7 @@ PAMhelper <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/
   assertNumeric(range)
   
   ifelse(diss, 
-         dissimilarity <- as.dist(data[, 2:ncol(data)]),
+         dissimilarity <- as.dist(data[, 2:ncol(data)], method = metric),
          {
   ifelse(metric == "gower",
     dissimilarity <- daisy(data[, 2:ncol(data)], metric = metric, weights = weights)
@@ -90,7 +90,7 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
   assertCharacter(fname)
   assertString(metric)
   
-  path <- "documentation/plots/PAMtrial/wide/"
+  path <- "documentation/plots/PAMfinal/"
   
   jpeg(file= paste0(path
                     , paste("mosaic", metric, fname, sep = "_"), ".jpeg"))

@@ -71,4 +71,50 @@ fviz_silhouette(silhouette(clust1$clustering, dist1))
 #trial
 
 #run final version
+## add diff over day to datextr
+d <- copy(datextr)[copy(Change_day_mslp), on = "date"]
+datadiff <- copy(d)[copy(Change_day_geopot), on = "date"]
+## 1. scaled but unweighted
+PAMhelper(scaleNweight(copy(datadiff)), 
+          weights = rep(1, 50), 
+          metric = "manhattan", 
+          dist = FALSE,
+          fname = "scaled",
+          diss = )
+#### skalierst du da??
+
+## 2.scaled and weighted
+PAMhelper(scaleNweight(copy(datadiff)),
+          weights = c(rep(c(1/4, 1/6, rep(1/4, 2), rep(1/6, 5)), 2),
+                      rep(1/6, 12), rep(1/9, 18), rep(1/4, 2)),
+          metric = "manhattan",
+          dist = FALSE,
+          fname = "scaledNweighted",
+          diss =
+          )
+
+## 3. without range
+dataNoRange <- copy(datadiff)[, ":=" (range.mslp = NULL, range.geopot = NULL)]
+
+PAMhelper(scaleNweight(copy(dataNoRange)),
+          weights = c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+                      rep(1/6, 12), rep(1/9, 18), rep(1/6, 2)),
+          metric = "manhattan",
+          dist = FALSE,
+          fname = "scaledNweighted.noRange",
+          diss =
+)
 #create final plots
+
+
+
+
+
+
+
+
+
+
+
+
+

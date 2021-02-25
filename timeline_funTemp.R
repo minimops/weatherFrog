@@ -1,15 +1,16 @@
 
 data <- extrapolate(seq(2000, 2006))
+
 pam <- pam(data, 5, metric = "manhattan")
 
 newdat <- data.table(date = data[, date], cluster = pam$clustering)
-
+pam$medoids
 
 
 Cl.timeline(newdat, seperated = TRUE)
 
 
-if(seperated){
+if(seperated) {
   runLengths <- rle(use[["ClustID"]])
   
   plots <- list()
@@ -29,15 +30,41 @@ if(seperated){
     p <- ggplot(as.data.frame(data), 
                 aes(x= as.numeric(length), y = count)) +
       geom_bar(stat = "identity") +
-      labs(x = "Length", 
-           title = paste("Occurence frequencies of lengths", 
-                         paste(titleAdd, "Cluster:", i))) + 
+      #labs(x = "Length", 
+       #    title = paste("Occurence frequencies of lengths", 
+        #                 paste(titleAdd, "Cluster:", i))) + 
       theme_bw()  +
       #scale_x_continuous(limits = c(0, 25), breaks = seq(1, 25, by = 2)) + 
-      scale_y_continuous(limits = c(0, 30)) + 
+      scale_y_continuous(limits = c(0, 35)) + 
       geom_text(x=23, y=20, label= "oof")
     #xlim(c(0, 25))
     
     plots[[i]] <- p
   }
   grid.arrange(grobs = plots)
+}
+
+
+
+
+
+data
+
+
+
+mosaicplot(table(data.gwl.cluster$gwl, data.gwl.cluster$cluster), color = TRUE,
+           ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
+           main = paste0(title, " Cluster - GWL"))
+ggplot()
+
+data.gwl
+newdat
+gwl
+
+
+
+
+
+
+
+
