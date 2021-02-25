@@ -47,12 +47,18 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
              
              print(Tl.weight.fun(data))
              
+             colVector <- RColorBrewer::brewer.pal(8, "Set1")
              ggplot(as.data.frame(data), 
                     aes(x= length.runLengths.part, y = Freq)) +
-               geom_col() +
-               labs(x = "Length", 
-                    title = paste("Occurence frequencies of lengths", 
-                                  paste(titleAdd, "Cluster:", i)))
+               geom_col(col = "black", fill = colVector[i]) +
+               labs(x = "Länge", 
+                    title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                    y = "Anzahl") +
+               ylim(0, 600) +
+               scale_x_continuous(breaks = seq(1, 23)) +
+               theme_bw()+
+               theme(axis.title.x = element_text(size=15),
+                     axis.title.y = element_text(size=15))
            }
          } else{
           runLengths <- rle(use[["ClustID"]])
@@ -67,11 +73,26 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           print("timeline Value:")
           print(Tl.weight.fun(data))
           
+          if (cluster == "cluster") {
+            mainAdd <- "Cluster"
+          }
+          else {
+            mainAdd <- "GWL"
+          }
+          
           ggplot(as.data.frame(data), 
                  aes(x= length, y = count)) +
-            geom_col() +
-            labs(x = "Length", 
-                 title = paste("Occurence frequencies of lengths", titleAdd))
+            geom_col(col = "black", fill = "gray77") +
+            labs(x = "Länge", 
+                 title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                 y = "Anzahl") +
+            ylim(0, 600) +
+            scale_x_continuous(breaks = seq(1, 23)) +
+            theme_bw()+
+            theme(axis.title.x = element_text(size=15),
+                  axis.title.y = element_text(size=15))
+        
+            
          }
 }
 
