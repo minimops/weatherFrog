@@ -47,26 +47,23 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
              
              # print(Tl.weight.fun(data))
              
-             if (cluster == "cluster") {
-               mainAdd <- "Cluster"
-             }
-             else {
-               mainAdd <- "GWL"
-             }
-             data2 <- data[order(as.numeric(length))]
+           
+             #data2 <- data[order(as.numeric(length))]
+             dataOver30 <- copy(data)[as.numeric(length) > 30]
+             cutoffs <- sum(as.numeric(dataOver30$length) * dataOver30$count)
              colVector <- RColorBrewer::brewer.pal(8, "Set1")
              
              p <- ggplot(as.data.frame(data), 
                     aes(x= as.numeric(length), y = count)) +
                geom_col(fill = colVector[i], col = "black") +
                labs(x = "Länge", 
-                    title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd),
+                    title = paste("Cluster ", i),
                     y = "Anzahl") +
-               ylim(0, 200) +
-               #scale_x_continuous(breaks = seq(1, 23)) +
+               ylim(0, 30) +
+               scale_x_continuous(limits = c(0, 30), breaks = seq(1, 30, by = 2)) +
                theme_bw() +
-               theme(axis.title.x = element_text(size=15),
-                     axis.title.y = element_text(size=15))
+               geom_text(x=23, y=20, label= paste0("Abgeschnitten: ", cutoffs),
+                         size = 4)
              plots[[i]] <- p
            }
            grid.arrange(grobs = plots)
@@ -133,13 +130,16 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1",
                   main = "Silhouette plot", 
                   submain = paste0("Average Silhouette Width: ", round(mean(sil[, 3]), 3)),
-                  legend.title = "Cluster") + theme_bw()
+                  legend.title = "Cluster") + theme_bw() +
+                  theme(axis.text.x = element_blank(),
+                        axis.text.x.bottom = element_blank(),
+                        axis.ticks.x = element_blank())
    
   output$layers[[2]]$aes_params$colour <- "black"
   output
 }
 
-
+sil(pam.manhat, pam.manhat$clustering, dist, "pam")
 # an example:
 #sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
 
