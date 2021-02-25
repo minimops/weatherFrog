@@ -98,7 +98,11 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   }
   sil <- silhouette(x = cluster.vector, dist = distance)
   print(mean(sil[, 3]))
-  output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1") + theme_bw() 
+  output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1",
+                  main = "Silhouette plot", 
+                  submain = paste0("Average Silhouette Width: ", round(mean(sil[, 3]), 3)),
+                  legend.title = "Cluster") + theme_bw()
+   
   output$layers[[2]]$aes_params$colour <- "black"
   output
 }
