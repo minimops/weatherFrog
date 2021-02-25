@@ -96,10 +96,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
             ylim(0, 800) +
             
             #scale_x_continuous(breaks = c(seq(0, 23))) +
-            theme_bw()+
-            theme(axis.title.x = element_text(size=15),
-                 axis.title.y = element_text(size=15))
-        
+            theme_bw()
             
          }
 }

@@ -82,4 +82,93 @@ datClustGWLf$cluster <- as.factor(datClustGWLf$cluster)
 levels(datClustGWLf$gwl)
 
 
+Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE) {
+  assertDataTable(data)
+  assertString(cluster)
+  assertString(titleAdd)
+  assertSubset(c("date"), names(data))
+  assertLogical(seperated)
+  
+  #this is next level stupid,i cant figure out a different way to extract the
+  #cluster column while leaving it a variable
+  use <- data.table(ClustID = copy(data)[[as.character(cluster)]],
+                    date = copy(data)[["date"]])
+  setorder(use, date)
+  print("Table of Cluster frequencies:")
+  print(table(use$ClustID))
+  if(seperated){
+    runLengths <- rle(use[["ClustID"]])
+    plots <- list()
+    for (i in unique(use[["ClustID"]])) {
+      
+      length.runLengths.part <- runLengths$lengths[which(runLengths$values == i)]
+      print(paste("distribution of runLengths", "Cluster:", i))
+      print(table(length.runLengths.part))
+      
+      data <- data.table(table(length.runLengths.part))
+      colnames(data) <- c("length", "count")
+      
+      # print(Tl.weight.fun(data))
+      
+      
+      #data2 <- data[order(as.numeric(length))]
+      dataOver30 <- copy(data)[as.numeric(length) > 30]
+      cutoffs <- sum(as.numeric(dataOver30$length) * dataOver30$count)
+      colVector <- RColorBrewer::brewer.pal(8, "Set1")
+      
+      p <- ggplot(as.data.frame(data), 
+                  aes(x= as.numeric(length), y = count)) +
+        geom_col(fill = colVector[i], col = "black") +
+        labs(x = "Länge", 
+             title = paste("Cluster ", i),
+             y = "Anzahl") +
+        ylim(0, 150) +
+        scale_x_continuous(limits = c(0, 30), breaks = seq(1, 30, by = 2)) +
+        theme_bw() +
+        geom_text(x=23, y=20, label= paste0("Abgeschnitten: ", cutoffs),
+                  size = 4)
+      plots[[i]] <- p
+    }
+    grid.arrange(grobs = plots)
+  } else{
+    runLengths <- rle(use[["ClustID"]])
+    
+    print("distribution of runLengths:")
+    print(table(runLengths$lengths))
+    
+    data <- data.table(table(runLengths$lengths))
+    colnames(data) <- c("length", "count")
+    data[, ":=" (length = as.numeric(length))]
+    
+    print("timeline Value:")
+    print(Tl.weight.fun(data))
+    
+    if (cluster == "cluster") {
+      mainAdd <- "Cluster"
+    }
+    else {
+      mainAdd <- "GWL"
+    }
+    
+    ggplot(as.data.frame(data), 
+           aes(x= as.numeric(length), y = count)) +
+      geom_col(col = "black", fill = "gray77") +
+      labs(x = "Länge", 
+           title = paste("Länge der aufeinanderfolgenden, gleichen GWL"),
+           y = "Anzahl") +
+      ylim(0, 600) +
+      
+      scale_x_continuous(breaks = c(seq(0, 23))) +
+      theme_bw()
+     
+    
+  }
+}
+gwl30
+
+
+Cl.timeline(copy(gwl30), "gwl")
+ggsave("TimelineGWL", path = "Documentation/plots/PAMfinal/", device = "jpeg",
+       width = 5, height = 3)
+
 
