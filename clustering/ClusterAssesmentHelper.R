@@ -35,7 +35,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
   print(table(use$ClustID))
   if(seperated){
            runLengths <- rle(use[["ClustID"]])
-           
+           plots <- list()
            for (i in unique(use[["ClustID"]])) {
              
              length.runLengths.part <- runLengths$lengths[which(runLengths$values == i)]
@@ -45,21 +45,31 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
              data <- data.table(table(length.runLengths.part))
              colnames(data) <- c("length", "count")
              
-             print(Tl.weight.fun(data))
+             # print(Tl.weight.fun(data))
              
+             if (cluster == "cluster") {
+               mainAdd <- "Cluster"
+             }
+             else {
+               mainAdd <- "GWL"
+             }
+             data2 <- data[order(as.numeric(length))]
              colVector <- RColorBrewer::brewer.pal(8, "Set1")
-             ggplot(as.data.frame(data), 
-                    aes(x= length.runLengths.part, y = Freq)) +
-               geom_col(col = "black", fill = colVector[i]) +
+             
+             p <- ggplot(as.data.frame(data), 
+                    aes(x= as.numeric(length), y = count)) +
+               geom_col(fill = colVector[i], col = "black") +
                labs(x = "Länge", 
-                    title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                    title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd),
                     y = "Anzahl") +
-               ylim(0, 600) +
-               scale_x_continuous(breaks = seq(1, 23)) +
-               theme_bw()+
+               ylim(0, 200) +
+               #scale_x_continuous(breaks = seq(1, 23)) +
+               theme_bw() +
                theme(axis.title.x = element_text(size=15),
                      axis.title.y = element_text(size=15))
+             plots[[i]] <- p
            }
+           grid.arrange(grobs = plots)
          } else{
           runLengths <- rle(use[["ClustID"]])
           
@@ -81,21 +91,22 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           }
           
           ggplot(as.data.frame(data), 
-                 aes(x= length, y = count)) +
+                 aes(x= as.numeric(length), y = count)) +
             geom_col(col = "black", fill = "gray77") +
             labs(x = "Länge", 
-                 title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd, titleAdd),
+                 title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd),
                  y = "Anzahl") +
-            ylim(0, 600) +
-            scale_x_continuous(breaks = seq(1, 23)) +
+            ylim(0, 800) +
+            
+            scale_x_continuous(breaks = c(seq(0, 23))) +
             theme_bw()+
             theme(axis.title.x = element_text(size=15),
-                  axis.title.y = element_text(size=15))
+                 axis.title.y = element_text(size=15))
         
             
          }
 }
-
+Cl.timeline(copy(data.cluster), seperated = FALSE)
 
 # this function is to get the silhouette coefficient. 
 # INPUT: - cluster.fittet: Result of a clustering

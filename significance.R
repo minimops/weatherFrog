@@ -46,7 +46,8 @@ any(is.na(gwl30$gwl))
 Cl.timeline(copy(gwl30), cluster = "gwl")
 Cl.timeline()
 
-
+data.cluster <- copy(data)[, cluster := pam.manhat$clustering]
+Cl.timeline(copy(data.cluster), seperated = TRUE)
 
 
 
