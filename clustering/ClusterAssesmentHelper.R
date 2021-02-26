@@ -19,7 +19,7 @@ attachGwl <- function(data) {
 #data input has to be a dt with date and id column
 #cluster input is used to identify the id column
 #title add input can be used to add smth to the plot title
-Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE) {
+Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE, cut = 90) {
   assertDataTable(data)
   assertString(cluster)
   assertString(titleAdd)
@@ -60,13 +60,17 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
                     title = paste("Cluster ", i),
                     y = "Anzahl") +
                ylim(0, 150) +
-               scale_x_continuous(limits = c(0, 30), breaks = seq(1, 30, by = 2)) +
+               scale_x_continuous(limits = c(0, cut + 1), breaks = seq(0, cut, by = ifelse(cut == 90, 5, 2))) +
                theme_bw() +
-               geom_text(x=23, y=20, label= paste0("Abgeschnitten: ", cutoffs),
-                         size = 4)
+               geom_text(x = ifelse(cut == 90, cut - 15, cut - 10), y = 125, 
+                         label= paste0(cutoffs, " Tage abgeschnitten"),
+                         size = 4) +
+               theme(axis.title.x = element_blank(),
+                     axis.title.y = element_blank()
+                     )
              plots[[i]] <- p
            }
-           grid.arrange(grobs = plots)
+           grid.arrange(grobs = plots, left = "Anzahl", bottom = "Länge")
          } else{
           runLengths <- rle(use[["ClustID"]])
           
@@ -93,9 +97,10 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
             labs(x = "Länge", 
                  title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd),
                  y = "Anzahl") +
-            ylim(0, 800) +
+            ylim(0, 700) +
             
-            #scale_x_continuous(breaks = c(seq(0, 23))) +
+            scale_x_continuous(breaks = c(seq(0, cut, by = 5)),
+                               limits = c(0, cut)) +
 
             theme_bw()
             
