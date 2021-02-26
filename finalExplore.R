@@ -81,6 +81,7 @@ PAMhelper(scaleNweight(copy(datadiff)),
           dist = FALSE,
           fname = "scaled"
           )
+
 #### skalierst du da??
 
 ## 2.scaled and weighted
