@@ -98,7 +98,8 @@ drawFinalDay <- function(data, fill, title, unit, legendSize = 0.5) {
                                        ymin=latitude - coords_diff[[2]],
                                        ymax=latitude + coords_diff[[2]],
                                        fill = fFill), alpha = 0.7) +
-    scale_fill_gradient(name = paste("in", unit), low = "blue", high = "red") +
+    #scale_fill_gradient(name = paste("in", unit), low = "blue", high = "red") +
+    scale_fill_gradient(low = "blue", high = "red", limits = c(1005, 1025), guide = F) +
     ggtitle(title) +
     theme(legend.key.size = unit(legendSize, "cm"))
   
