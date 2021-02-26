@@ -32,5 +32,43 @@ ggsave("documentation/plots/PAMfinal/timelineSep.png", timelineSep, device = "pn
 # 4. Timeline nach Cluster cut
 timelineSepCut <- Cl.timeline(copy(datafinalID), seperated = TRUE, cut = 40)
 
+
+ggsave("TimelineClusterCut", path = "Documentation/plots/PAMfinal/", device = "jpeg",
+       width = 5, height = 3)
+
+
+
+
+
+
+
+reanalyse <- readRDS("Data/data_reanalysis_20201109.rds")
+a <- head(reanalyse, 4)
+time <- c(rep("1900-01-01 00:00:00", 4), "1900-01-01 18:00:00", "1900-01-02 00:00:00", 
+          rep("2010-12-31 18:00:00", 2))
+a$time <- time
+mytable <- tableGrob(a, rows = NULL, theme = ttheme_default(core = list(bg_params = list(fill = "grey99"))))
+drw <- grid.draw(mytable)
+?ggsave
+ggsave(path = "Documentation/plots/PAMfinal/Data1.jpeg", grid.table(drw), device = "jpeg",
+       width = 5, height = 3)
+
+png("Data1.png", height = 800, width = 1600)
+grid.arrange(mytable)
+grid.table(a)
+dev.off()
+
+
+
+?grid.table
+class(grid.table(a))
+
+
+d$time <- time
+d
+
+
+
 ggsave("documentation/plots/PAMfinal/timelineSepCut.png",timelineSepCut, device = "png",
        width = 10, height = 6)
+
