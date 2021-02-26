@@ -32,7 +32,7 @@ for (param in names(f_data)[3:50]) {
 
   # Boxplot
 for (param in names(f_data)[3:50]) {
-    ggplot( aes_string(x= as.factor(cluster), y=param, fill=as.factor(cluster)), data = f_data) + 
+    plot <- ggplot( aes_string(x= as.factor(cluster), y=param, fill=as.factor(cluster)), data = f_data) + 
     geom_boxplot() +
     xlab("cluster") +
     ylab("param") +
