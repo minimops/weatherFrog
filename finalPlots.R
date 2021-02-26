@@ -7,25 +7,31 @@ datafinalID <- copy(datafinal)[, cluster := pamfinal$clustering]
 
 
 # 1. Timeline ganz
-Cl.timeline(copy(datafinalID))
+tl <- Cl.timeline(copy(datafinalID))
 
-ggsave("TimelineFull", path = "Documentation/plots/PAMfinal/", device = "jpeg",
+ggsave(plot = tl, "documentation/plots/PAMfinal/timeline.png", device = "png",
        width = 5, height = 3)
 
+#1.1 Timeline multiplied
+tlMult <- Cl.timeline(copy(datafinalID), multiplied = TRUE)
+ggsave(plot = tlMult, "documentation/plots/PAMfinal/timelineMult.png", device = "png",
+       width = 5, height = 3)
 
 # 2. Timeline cut
-Cl.timeline(copy(datafinalID), cut = 41)
+timelineCut <- Cl.timeline(copy(datafinalID), cut = 41)
 
-ggsave("TimelineCut", path = "Documentation/plots/PAMfinal/", device = "jpeg",
+ggsave("documentation/plots/PAMfinal/timelineCut.png", timelineCut, device = "png",
        width = 5, height = 3)
+
 
 # 3. Timeline nach Cluster ganz
-Cl.timeline(copy(datafinalID), seperated = TRUE)
-ggsave("TimelineClusterFull", path = "Documentation/plots/PAMfinal/", device = "jpeg",
-       width = 5, height = 3)
+timelineSep <- Cl.timeline(copy(datafinalID), seperated = TRUE)
+ggsave("documentation/plots/PAMfinal/timelineSep.png", timelineSep, device = "png",
+       width = 10, height = 6)
 
 # 4. Timeline nach Cluster cut
-Cl.timeline(copy(datafinalID), seperated = TRUE, cut = 40)
+timelineSepCut <- Cl.timeline(copy(datafinalID), seperated = TRUE, cut = 40)
+
 
 ggsave("TimelineClusterCut", path = "Documentation/plots/PAMfinal/", device = "jpeg",
        width = 5, height = 3)
@@ -61,4 +67,8 @@ class(grid.table(a))
 d$time <- time
 d
 
+
+
+ggsave("documentation/plots/PAMfinal/timelineSepCut.png",timelineSepCut, device = "png",
+       width = 10, height = 6)
 
