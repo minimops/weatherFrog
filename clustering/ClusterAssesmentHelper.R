@@ -19,12 +19,14 @@ attachGwl <- function(data) {
 #data input has to be a dt with date and id column
 #cluster input is used to identify the id column
 #title add input can be used to add smth to the plot title
-Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE, cut = 90) {
+Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE,
+                        cut = 90, multiplied = FALSE) {
   assertDataTable(data)
   assertString(cluster)
   assertString(titleAdd)
   assertSubset(c("date"), names(data))
   assertLogical(seperated)
+  assertLogical(multiplied)
   
   #this is next level stupid,i cant figure out a different way to extract the
   #cluster column while leaving it a variable
@@ -63,7 +65,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
                scale_x_continuous(limits = c(0, cut + 1), breaks = seq(0, cut, by = ifelse(cut == 90, 5, 2))) +
                theme_bw() +
                geom_text(x = ifelse(cut == 90, cut - 15, cut - 10), y = 125, 
-                         label= paste0(cutoffs, " Tage abgeschnitten"),
+                         label= ifelse(cut == 90, "", paste0(cutoffs, " Tage abgeschnitten")),
                          size = 4) +
                theme(axis.title.x = element_blank(),
                      axis.title.y = element_blank()
@@ -91,13 +93,19 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
             mainAdd <- "GWL"
           }
           
+          if(multiplied){
+            data[, count := count * length]
+          }
+          ifelse(max(data$count) > 700, upperYlim <- 1000,
+                 upperYlim <- 700)
+          
           ggplot(as.data.frame(data), 
                  aes(x= as.numeric(length), y = count)) +
             geom_col(col = "black", fill = "gray77") +
             labs(x = "Länge", 
-                 title = paste("Länge der aufeinanderfolgenden, gleichen", mainAdd),
+                 title = paste("Timeline (Länge * Anzahl)"),
                  y = "Anzahl") +
-            ylim(0, 700) +
+            ylim(0, upperYlim) +
             
             scale_x_continuous(breaks = c(seq(0, cut, by = 5)),
                                limits = c(0, cut)) +
