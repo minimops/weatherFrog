@@ -49,15 +49,16 @@ drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
                                               fill = as.numeric(fFill)), alpha = 0.7) +
         # scale_fill_gradient(low = "blue", high = "red",
         #                     guide = showGuide) +
-        scale_fill_gradient(name = "Mslp in Pa", low = "blue", high = "red") +
-        ggtitle("Mslp am 01-01-2006 um 0 Uhr") 
+        scale_fill_gradient(low = "blue", high = "red", guide = FALSE) +
+        #theme(legend.key.size = unit(0.4, "cm"))
         #labs(title =whichFill, x = "", y = "") +
-        # theme(axis.title.x=element_blank(),
-        #       axis.text.x=element_blank(),
-        #       axis.ticks.x=element_blank(),
-        #       axis.title.y=element_blank(),
-        #       axis.text.y=element_blank(),
-        #       axis.ticks.y=element_blank())
+        theme(axis.title.x=element_blank(),
+              axis.text.x=element_blank(),
+              axis.ticks.x=element_blank(),
+              axis.title.y=element_blank(),
+              axis.text.y=element_blank(),
+              axis.ticks.y=element_blank(),
+              title = element_blank())
     )
   return(plot)
 }
@@ -83,3 +84,68 @@ multDays <- function(dates, param) {
   
 }
 
+
+drawFinalDay <- function(data, fill, title, unit, legendSize = 0.5) {
+  data <- as.data.frame(data)
+  fFill <- data[, fill]
+  
+  world_map_local <- readRDS("Data/world_map_local.rds")
+  coords_diff <- readRDS("Data/diff_coords.rds")
+  
+  plot <- world_map_local +
+    geom_rect(data = data, mapping=aes(xmin=longitude - coords_diff[[1]],
+                                       xmax=longitude + coords_diff[[1]],
+                                       ymin=latitude - coords_diff[[2]],
+                                       ymax=latitude + coords_diff[[2]],
+                                       fill = fFill), alpha = 0.7) +
+    scale_fill_gradient(name = paste("in", unit), low = "blue", high = "red") +
+    ggtitle(title) +
+    theme(legend.key.size = unit(legendSize, "cm"))
+  
+  plot
+}
+
+
+drawFullDay <- function(data) {
+  world_map_local <- readRDS("Data/world_map_local.rds")
+  coords_diff <- readRDS("Data/diff_coords.rds")
+  
+  
+  
+  plist <- list()
+  param <- c("mslp", "geopotential")
+  times <- sort(unique(data$time))
+
+  count <- 0
+  for (j in seq_len(length(param))) {
+    para <- param[j]
+    for (i in seq_len(length(times))) {
+      count <- count + 1
+      tim <- times[i]
+      use <- as.data.frame(copy(data)[time %in% tim, ])
+      fFill <- use[, para]
+      
+      plot <- drawDay(use, para, showGuide = F, discrete = F)
+      
+      
+      
+      # plot <- world_map_local +
+      #   geom_rect(data = use, mapping=aes(xmin=longitude - coords_diff[[1]],
+      #                                      xmax=longitude + coords_diff[[1]],
+      #                                      ymin=latitude - coords_diff[[2]],
+      #                                      ymax=latitude + coords_diff[[2]],
+      #                                      fill = fFill), alpha = 0.7) +
+      #   scale_fill_gradient(low = "blue", high = "red", guide = FALSE) +
+      #   theme(axis.title.x=element_blank(),
+      #         axis.text.x=element_blank(),
+      #         axis.ticks.x=element_blank(),
+      #         axis.title.y=element_blank(),
+      #         axis.text.y=element_blank(),
+      #         axis.ticks.y=element_blank(),
+      #         title = element_blank())
+
+      plist[[count]] <- plot
+    }
+  }
+  grid.arrange(grobs = plist, nrow = 2)
+}

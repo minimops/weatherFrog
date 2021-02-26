@@ -78,7 +78,6 @@ datadiff <- copy(d)[readRDS("Data/change_day_geopot.rds"), on = "date"]
 PAMhelper(scaleNweight(copy(datadiff)), 
           weights = rep(1, 50), 
           metric = "manhattan", 
-          dist = FALSE,
           fname = "scaled"
           )
 
@@ -170,3 +169,40 @@ PAMhelper(scaleNweight(copy(datadiff_newID_var2)),
           dist = FALSE,
           fname = "scaledNweighted.noRange.noDiff.newID.newDiff"
 )
+
+
+# final decision
+diff2 <- readRDS("Data/change_day_mslp_var2.rds")[readRDS("Data/change_day_geopot_var2.rds"), ]
+datfull_f <- extrapolate(seq(1971, 2000))[diff2, ]
+dataNoRange_f <- datfull_f[, ":=" (range.mslp = NULL, range.geopot = NULL)]
+
+
+PAMhelper(scaleNweight(copy(dataNoRange_f)),
+          weights = c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+                      rep(1/6, 12), rep(1/9, 18), rep(1/6, 2)),
+          metric = "manhattan",
+          dist = FALSE,
+          fname = "scaledNweighted.noRange.newDiff"
+)
+
+
+weights <- c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+             rep(1/6, 12), rep(1/9, 18), rep(1/6, 2))
+d <- copy(datextr)[readRDS("Data/change_day_mslp.rds"), on = "date"]
+datadiff <- copy(d)[readRDS("Data/change_day_geopot.rds"), on = "date"]
+dataNoRange <- copy(datadiff)[, ":=" (range.mslp = NULL, range.geopot = NULL)]
+
+useDat <- as.data.table(scale(copy(dataNoRange)[, date := NULL]))[, Map("*", .SD, weights)]
+dissimilarity <- parallelDist(as.matrix(useDat), method = "manhattan",
+                              threads = detectCores() - 2)
+
+finalClust <- pam(dissimilarity, 6, diss = TRUE)
+
+clusterAssesment(dataNoRange, clusterRes = finalClust, metric = "manhattan", 
+                 distance = dissimilarity, fname = "scaleNweight.noRange.diff1.6clust")
+
+saveRDS(finalClust, "finalDATA/PAMres.rds")
+saveRDS(dataNoRange, "finalDATA/f_data.rds")
+saveRDS(dissimilarity, "finalDATA/f_dist.rds")
+
+
