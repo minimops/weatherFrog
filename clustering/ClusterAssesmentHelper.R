@@ -95,7 +95,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
                  y = "Anzahl") +
             ylim(0, 800) +
             
-            scale_x_continuous(breaks = c(seq(0, 23))) +
+            #scale_x_continuous(breaks = c(seq(0, 23))) +
             theme_bw()+
             theme(axis.title.x = element_text(size=15),
                  axis.title.y = element_text(size=15))
@@ -103,7 +103,6 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
             
          }
 }
-Cl.timeline(copy(data.cluster), seperated = FALSE)
 
 # this function is to get the silhouette coefficient. 
 # INPUT: - cluster.fittet: Result of a clustering
@@ -139,7 +138,6 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   output
 }
 
-sil(pam.manhat, pam.manhat$clustering, dist, "pam")
 # an example:
 #sil(pam_fit, pam_fit$clustering, dissimilarity, "pam")
 

@@ -47,15 +47,17 @@ drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
                                               ymin=latitude - coords_diff[[2]],
                                               ymax=latitude + coords_diff[[2]],
                                               fill = as.numeric(fFill)), alpha = 0.7) +
-        scale_fill_gradient(low = "blue", high = "red",
-                            guide = showGuide) +
-        labs(title =whichFill, x = "", y = "") +
-        theme(axis.title.x=element_blank(),
-              axis.text.x=element_blank(),
-              axis.ticks.x=element_blank(),
-              axis.title.y=element_blank(),
-              axis.text.y=element_blank(),
-              axis.ticks.y=element_blank())
+        # scale_fill_gradient(low = "blue", high = "red",
+        #                     guide = showGuide) +
+        scale_fill_gradient(name = "Mslp in Pa", low = "blue", high = "red") +
+        ggtitle("Mslp am 01-01-2006 um 0 Uhr") 
+        #labs(title =whichFill, x = "", y = "") +
+        # theme(axis.title.x=element_blank(),
+        #       axis.text.x=element_blank(),
+        #       axis.ticks.x=element_blank(),
+        #       axis.title.y=element_blank(),
+        #       axis.text.y=element_blank(),
+        #       axis.ticks.y=element_blank())
     )
   return(plot)
 }

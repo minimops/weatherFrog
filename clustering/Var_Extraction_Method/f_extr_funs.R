@@ -12,7 +12,7 @@ extrapolate <- function(yearspan, vars = "all") {
   assertNumeric(yearspan, lower = 1900, upper = 2010)
   #TODO insert all possible var creations
   #TODO handling
-  assertSubset(vars, c("all", "all.4qm", "all.pca", "season", "min", "max", 
+  assertSubset(vars, c("all", "all.4qm", "all.pca", "all.fullID", "season", "min", "max", 
                        "intensity", "location",
                        "range", "distance"))
   
@@ -50,7 +50,9 @@ extrapolate <- function(yearspan, vars = "all") {
   data_long_avg_quadrant <- append.QuadrantID(data_long_avg)
   
   #get max and min quadrant values
-  max_mins_location <- quadrantValues(data_long_avg_quadrant)
+  ifelse(vars == "all.fullID",
+         max_mins_location <- quadrantValues(diff_quadrandID(data_long_avg)), 
+        max_mins_location <- quadrantValues(data_long_avg_quadrant))
  
   #distribution measures
   distMeasures <- measures(copy(data_wide_avgDay))
@@ -81,7 +83,7 @@ extrapolate <- function(yearspan, vars = "all") {
     pca <- getPCA(copy(data_wide_avgDay), 3)
     Qmeans <- Reduce(merge, list(Qmeans, pca))
   }
-  
+
   #return new dataset
   out <- Reduce(merge, list(distMeasures, 
                      max_mins_location[, grep("latitude|longitude$", 
@@ -89,6 +91,8 @@ extrapolate <- function(yearspan, vars = "all") {
                      distances,
                      intensity,
                      Qmeans))
+  
+  
   setcolorder(out, c("date", "mean.mslp", "median.mslp", "max.mslp", "min.mslp",
                      "quartile25.mslp", "quartile75.mslp", "range.mslp",
                      "intensity.high.mslp", "intensity.low.mslp", "mean.geopot",
@@ -404,4 +408,20 @@ getPCA <- function(data, number = 3) {
   
   data.table(date = data$date, 
         prcomp(as.data.frame(copy(data)[, date := NULL]))[["x"]][, seq(1, number)])
+}
+
+
+diff_quadrandID <- function(data){
+  assertDataTable(data)
+  assertSubset(c("longitude", "latitude"), names(data))
+  
+  out <- copy(data)
+  
+  lats <- unique(sort(out$latitude))
+  longs <- unique(sort(out$longitude))
+  
+  out[, ":=" (verID = vapply(latitude, function(x) which(lats == x), c(1)),
+              horID = vapply(longitude, function(x) which(longs == x), c(1)))]
+  
+  out
 }
