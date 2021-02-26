@@ -63,7 +63,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
                scale_x_continuous(limits = c(0, cut + 1), breaks = seq(0, cut, by = ifelse(cut == 90, 5, 2))) +
                theme_bw() +
                geom_text(x = ifelse(cut == 90, cut - 15, cut - 10), y = 125, 
-                         label= paste0(cutoffs, " Tage abgeschnitten"),
+                         label= ifelse(cut == 90, "", paste0(cutoffs, " Tage abgeschnitten")),
                          size = 4) +
                theme(axis.title.x = element_blank(),
                      axis.title.y = element_blank()
