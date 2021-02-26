@@ -61,17 +61,7 @@ mosaic_examp <- ggplot(data = flights) +
 
 data.gwl
 
-ggplot(data = datClustGWL) +
-  geom_mosaic(aes(x = product(cluster, gwl), fill = as.factor(cluster))) +
-  theme_bw()+ 
-  scale_fill_brewer(palette = "Set1") +
-  labs(y = "Cluster", x = "GWL", title = "Mosaikplot von Cluster zu GWL") +
-  scale_alpha_manual(values = 0.8) +
-  theme(aspect.ratio = 3,
-        axis.text.x = element_blank())
-  
-newdat
-gwl
+
 
 datClust <- datextr[, cluster := pam.manhat.30$clustering]
 datClustGWL <- copy(gwl)[datClust, on = "date"]
@@ -80,7 +70,31 @@ datClustGWLf$gwl <- as.factor(datClustGWLf$gwl)
 levels(datClustGWLf$gwl)
 datClustGWLf$cluster <- as.factor(datClustGWLf$cluster)
 levels(datClustGWLf$gwl)
+datClustGWLf$cluster <- forcats::fct_relevel(datClustGWLf$cluster, "1", "2", "3", "4", "5", "6")
 
+
+ggplot(data = datClustGWLf) +
+  geom_mosaic(aes(x = product(cluster, gwl), fill = as.factor(cluster)), offset = 0.015) +
+  theme_bw()+ 
+  scale_fill_brewer(palette = "Set1") +
+  labs(y = "Cluster", x = "GWL", title = "Mosaikplot von Cluster zu GWL",
+       legend = "Cluster") +
+  guides(fill = guide_legend(title = "Cluster")) +
+  
+  
+
+scale_alpha_manual(values = 0.8) 
+
+  theme(aspect.ratio = 3,
+        axis.text.x = element_blank())
+  
+newdat
+gwl
+
+?forcats::fct_relevel
+Cl.timeline(copy(gwl30), "gwl")
+ggsave("TryoutMosaik", path = "Documentation/plots/PAMfinal/", device = "jpeg",
+       width = 5, height = 3)
 
 Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE) {
   assertDataTable(data)
@@ -159,16 +173,10 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
       ylim(0, 600) +
       
       scale_x_continuous(breaks = c(seq(0, 23))) +
+      
       theme_bw()
-     
     
   }
 }
-gwl30
-
-
 Cl.timeline(copy(gwl30), "gwl")
-ggsave("TimelineGWL", path = "Documentation/plots/PAMfinal/", device = "jpeg",
-       width = 5, height = 3)
-
 
