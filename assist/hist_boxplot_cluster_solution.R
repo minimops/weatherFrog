@@ -76,7 +76,7 @@ ggsave(plot, file = "final_cluster/mean_mslp_boxplot.png")
 
 # Boxplot of mean.geopot in every cluster
 
- plot <- ggplot( aes(x= as.factor(cluster), y= mean.geopot, fill=as.factor(cluster)), data = f_data) + 
+  ggplot( aes(x= as.factor(cluster), y= mean.geopot, fill=as.factor(cluster)), data = f_data) + 
   geom_boxplot() +
   xlab("Cluster") +
   ylab("Geopotential in [gpm]") +
@@ -147,7 +147,7 @@ min_max_boxplot <- reshape2::melt(min_max_boxplot, id.vars = "cluster", measure.
   
   # barplot of mean mslp
   
-  clusterDescription <- descriptive_array(extract_data_30[,-1],PAMres$clustering) 
+  clusterDescription <- descriptive_array(f_data[,-c(1,2)],PAMres$clustering) 
   descriptive_mean <- as.data.table(clusterDescription[,,1])
   descriptive_mean <- as.data.table(sapply(descriptive_mean,as.numeric))
   cluster <- as.factor(c(1,2,3,4,5,6))
@@ -172,7 +172,7 @@ min_max_boxplot <- reshape2::melt(min_max_boxplot, id.vars = "cluster", measure.
   data <- as.data.table(scale(descriptive_mean[,-1], scale = FALSE))
   data <-cbind(cluster, data)
   
-  plot <- ggplot(data,aes(x = cluster,y = mean.mslp, fill = cluster)) +
+   plot <- ggplot(data,aes(x = cluster,y = mean.mslp, fill = cluster)) +
     geom_bar(stat="identity", alpha=0.7, width=0.5) +
     theme_bw() +
     theme(
@@ -208,17 +208,22 @@ min_max_boxplot <- reshape2::melt(min_max_boxplot, id.vars = "cluster", measure.
  
  ggsave(plot, file="final_cluster/scaled_geopot.mslp in every cluster.png") 
  
+ 
   
-  
+ 
+ 
   
  
 
   # boxplot with mean in each cluster
   mean_location <- f_data[,c(1,13,23,33,34,35,36,37,38,39)]
+  mean_location <- scale(mean_location[,-1], scale = FALSE)
   names <- colnames(f_data[,c(1,13,23,33,34,35,36,37,38,39)])
   mean_location <- reshape2::melt(mean_location, id.vars = "cluster", measure.vars = names )
   
-  
+  ggplot(mean_location, aes(fill=Var2, y=value, x= Var2)) + 
+    geom_bar(position="dodge", stat="identity") +
+    facet_wrap(~ as.factor(Var1))
   
   ggplot( aes(x=as.factor(cluster), y=value, fill= variable), data = mean_location) + 
     geom_boxplot() +
@@ -228,7 +233,7 @@ min_max_boxplot <- reshape2::melt(min_max_boxplot, id.vars = "cluster", measure.
     xlab("") 
 #interesting, but not practicable  
   
-# histogram: destribution of the cluster ober the years
+# histogram: destribution of the cluster over the years
 
 data <-f_data 
 data <- cbind(Jahreszeit, data)
@@ -253,7 +258,7 @@ plot <- ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluster
   xlab("Jahr")
 
 
-ggsave(plot," distribution of years over cluster.png")
+ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
 
 # Distribution of clusters split in seasons
 
@@ -274,7 +279,7 @@ plot <- ggplot(aes(x = year, fill = Jahreszeit), data = data) +
   xlab("Jahr") +
   ylab("Häufigkeit")
 
-ggsave(plot,file = "distribution of years over cluster_ splited_in_seasons1.png")
+ggsave(plot,file = "final_cluster/distribution of years over cluster_ splited_in_seasons1.png")
 
 
  ggplot(aes(x = year, fill = as.factor(cluster)), data = data) +
@@ -284,14 +289,15 @@ ggsave(plot,file = "distribution of years over cluster_ splited_in_seasons1.png"
   theme(
     panel.spacing = unit(0.1, "lines"),
     #axis.title.x=element_blank(),
-    #axis.text.x=element_blank(),
+    axis.text.x=element_text(),
     #axis.ticks.x=element_blank()
   ) +
-   labs(fill ="cluster") +
+   labs(fill ="Cluster") +
   scale_color_brewer(palette="Set1")+
   scale_fill_brewer(palette="Set1") + 
-  ggtitle("Verteilung der Cluster über die Jahre aufgeteilt nach Sommer und Winterzeit") +
+  ggtitle("Verteilung der Cluster über die Jahre aufgeteilt nach
+                      Sommer und Winterzeit") +
   xlab("Jahr") +
   ylab("Häufigkeit")
 
-ggsave(plot,file = "distribution of years over cluster_ splited_in_seasons2.png")
+ggsave(plot,file = "final_cluster/distribution of years over cluster_ splited_in_seasons2.png")
