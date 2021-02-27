@@ -139,9 +139,10 @@ sil <- function(cluster.fitted, cluster.vector, distance, algorithm) {
   sil <- silhouette(x = cluster.vector, dist = distance)
   print(mean(sil[, 3]))
   output <- fviz_silhouette(sil.obj = sil, print.summary = FALSE, palette = "Set1",
-                  main = "Silhouette plot", 
-                  submain = paste0("Average Silhouette Width: ", round(mean(sil[, 3]), 3)),
-                  legend.title = "Cluster") + theme_bw() +
+                  main = "Silhouettenplot", 
+                  submain = paste0("Silhouettenkoeffizient: ", round(mean(sil[, 3]), 3)),
+                  legend.title = "Cluster") + theme_classic() +
+                  labs(y = "Silhouette S(o)") +
                   theme(axis.text.x = element_blank(),
                         axis.text.x.bottom = element_blank(),
                         axis.ticks.x = element_blank())

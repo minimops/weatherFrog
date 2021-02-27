@@ -37,9 +37,24 @@ ggsave("TimelineClusterCut", path = "Documentation/plots/PAMfinal/", device = "j
        width = 5, height = 3)
 
 
+#silhouette plot
 
+silli <- silhouette(PAMres$clustering, f_dist)
 
-
+jpeg("documentation/plots/PAMfinal/f_sil.jpeg", width = 5, height = 3, res = 1000, units = "in")
+output <- fviz_silhouette(sil.obj = silli,
+                print.summary = FALSE, palette = "Set1",
+                main = "Silhouettenplot", 
+                submain = paste0("Silhouettenkoeffizient: ", round(mean(silli[, 3]), 3)),
+                legend.title = "Cluster") + theme_classic() +
+        scale_y_continuous(name = "Silhouette S(o)", limits = c(-0.3, 1),
+                           breaks = seq(-0.25, 1, by = 0.25)) +
+        theme(axis.text.x = element_blank(),
+              axis.text.x.bottom = element_blank(),
+              axis.ticks.x = element_blank())
+output$layers[[2]]$aes_params$colour <- "black"
+output
+dev.off()
 
 
 reanalyse <- readRDS("Data/data_reanalysis_20201109.rds")

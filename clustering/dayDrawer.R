@@ -31,14 +31,15 @@ drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
                                              ymin=latitude - coords_diff[[2]], 
                                              ymax=latitude + coords_diff[[2]], 
                                              fill = as.factor(fFill)), alpha = 0.7) +
-       scale_fill_brewer(palette = "Set1", guide = showGuide) +
-       labs(title =whichFill, x = "", y = "") +
+        scale_fill_manual(values=c("#999999", "red", "blue"), labels = c("Noise", "Hoch", "Tief")) +
+       labs(title = "Gefilterter Mslp", fill = "Gebiet") + 
+      #labs(title =whichFill, x = "", y = "") +
        theme(axis.title.x=element_blank(),
-             axis.text.x=element_blank(),
-             axis.ticks.x=element_blank(),
-             axis.title.y=element_blank(),
-             axis.text.y=element_blank(),
-             axis.ticks.y=element_blank())
+             # axis.text.x=element_blank(),
+             # axis.ticks.x=element_blank(),
+             axis.title.y=element_blank())
+             # axis.text.y=element_blank(),
+             # axis.ticks.y=element_blank())
    ,
     plot <-
       world_map_local +
@@ -51,14 +52,13 @@ drawDay <- function(data, whichFill, showGuide = TRUE, discrete = TRUE) {
         #                     guide = showGuide) +
         scale_fill_gradient(low = "blue", high = "red", guide = FALSE) +
         #theme(legend.key.size = unit(0.4, "cm"))
-        #labs(title =whichFill, x = "", y = "") +
+        labs(title =whichFill, x = "", y = "") +
         theme(axis.title.x=element_blank(),
               axis.text.x=element_blank(),
               axis.ticks.x=element_blank(),
               axis.title.y=element_blank(),
               axis.text.y=element_blank(),
-              axis.ticks.y=element_blank(),
-              title = element_blank())
+              axis.ticks.y=element_blank())
     )
   return(plot)
 }
@@ -98,8 +98,8 @@ drawFinalDay <- function(data, fill, title, unit, legendSize = 0.5) {
                                        ymin=latitude - coords_diff[[2]],
                                        ymax=latitude + coords_diff[[2]],
                                        fill = fFill), alpha = 0.7) +
-    #scale_fill_gradient(name = paste("in", unit), low = "blue", high = "red") +
-    scale_fill_gradient(low = "blue", high = "red", limits = c(1005, 1025), guide = F) +
+    scale_fill_gradient(name = paste("in", unit), low = "blue", high = "red") +
+    #scale_fill_gradient(low = "blue", high = "red", limits = c(1005, 1025), guide = F) +
     ggtitle(title) +
     theme(legend.key.size = unit(legendSize, "cm"))
   
