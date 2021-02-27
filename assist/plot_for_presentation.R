@@ -165,7 +165,8 @@ ggsave(plot, file="final_cluster/min_max_geopot.png")
 # histogram: distribution of the cluster over the years
 
 data <-f_data 
-# data <- cbind(Jahreszeit, data) Jahreszeitvektor als spalte hinzufügen
+ #data <- cbind(Jahreszeit, data) 
+ #Jahreszeitvektor als spalte hinzufügen
 data$year <- format(data$date,"%Y")
 data$year <- as.numeric(data$year)
 
