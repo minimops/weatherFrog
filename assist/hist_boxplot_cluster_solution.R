@@ -228,10 +228,70 @@ min_max_boxplot <- reshape2::melt(min_max_boxplot, id.vars = "cluster", measure.
     xlab("") 
 #interesting, but not practicable  
   
+# histogram: destribution of the cluster ober the years
+
+data <-f_data 
+data <- cbind(Jahreszeit, data)
+data$year <- format(data$date,"%Y")
+data$year <- as.numeric(data$year)
+
+plot <- ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluster)), data = data) +
+  geom_histogram(alpha = 0.9) +
+  facet_wrap(~as.factor(cluster), scale="free_x") +
+  theme_bw() +
+  theme(
+    panel.spacing = unit(0.1, "lines"),
+    #axis.title.x=element_blank(),
+    #axis.text.x=element_blank(),
+    #axis.ticks.x=element_blank(),
+    legend.position = "none"
+  ) +
+  scale_color_brewer(palette="Set1")+
+  scale_fill_brewer(palette="Set1") + 
+  ggtitle("Verteilung der Cluster über die Jahre") +
+  ylab("Häufigkeit") +
+  xlab("Jahr")
 
 
- 
+ggsave(plot," distribution of years over cluster.png")
+
+# Distribution of clusters split in seasons
 
 
+plot <- ggplot(aes(x = year, fill = Jahreszeit), data = data) +
+  geom_histogram(alpha = 0.9) +
+  facet_wrap(~as.factor(cluster), scale="free_x") +
+  theme_bw() +
+  theme(
+    panel.spacing = unit(0.1, "lines"),
+    #axis.title.x=element_blank(),
+    #axis.text.x=element_blank(),
+    #axis.ticks.x=element_blank()
+  ) +
+  scale_color_brewer(palette="Set1")+
+  scale_fill_brewer(palette="Set1") + 
+  ggtitle("Verteilung der Cluster über die Jahre aufgeteilt nach Sommer und Winterzeit") +
+  xlab("Jahr") +
+  ylab("Häufigkeit")
 
-       
+ggsave(plot,file = "distribution of years over cluster_ splited_in_seasons1.png")
+
+
+ ggplot(aes(x = year, fill = as.factor(cluster)), data = data) +
+  geom_histogram(alpha = 0.9) +
+  facet_wrap(~as.factor(Jahreszeit), scale="free_x") +
+  theme_bw() +
+  theme(
+    panel.spacing = unit(0.1, "lines"),
+    #axis.title.x=element_blank(),
+    #axis.text.x=element_blank(),
+    #axis.ticks.x=element_blank()
+  ) +
+   labs(fill ="cluster") +
+  scale_color_brewer(palette="Set1")+
+  scale_fill_brewer(palette="Set1") + 
+  ggtitle("Verteilung der Cluster über die Jahre aufgeteilt nach Sommer und Winterzeit") +
+  xlab("Jahr") +
+  ylab("Häufigkeit")
+
+ggsave(plot,file = "distribution of years over cluster_ splited_in_seasons2.png")

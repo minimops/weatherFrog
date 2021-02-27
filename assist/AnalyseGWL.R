@@ -93,7 +93,9 @@ month_10_day_1_15 <- paste(10,day_1_to_15,sep = "-")
                                  Month_Day %in% month_4_day_1_15 ~ "Winterzeit",
                                  Month_Day %in% month_4_day_16_30 ~ "Sommerzeit",
                                  Month_Day %in% month_10_day_1_15 ~ "Sommerzeit"))
-
+ 
+data_2000 <- cli_gwl_1971_Month_Day[cli_gwl_1971_Month_Day$date <= "2000-12-31",]
+Jahreszeit <- data_2000$Jahreszeit
 setcolorder(cli_gwl_1971_Month_Day,c("index_length_gwl","id","Jahreszeit"))
 cli_gwl_1971_Month_Day <- cli_gwl_1971_Month_Day[,-329]
  
