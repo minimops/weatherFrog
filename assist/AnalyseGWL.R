@@ -168,11 +168,11 @@ dev.off()
 # Verteilung der Messwerte von Mslp und Geopot ueber 2 Jahreszeiten
 
 cli_gwl_long2 <- melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,9 : 328])))
-cli_gwl_long_mslp2 <- melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,9 : 168])))
-cli_gwl_long_geo2 <- melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,169 : 328])))
+cli_gwl_long_mslp2 <- reshape2::melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,9 : 168])))
+cli_gwl_long_geo2 <- reshape2::melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,169 : 328])))
 
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/MslpRange2Jahreszeiten.jpeg")
+#jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/MslpRange2Jahreszeiten.jpeg")
 boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der 2 Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
@@ -180,6 +180,43 @@ jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plot
 boxplot(cli_gwl_long_geo2$value ~ cli_gwl_long_geo2$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der 2 Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
+
+
+boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der 2 Jahreszeiten",
+       xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
+
+
+cli_gwl_long_mslp2$value <- cli_gwl_long_mslp2$value/100
+
+ ggplot(aes(x=Jahreszeit, y=value, fill = Jahreszeit), data = cli_gwl_long_mslp2) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Luftdruck in [hPa]")+
+  ggtitle ("Verteilung des Luftdrucks bezogen auf die Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_mslp.png")
+
+
+cli_gwl_long_geo2$value <- cli_gwl_long_geo2$value/9.80665
+
+plot <- ggplot(aes(x=Jahreszeit, y=value, fill = Jahreszeit), data = cli_gwl_long_geo2) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Geopotential in gpm")+
+  ggtitle ("Verteilung des Geopotentials bezogen auf die Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_geo.png")
+
+
+
 
 
 
