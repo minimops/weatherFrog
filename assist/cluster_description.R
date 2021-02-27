@@ -42,9 +42,9 @@ dimnames(clusterDescription) <- list(firstDimNames,secondDimNames,thirdDimNames)
 
 # mode only applicable for ordinal and nominal data, delete mode from array
 clusterDescription <- clusterDescription[,,-5]
-dim(cluster)
+dim(clusterDescription)
 first_cluster <- clusterDescription[1,,]
-
+clusterDescription
 
 # Plot for number of observations in each cluster
 
@@ -57,7 +57,7 @@ col_vector <- c("darkblue", "darkgreen", "lightgreen","red","hotpink","orange")
 
 ggplot(cluster_number) +
   geom_bar( aes(x = V1, y=N),stat = "identity", fill=col_vector, alpha=0.7, width=0.5) +
-  theme_ipsum() +
+  theme_bw() +
   theme(
     legend.position="none",
     plot.title = element_text(size=11)
@@ -79,6 +79,7 @@ mean_mslp <- as.data.table(clusterDescription[,1,])
 mean_mslp <- as.data.table(sapply(mean_mslp,as.numeric))
 cluster <- as.factor(c(1,2,3,4,5,6))
 mean_mslp <- cbind(cluster,mean_mslp)
+
 
 
 
@@ -125,6 +126,7 @@ data_cluster %>%
   ggplot( aes(x=mean.mslp)) +
   geom_histogram(fill="#69b3a2", color="#e9ecef", alpha=0.9) +
   facet_wrap(~cluster, scale="free_x") +
+  theme_bw() +
   theme(
     panel.spacing = unit(0.1, "lines"),
     axis.title.x=element_blank(),

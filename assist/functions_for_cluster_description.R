@@ -33,5 +33,5 @@ dimnames(clusterDescription) <- list(firstDimNames,secondDimNames,thirdDimNames)
 
 # mode only applicable for ordinal and nominal data, delete mode from array
 clusterDescription <- clusterDescription[,,-5]
-dim(clusterDescription)
+return(clusterDescription)
 }
