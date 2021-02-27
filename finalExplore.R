@@ -100,7 +100,7 @@ PAMhelper(scaleNweight(copy(dataNoRange)),
                       rep(1/6, 12), rep(1/9, 18), rep(1/6, 2)),
           metric = "manhattan",
           dist = FALSE,
-          fname = "scaledNweighted.noRange"
+          fname = "scaledNweighted.noRange.final"
 )
 #create final plots
 

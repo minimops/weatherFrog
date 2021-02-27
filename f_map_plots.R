@@ -44,19 +44,11 @@ one_day <- copy(cli_data_05_avgDay)[format(date, "%Y-%m-%d")
 mslp1 <- drawFinalDay(one_day, "avg_mslp", "Mslp", 
                       "hPa", 0.4) +
   theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank())
+        axis.title.y=element_blank())
 geopot1 <- drawFinalDay(one_day, "avg_geopot", "Geopot", 
                         "gpm", 0.4) +
   theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank())
+        axis.title.y=element_blank())
 avgDay <- grid.arrange(mslp1, geopot1, nrow = 1, top = "Mittelwerte am 01.01.2006")  
 
 ggsave("documentation/plots/fplots/avgDay.png", avgDay, device = "png",
@@ -64,7 +56,7 @@ ggsave("documentation/plots/fplots/avgDay.png", avgDay, device = "png",
 
 
 ## one avg day
-mslp2 <- drawFinalDay(one_day, "avg_mslp", "avg Mslp am 01.01.2006", 
+mslp2 <- drawFinalDay(one_day, "avg_mslp", "Gemittelter Mslp am 01.01.2006", 
                       "hPa", 0.5)+
   theme(axis.title.x=element_blank(),
         axis.title.y=element_blank())
@@ -72,6 +64,14 @@ mslp2 <- drawFinalDay(one_day, "avg_mslp", "avg Mslp am 01.01.2006",
 ggsave("documentation/plots/fplots/oneDay_2.png", mslp2, device = "png",
        width = 5, height = 3)
 
+
+geopot2 <- drawFinalDay(one_day, "avg_geopot", "Gemitteltes Geopot am 01.01.2006", 
+                      "gpm", 0.5)+
+  theme(axis.title.x=element_blank(),
+        axis.title.y=element_blank())
+
+ggsave("documentation/plots/fplots/oneDay_geo_2.png", geopot2, device = "png",
+       width = 5, height = 3)
 
 
 #avg Pics of Cluster
@@ -175,3 +175,43 @@ geopot_avgC <- grid.arrange(grobs = plots, nrow = 2, left = "Latitude", bottom =
 ggsave("documentation/plots/fplots/avgClustIMG_geopot.rds", geopot_avgC, width = 8, height = 5, device = "png")
 
 
+
+##filter method for 01-01-2006
+filterDayData("2006-01-01", "custom", type = "geopot")
+
+day <- "2006-01-01"
+plots <- list()
+
+  oneDay <- readRDS("Data/cli_data_2k_avgDay.rds")[date %in% as.Date(day), ]
+  plotRes <- copy(oneDay)
+  
+  result <- filterDay(oneDay[, date := NULL], "avg_mslp")
+  
+  plotDat <- data.frame(plotRes, cluster = as.factor(result$cluster))
+  plots[[2]] <- drawDay(plotDat, whichFill = "cluster", showGuide = FALSE,
+          discrete = TRUE)
+  
+  result2 <- filterDay(oneDay[, date := NULL], "avg_geopot")
+  
+  plotDat2 <- data.frame(plotRes, cluster = as.factor(result2$cluster))
+  plots[[4]] <- drawDay(plotDat2, whichFill = "cluster", showGuide = FALSE,
+                        discrete = TRUE)
+
+    plots[[1]] <- drawFinalDay(plotRes[, avg_mslp := avg_mslp / 100],
+                               "avg_mslp", "Gemittelter Mslp",
+                               "hPa") + theme(axis.title.x = element_blank(),
+                                              axis.title.y = element_blank())
+    
+    plots[[3]] <- drawFinalDay(plotRes[, avg_geopot := avg_geopot / 9.80665],
+                               "avg_geopot", "Gemitteltes Geopot",
+                               "gpm") + theme(axis.title.x = element_blank(),
+                                              axis.title.y = element_blank())
+
+    filterExa <- grid.arrange(grobs = plots,
+                 top = textGrob("Filtern des 01.01.2006",gp=gpar(fontsize=20)),
+                 bottom = "Longitude",
+                 left = "Latitude")
+
+    ggsave("documentation/plots/fplots/filterExa.png", filterExa, device = "png",
+           width = 8, height = 5)
+    
