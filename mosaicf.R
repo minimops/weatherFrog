@@ -12,7 +12,8 @@ saveRDS(MosDat, file = "date_cluster_gwl.rds")
 mosaicLegend <- ggplot(data = MosDat) +
   geom_mosaic(aes(x = product(cluster, gwl), fill = cluster), offset = 0.005) +
   theme_classic() +
-  ggtitle("Mosaik cluster ~ GWL") +
+  ggtitle("Mosaikplot für Cluster ~ GWL") +
+  labs(x = "GWL") +
   scale_fill_brewer(palette = "Set1") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   guides(fill=guide_legend(title = "Cluster", reverse = TRUE)) +
@@ -23,7 +24,7 @@ mosaicLegend <- ggplot(data = MosDat) +
   
   
 ggsave("documentation/plots/fplots/mosaicLegend.png", mosaicLegend,
-       device = "png", width = 7, height = 4)
+       device = "png", width = 9, height = 5)
 
 
 

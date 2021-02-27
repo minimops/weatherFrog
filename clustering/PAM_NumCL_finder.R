@@ -28,16 +28,26 @@ bestClustNumber <- function(distMat, metric, fname, range) {
   sil_width <- unlist(clusterApply(cl, range, PamSilFun, distM = distMat))
   stopCluster(cl)
   
-  jpeg(file= paste0("documentation/plots/PAMfinal/"
-                    , fname, ".jpeg"))
-  
-  plot(range, sil_width,
-       xlab = "Number of clusters",
-       ylab = "Silhouette Width",
-       main = paste("PAM", metric))
-  lines(range, sil_width)
-  
-  dev.off()
+  # jpeg(file= paste0("documentation/plots/PAMfinal/"
+  #                   , fname, ".jpeg"), width = 5, height = 3, units = "in", res = 1000)
+  # 
+  # plot(range, sil_width,
+  #      xlab = "Cluster Anzahl",
+  #      ylab = "Silhouettenkoeffizient",
+  #      main = "Optimale Anzahl an Cluster")
+  # lines(range, sil_width)
+  # 
+  # dev.off()
+
+  ggsave(paste0("documentation/plots/PAMfinal/"
+                , fname, ".png"), plot = 
+           ggplot(data.frame(range, sil_width), aes(x = range, y = sil_width)) + 
+           geom_point() +
+           geom_line() +
+           theme_bw() +
+           labs(x = "Cluster Anzahl", y = "Silhouettenkoeffizient", 
+                title = "Optimale Anzahl an Cluster"),
+         device = "png", width = 5, height = 3)
 
   return(range[which(sil_width == max(sil_width))])
 }

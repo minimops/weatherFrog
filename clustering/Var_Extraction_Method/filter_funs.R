@@ -67,7 +67,7 @@ filterDay <- function(data, param) {
   #get density threshold
   eps <- findCutoff(seq(1, nrow(sc_oneDay)),
                   kNNdist(sc_oneDay, k = 10)
-                  , method = "curvature")$y
+                  , method = "curvature")$y  + 0.008
 
   startingPoints <- getMinMax(sc_oneDay, param)
   runIndex <- 0
