@@ -196,7 +196,7 @@ ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
 data1 <- as.data.table(table(as.factor(data$cluster),data$Jahreszeit))
 colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
 
- plot <- ggplot(aes(x = as.factor(cluster), y = Anzahl, group = Jahreszeit, fill = Jahreszeit), data = data1) +
+ (plot <- ggplot(aes(x = as.factor(cluster), y = Anzahl, group = Jahreszeit,fill = Jahreszeit), data = data1) +
   geom_bar(position = "dodge", stat = "identity") +
   theme_bw() +
   theme(
@@ -205,13 +205,14 @@ colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
   scale_fill_brewer(palette="Set1") + 
   ggtitle("Verteilung der Cluster über die Jahre aufgeteilt 
            nach Sommer und Winterzeit") +
-  xlab("Häufigkeit") +
-  ylab("Cluster")
+  xlab("Cluster") +
+  ylab("relative Häufigkeit"))
  
 
 
 ggsave(plot,file = "final_cluster/distribution of years over cluster_ splited_in_seasons1.png")
 
+<<<<<<< HEAD
 
 data1 <- data.table(cluster = data$cluster, season = getWinSum(data$date))
 
@@ -254,3 +255,25 @@ custPal <- data.frame(rbind(
 
 custPal[order(as.numeric(custPal$X1)), ]$X2 
   
+=======
+#same, not grouprd, but as mosaic plot
+
+data1 <- as.data.table(table(as.factor(data$cluster),data$Jahreszeit))
+colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
+
+(plot <- ggplot(aes(x = as.factor(cluster), y = Anzahl, group = Jahreszeit,fill = Jahreszeit), data = data1) +
+    geom_bar(position = "fill", stat = "identity") +
+    theme_bw() +
+    theme(
+      legend.position = "none"
+    ) +
+    scale_fill_brewer(palette="Set1") + 
+    ggtitle("Verteilung der Cluster über die Jahre aufgeteilt 
+           nach Sommer und Winterzeit") +
+    xlab("Cluster") +
+    ylab("relative Häufigkeit"))
+
+
+
+ggsave(plot,file = "final_cluster/mosail_seasons_cluster.png")
+>>>>>>> d6238190e3513a6a3a9528ca0678717406e98cd1
