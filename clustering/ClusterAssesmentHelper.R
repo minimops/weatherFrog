@@ -103,7 +103,7 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
                  aes(x= as.numeric(length), y = count)) +
             geom_col(col = "black", fill = "gray77") +
             labs(x = "Länge", 
-                 title = paste("Timeline (Länge * Anzahl)"),
+                 title = paste("Timeline"),
                  y = "Anzahl") +
             ylim(0, upperYlim) +
             

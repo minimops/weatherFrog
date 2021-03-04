@@ -165,13 +165,12 @@ ggsave(plot, file="final_cluster/min_max_geopot.png")
 # histogram: distribution of the cluster over the years
 
 data <-f_data 
- #data <- cbind(Jahreszeit, data) 
- #Jahreszeitvektor als spalte hinzufügen
+# data <- cbind(Jahreszeit, data) Jahreszeitvektor als spalte hinzufügen
 data$year <- format(data$date,"%Y")
 data$year <- as.numeric(data$year)
 
 plot <-  ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluster)), data = data) +
-  geom_histogram(alpha = 0.9) +
+  geom_histogram(aes(y = ..density..), alpha = 0.9, bins = 30) +
   facet_wrap(~as.factor(cluster), scale="free_x") +
   theme_bw() +
   theme(
@@ -184,10 +183,11 @@ plot <-  ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluste
   scale_color_brewer(palette="Set1")+
   scale_fill_brewer(palette="Set1") + 
   ggtitle("Verteilung der Cluster über die Jahre") +
-  ylab("Dichte") +
+  ylab("Anteil") +
   xlab("Jahr")
 
-
+ggsave("documentation/plots/fplots/clust_years.png", plot, device = "png",
+       width = 5, height = 3)
 ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
 
 # Distribution of clusters split in seasons
@@ -212,6 +212,50 @@ colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
 
 ggsave(plot,file = "final_cluster/distribution of years over cluster_ splited_in_seasons1.png")
 
+<<<<<<< HEAD
+
+data1 <- data.table(cluster = data$cluster, season = getWinSum(data$date))
+
+
+data1[, fillVar := paste0(cluster, season)][season == "W", season := "Winter"][season == "S", season := "Sommer"]
+
+library(cowplot)
+newlegend <- get_legend(ggplot(data1, aes(cluster, fill = season)) +
+                          geom_bar() +
+                          scale_fill_grey(name = "Saison") +
+                          theme_bw())
+
+plotSeason <- ggplot(data1, aes(cluster)) +
+  geom_bar(aes(fill = as.factor(fillVar)), position = "fill") +
+  scale_fill_manual(values = c("#E41A1C", "#FBB4AE", "#377EB8", "#B3CDE3",
+                               "#4DAF4A", "#CCEBC5", "#984EA3", "#DECBE4",
+                               "#FF7F00", "#FED9A6", "#FFFF33", "#FFFFCC")) +
+  labs(x = "Cluster", y = "Anteil", title = "Veteilung der Cluster über Saison") +
+  theme_bw() +
+  theme(legend.position = "none")
+  
+grid.arrange(plotSeason, right = newlegend)
+  
+
+legendSomm <- get_legend()
+
+ggplot(data1, aes(cluster)) +
+  geom_bar(aes(fill = as.factor(cluster))) +
+  scale_fill_brewer(name = "Cluster", palette = "Set1") +
+  theme(legend.direction = "horizontal",
+        legend.box.just = "top",
+        legend.box.margin = margin(1, 6))
+
+
+
+custPal <- data.frame(rbind(
+  cbind(seq(1, 11, by = 2), brewer.pal(6, "Set1")),
+  cbind(seq(2, 12, by =2), brewer.pal(6, "Pastel1"))
+))
+
+custPal[order(as.numeric(custPal$X1)), ]$X2 
+  
+=======
 #same, not grouprd, but as mosaic plot
 
 data1 <- as.data.table(table(as.factor(data$cluster),data$Jahreszeit))
@@ -232,3 +276,4 @@ colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
 
 
 ggsave(plot,file = "final_cluster/mosail_seasons_cluster.png")
+>>>>>>> d6238190e3513a6a3a9528ca0678717406e98cd1
