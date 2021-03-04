@@ -61,13 +61,13 @@ longrun = FALSE # set to TRUE to rerun all code
 \section*{List of abbreviations}
 
 
-```{r abbreviations, echo=FALSE}
+```{r Abkürzungen, echo=FALSE}
 data.table(
-  Term = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
+  Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
            "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids",
            "Density-Based Spatial Clustering of Applications with Noise", "Ludwig-Maximilians-Universität"),
-  Abbreviation = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU")) %>%
-  arrange(Term) %>%
+  Abkuerzung = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU")) %>%
+  arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
 ```
@@ -95,17 +95,11 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 ## Distanzmetriken
 
 
-# Hauptteil
+# Methodik
 ## Clustern mit den Originaldaten
-### Mahalanobis
-### CLARA
-### PCA
 ## Clustern mit extrahierten Daten
 ### Extrahieren der Variablen
-### Clusteranalysen
-#### PAM
-#### Kmeans
-#### Fuzzy
+### Entscheidung des Clusterverfahrens
 ## Analyse der Clusterergebnisse
 # Schluss
 
