@@ -97,6 +97,29 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 
 # Methodik
 ## Clustern mit den Originaldaten
+
+
+### Filter Ansatz
+
+-erklaerung gwl beschreibung
+Beim genaueren Blick in die Beschreibungen einzelner GWL ist zu erkennen, dass diese häufig duch Position oder Formation bestimmter Gebiete mit erkennbar höheren oder tieferen Messwerten definiert sind. \textcolor{red}{Beispiele?}
+Beispielsweise wird die GWL Trog Westeuropa (TRW) definiert durch ein sich vertikal erstreckendes Tiefdruckgebiet von Skandinavien bis zur Iberischen Halbinsel, flankiert von Hochdruckgebieten über dem Atlantik und Westrussland. Hingegen die GWL Hoch Britische Inseln (HB) ist, wie der Name bereits vermuten lässt, beschrieben durch ein Hochdruckgebiet über dem Vereinigten Königreich und Irland, umgeben von mehreren Tiefdruckgebieten (@sklima). Ähnlich ist dies bei allen weiteren Großwetterlagen zu beobachten.
+-erklärung motivation
+Demnach lässt sich vermuten, dass die GWL sich anhand der Position und Form der an dem Tag respektiven Hoch- und Tief(druck)gebiete sinnvoll gruppieren \textcolor{red}{ließen}. 
+-erklärung prinzip
+Diesen Grundgedanken verfolgend, sind die Tage optimalerweise in interessierende Gebiete zu unterteilen und anhand dieser miteinander zu vergleichen. "Interessierende Gebiete" wurden hierbei vorerst angenommen als die Gebiete um die täglich gemessenen Extrema. Folglich also einem Gebiet höherer Messwerte um den am Tag maximal gemessenen Wert und einem Gebiet tieferer Messwerte um den minimalen Messwert. Dabei ist zu beachten, dass diese Gebiete nicht zu groß werden aber auch nicht nur aus einzelnen wenigen Punkten bestehen. Außerdem sollte ihre Form, unabhängig der Messwerte, nicht zum Beispiel immer einen Kreis darstellen. Beides führte später zu Problemen bei dem Vergleich zwischen den Tagen. Alle Standorte nicht in den interessanten Gebieten sollten beim Vergleich der Tage natürlich nicht mit einbezogen werden, demnach bei der Gebietseinteilung als Rauschen bezeichnet werden. Um diese Gebietseinteilung eines Tages durchzuführen soll also ein metrischer Messwert eines bestimmten Standortes mit einer Gebietszugehörigkeit erstzt werden. Die Messinformationen des Tagen sollen also "gefiltert" werden. Da sonst bestimmte Hyperparameter oder Grenzwerte fest angegeben werden müssten, lässt sich dies durch ein seperates Clusterverfahren über die 160 Standorte pro Tag erreichen. Mit der Idee anhand beider Parameter-Messwerte (Mslp und Geopotential) "Gebiete-Muster" zu erkennen und, da durch experimentieren herausgefunden wurde, dass die beiden Parameter vereinigt keine besonders sauberen Muster zu erkennen ließen, wird jeder Tag zwei mal auf diese Weise geclustered; jeweils pro Parameter ein Mal. Die Feature-Variablen dieses Clusterverfahrens sind demnach Longitude, Latitude und der Parametermesswert. 
+-erklärung verusche mit DBSCAN oder fuzzy
+Um der Anforderung der nicht uniformen Gebiete gerecht zu werden, erscheint ein dichtebasiertes Clusterverfahren von Vorteil. Ein implementiertes Verfahren, das auch die Möglichkeit des Rauschens beinhaltet, ist DBSCAN (Density-Based Spatial Clustering of Applications with Noise). \textcolor{red}{DBSCAN erklären?}
+DBSCAN benötigt keine Angabe der Clusteranzahl, sonder nur der Hyperparameter *minPoints* (minimal Anzahl an Punkte pro Cluster) und *eps* (Nachbarschaftsparameter). Hier lässt sich erhoffen, dass eventuell auch mehr als nur die zwei Gebiete um die Extrema erkannt werden. Allerdings musste schnell erkannt werden, dass der Algorythmus mit diesen Daten sich sehr sensitiv gegenüber den Hyperparametern präsentiert, selbst wenn der Nachbarschaftsparameter pro Tag anhand dem Wert der grössten \textcolor{red}{Curviture eines kNN-Plots} spezifisch berechnet wird. \textcolor{red}{zeigen} Dies führt dazu, dass sehr viele Tage nur zu Noise, einem einzigen Cluster oder zu riesigen Clustern gefiltert werden, was natürlich widerrum nicht erwünscht ist, da die Vergleichbarkeit der Tage im Nachhinein damit nahezu unmöglich wird. \textcolor{red}{beispiel ergebnisse} Ein Bestimmen der Startpunkte und somit ein Festsetzen der Cluster-Orte ist - zumindest in vorhandenen Implementationen dieses Algorythmus' - nicht möglich.
+Ein weiterer vielversprechender Ansatz ist das Fuzzy-Clustering \textcolor{red}{Fuzzy erklären?}, da hier Startpunkte angegeben werden können und anhand der Clusterzugehörigkeitswahrscheinlichkeit jeder Beobachtung, bestimmte Beobachttungen mithilfe eines Schwellenwertes im Nachhinein zu Rauschen verwandelt werden können. 
+Neben dem, dass Fuzzy üblicherweise rechentechnisch sehr teuer implementiert ist, kommt hinzu, dass dieses Verfahren natürlich auf ein Mittelpunkt pro Cluster beruht und die Distanz dazu anhand eines gegebenen Distanzmaß' bestimmt wird. Nachdem die Koordinaten als Variablen aufgenommen werden, führt dies zu Clustern gleicher Form und verletzt somit die Anforderung die Form eines Gebietes möglichst getreu darzustellen. \textcolor{red}{beispiel ergebnisse}
+
+-vorstellen custom cluster algo
+-vorstellen rand.index und custom distance
+
+
+
+
 ## Clustern mit extrahierten Daten
 ### Extrahieren der Variablen
 ### Entscheidung des Clusterverfahrens
