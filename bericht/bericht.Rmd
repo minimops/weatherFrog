@@ -52,23 +52,25 @@ longrun = FALSE # set to TRUE to rerun all code
 \pagenumbering{Roman}
 
 \setcounter{tocdepth}{4}
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
 \tableofcontents
 
+\renewcommand{\listtablename}{Tabellenverzeichnis}
 \listoftables
 
 \newpage
 
+\renewcommand{\listfigurename}{Abbildungsverzeichnis}
 \listoffigures
 
-\section*{List of abbreviations}
+\section*{Abkürzungen}
 
 
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids",
-           "Density-Based Spatial Clustering of Applications with Noise", "Ludwig-Maximilians-Universität", "Spatial Clustering around Points of Interest"),
-  Abkuerzung = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU", "SCAPOI")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise", "Ludwig-Maximilians-Universität", "Spatial Clustering around Points of Interest"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU", "SCAPOI")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -173,10 +175,41 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 
 
 ## Clustern mit extrahierten Daten
+Ein weiterer Ansatz ist, dass Informationen aus dem Reanalyse Datensatz extrahiert werden und diese dann Variablen eines neuen Datensatzes werden. Diese Idee knüpft an den des vorher beschriebenen Ansatz des Filterns an. Auch hier ist die Lage von Extremwerten von Interesse. Zwar wird hier die Form der jeweiligen Tief- und Hochdruckgebiete vernachlässigt, aber es lassen sich weitere interessante Informationen mit hinzunehmen. 
+
+Dabei versteht man unter interessanten Informationen unter anderem die Verteilung der Parameter Luftdruck und Geopotential sowie das Einbeziehen der räumlichen Ebene. Das bedeutet, der neue Datensatz beinhaltet zwei Kategorien, die Verteilung der Parameter, die bestimmte Messwerte pro Tag enthält und die räumliche Ebene, die diese dann örtlich einordnet.
+
+Wir erhoffen uns von dieser Methodik, dass die Dimensionen weiter reduziert werden können und dass wichtige Größen spezifisch gewichtet werden können.
+
 ### Extrahieren der Variablen
+Die Ausgangslage beim Extrahieren der Variablen ist dabei größtenteils der Datensatz mit 320 Dimensionen, also der, bei dem die vier Messzeitpunkte für jeden Tag gemittelt wurden. Davon extrahieren wir verschiedene Größen, die jeweils eine für uns interessante Variable über alle Standorte zusammengefasst verkörpert, wie zum Beispiel der Mittelwert des Luftdrucks über alle Standorte pro Tag. Dieser ist damit unabhängig von den Standorten und gehört zu der Kategorie "Verteilung der Parameter" am Tag. Weitere Variablen dieser Kategorie sind das Minimum und Maximum, der Median, die 0.25- und 0.75-Quantile, die Intensität und die Veränderung über den Tag jeweils für beide Parameter Luftdruck und Geopotential. Für das Minimum, Maximum, Median, Mittelwert und die beiden Quartile wird je ein Tag mit den 160 Standorten betrachtet, wovon diese Variablen für den Luftdruck sowie für das Geopotential extrahiert werden. 
+Siehe zusammengefasst alle Extrahierten Variablen in Tabelle \ref{tab:state1}
+
+```{r Variablen, echo=FALSE, fig.cap="\\label{tab:state1}Extrahierte Variablen für je Luftdruck und Geopotential. Each row represents a list element"}
+data.table(
+  Variable = c("Minimum", "Maximum", "Mittelwert", "Median", "Quartile", "Intensität Hoch", "Intensität Tief", 
+               "Veränderung über den Tag", "Spalte Minimum", "Zeile Minimum", "Spalte Maximum", "Zeile Maximum",
+               "Distanz zwischen Extrema", "Distanz der beiden Minima", "Distanz der beiden Maxima", 
+               "Mittelwerte in den Quadranten"),
+  Definition = c("Minimaler Wert pro Tag", "Maximaler Wert pro Tag", "Mittelwert pro Tag", "Median pro Tag", 
+                 "Quartile pro Tag", 
+                 "Anzahl der Messpunkte am Tag, die über alle Daten über dem 0.75-Quantil liegen", 
+                 "Anzahl der Messpunkte am Tag, die über alle Daten unter dem 0.25-Quantil liegen", 
+                 "Summierte Differenzen von vier Messzeitpunkten am Tag für alle Standorte",
+                 "Spalte x, in dem sich Minimum befindet; x = 1, 2, 3",
+                 "Zeile y, in dem sich Minimum befindet; y = 1, 2, 3",
+                 "Spalte x, in dem sich Maximum befindet; x = 1, 2, 3",
+                 "Spalte y, in dem sich Maximum befindet; y = 1, 2, 3",
+                 "Euklidische Distanz zwischen Minimum und Maximum",
+                 "Euklidische Distanz vom Minimum Geopotential zu Minimum Mslp",
+                 "Euklidische Distanz vom Maximum Geopotential zu Minimum Mslp",
+                 "Mittelwerte in jeweils 9 Quadranten")) %>%
+  kable(booktabs = TRUE, format =  "latex", escape = FALSE, label = "state1", caption = "Extrahierte Variablen für je Luftdruck und Geopotential") %>%
+  kable_styling(latex_options = "striped", full_width = TRUE)
+```
 ### Entscheidung des Clusterverfahrens
 ## Analyse der Clusterergebnisse
 # Schluss
 
 
-# Referenzen
+\section{References}
