@@ -186,13 +186,28 @@ Die Ausgangslage beim Extrahieren der Variablen ist dabei größtenteils der Dat
 
 Für das Minimum, Maximum, Median, Mittelwert und die beiden Quartile wird je ein Tag mit den 160 Standorten betrachtet, wovon diese Variablen für den Luftdruck sowie für das Geopotential extrahiert werden. 
 
-Die Intensität wird in "Intensität Hoch" und "Intensität Tief" aufgeteilt und ist die Anzahl der Messwerte am Tag, die unter bzw. über dem 0.25- bzw. 0.75-Quantil, über alle Tage zusammen betrachtet, liegen. Sind beispielsweise an einem Tag 10 Messwerte des Geopotentials unterhalb dem 0.25-Quantil über alle Tage betrachtet, so ist die Variable "Intensität Tief Geopotential" für diesen Tag 10. Die Intention dahinter ist, dadurch zum einen, die Größe von Hoch- und Tiefdruckgebiete am Tag zu bestimmen. Hochdruckgebiete sind hier einfachhalber durch hohen Luftdruck und hohes Geopotential definiert, wobei diese Parameter getrennt voneinander betrachtet werden und analog für ein Tiefdruckgebiet. 
+Die Intensität wird in "Intensität Hoch" und "Intensität Tief" aufgeteilt und ist die Anzahl der Messwerte am Tag, die unter bzw. über dem 0.25- bzw. 0.75-Quantil, über alle Tage zusammen betrachtet, liegen. Sind beispielsweise an einem Tag 10 Messwerte des Geopotentials unterhalb des 0.25-Quantils über alle Tage betrachtet, so ist die Variable "Intensität Tief Geopotential" für diesen Tag 10. Die Intention dahinter ist, dadurch zum einen, die Größe von Hoch- und Tiefdruckgebiete am Tag zu bestimmen. Hochdruckgebiete sind hier einfachhalber durch hohen Luftdruck und hohes Geopotential definiert, wobei diese Parameter getrennt voneinander betrachtet werden und analog für ein Tiefdruckgebiet. 
 \textcolor{red}{evtl bezug auf internetseite mit def hoch und tiefdruckgebbiet} Das bedeutet, insgesamt gibt es 4 Variablen, die die Intensität beschreiben - Intensität Hoch und Intensität Tief je für Mslp und Geopotential. Dadurch lassen sich die Tief- und Hochdruckgebiete am Tag miteinander vergleichen. Zum anderen kann die Größe und Intensität der Gebiete über alle Tage verglichen werden, da sie in Bezug auf die Quartile über alle Tage gebildet werden. So kann es zum Beispiel sein, dass an einem Tag die Intensität des Luftdrucks für ein Hochdruckgebiet 0 ist, da an diesem Tag generell niedrige Mslp Werte beobachtet wurden. 
 
 In Abschnitt \textcolor{red}{wahrscheinlich 1...} wurde bereits beschrieben, dass der Mittelwert über vier Messzeitpunkte pro Tag gebildet wurde. Da dies mit einem Informationsverlust einhergeht, wird die Variable "Veränderung über den Tag" eingeführt. Sie ist definiert als die summierten, absoluten Differenzen des maximalen und minimalen Messwertes für jeden Standort am Tag. Diese Variable wird folglich mit Hilfe des Originaldatensatzes, ohne Informationsverlust, für beide Parameter Mslp und Luftdruck extrahiert. 
-Siehe zusammengefasst alle Extrahierten Variablen in Tabelle \ref{tab:state1}
 
-```{r Variablen, echo=FALSE, fig.cap="\\label{tab:state1}Extrahierte Variablen für je Luftdruck und Geopotential. Each row represents a list element"}
+Da bereits Variablen extrahiert wurden, die die Verteilung der Parameter an verschiedenen Tagen beschreiben, ist jetzt noch die räumliche Ebene von Interesse. Dafür wird das 8x20 Grid in 9 Quadranten unterteilt, also in Nord - Süd, Ost - West und jeweils die Mitte bzw. das Zentrum, wie man in Bild \ref{fig:quadranten} sehen kann.
+
+```{r quadranten, echo = FALSE, fig.cap="\\label{fig:quadranten}Aufteilung in 9 Quadranten", fig.align="center", out.width="80%"}
+include_graphics("quadranten.png")
+```
+
+Es wird jeden Tag angegeben, in welchem der 9 Quadranten sich die Extremwerte, also Minimum sowie Maximum für je Luftdruck und Geopotential, befinden. Ursprünglich waren diese Variablen kategorial, da die Quadranten von eins bis neun durch nummeriert wurden, z.B. 
+
+$Quadrant_{maxMslp, i} \in \{1, 2, ... , 9\} \ mit \ i = 1, ... , 10958\ (Anzahl\ der\ Tage)$. Allerdings ist der Datensatz dadurch sowohl mit numerischen, als auch mit kategorialen Variablen und die Möglichkeiten zu clustern sind damit eingeschränkt. Deshalb wurden zwei "Dummy-Variablen" eingeführt, sodass die Lage auch numerisch angegeben werden kann. Diese Variablen sind Spalte und Zeile für die vier Extremwerte am Tag, beispielsweise $Zeile_{maxMslp, i} \in \{1, 2, 3\}\ und\\ Spalte_{maxMslp, i} \in \{1, 2, 3\}\  mit\ i = 1, ... , 10958$. \textcolor{red}{noch genauer erklären?}
+
+Zudem werden die Distanzen zwischen Extrempunkten mit einbezogen. Zum einen die Distanzen zwischen dem Maximum und Minimum für je Geopotential und Luftdruck. Zum anderen die Distanzen vom Minimum bzw. Maximum des Geopotential zu den jeweiligen Extremwerten des Luftdrucks für jeden Tag. Alle Distanzen werden mit der euklidischen Distanz gebildet, wobei die Longituden und Latituden der Extremwerte am Tag zur Berechnung betrachtet werden. 
+
+Zuletzt werden die Kategorien, Verteilung der Parameter und räumliche Ebene, vermischt, indem die Mittelwerte für beide Parameter in allen 9 Quadranten angegeben wird. Das sind somit 18 weitere Variablen.
+
+Insgesamt umfasst der neu extrahierte Datensatz 48 Variablen. Die Variablen wurden in Absprache mit den Projektpartner bestimmt und es lassen sich bestimmt auch noch weitere inhaltlich sinnvolle Variablen definieren. In Tabelle \ref{tab:variablen} sind die extrahierten Variablen für je das Geopotential sowie den Luftdruck zusammengefasst.
+
+```{r variablen, echo=FALSE, fig.cap="\\label{tab:variablen}Extrahierte Variablen. Each row represents a list element"}
 data.table(
   Variable = c("Minimum", "Maximum", "Mittelwert", "Median", "Quartile", "Intensität Hoch", "Intensität Tief", 
                "Veränderung über den Tag", "Spalte Minimum", "Zeile Minimum", "Spalte Maximum", "Zeile Maximum",
@@ -211,7 +226,7 @@ data.table(
                  "Euklidische Distanz vom Minimum Geopotential zu Minimum Mslp",
                  "Euklidische Distanz vom Maximum Geopotential zu Minimum Mslp",
                  "Mittelwerte in jeweils 9 Quadranten")) %>%
-  kable(booktabs = TRUE, format =  "latex", escape = FALSE, label = "state1", caption = "Extrahierte Variablen für je Luftdruck und Geopotential") %>%
+  kable(booktabs = TRUE, format =  "latex", escape = FALSE, label = "variablen", caption = "Extrahierte Variablen") %>%
   kable_styling(latex_options = "striped", full_width = TRUE)
 ```
 ### Entscheidung des Clusterverfahrens
