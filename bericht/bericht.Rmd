@@ -98,7 +98,7 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 
 
 # Methodik
-<<<<<<< HEAD
+
 
 ## Clusterbewertungskriterien
 
@@ -108,11 +108,6 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
   #### Timeline  
   
 
-=======
-## Bewertungskriterien für Clustering
-### Silhouettenkoeffizient
-### Timeline
->>>>>>> 607a0f56205b5d97d39b05572132c5488af5a4ec
 ## Clustern mit den Originaldaten
 ### Clara, Mahalanobis und PCA
 
@@ -267,12 +262,9 @@ Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidis
 
 ## Analyse der Clusterergebnisse
 
-<<<<<<< HEAD
 ##weitere ergebnis ansaetze
 ###pam + filter
 
-=======
->>>>>>> 607a0f56205b5d97d39b05572132c5488af5a4ec
 # Schluss
 
 
