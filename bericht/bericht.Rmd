@@ -82,26 +82,27 @@ data.table(
 
 \pagenumbering{arabic} 
 
-# Einleitung
-Der Klimawandel bringt viele Veränderungen mit sich. Magdalena Mittermeier vom Department für Geografie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich auch das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert. 
-
+# Einleitung 
+Die Fridays for Future Bewegung ist eine globale soziale Bewegung, die vor allem von Schülern und Studenten ausgeht. Diese gehen jeden Freitag auf die Straße und protestieren, um auf den Klimawandel und ihre Folgen aufmerksam zu machen.  
+Es ist bekannt, dass der Klimawandel viele Veränderungen mit sich bringt.
+Magdalena Mittermeier vom Department für Geografie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert. 
 Im Rahmen des Statistischen Praktikums unterstützen wir dieses Projekt, indem wir beobachtete Wetterdaten auf täglicher Basis in Cluster einteilen.
 
 ## Großwetterlagen
-Es gibt mehrere Systeme, die Wettertypen klassifizieren. Die uns zur Verfügung gestellte Einteilung in Großwetterlagen beruht auf dem Katalog nach Hess und Brezowsky, der im Jahr 1952 veröffentlicht wurde. Es wurden 29 Großwetterlagen über Europa und dem Atlantik definiert. Zudem gibt es die Kategorie Unbestimmt (U), die angegeben wurde, wenn sich ein Tag keiner GWL zuordnen ließ (siehe @pik119). Die jeweiligen Tage lassen sich anhand von mehreren Variablen einteilen (TODO nachschauen wonach die eingeteilt werden!) 
-
+Es gibt zwei Kategorien, um die Großwetterlagen zu unterteilen, einmal die objektiven und subjektiven Großwetterlagen. 
+Die uns zur Verfügung gestellte Einteilung in Großwetterlagen beruht auf subjektiven Einteilung, nach dem Katalog nach Hess und Brezowsky, der im Jahr 1952 veröffentlicht wurde. Es wurden 29 Großwetterlagen über Europa und dem Atlantik definiert. Zudem gibt es die Kategorie Unbestimmt (U), die angegeben wurde, wenn sich ein Tag keiner GWL zuordnen ließ (siehe @pik119). Die jeweiligen Tage lassen sich anhand von mehreren Variablen einteilen. Die Einteilung erfolgt nach den Zirkulationsformen in Bodennäheund in mittleren tropesphärischen Niveau. Die Zirkulationsformen sind zyklonal und antizyklonal 
+Die Lage "West zyklonal" kommt am häufigsten vor. 
 
 ## Daten
 Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Außerdem ist uns die GWL für jeden Tag im Zeitraum von 1900 bis 2010 bekannt. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert.
 
- 
-## Cluster
-## Distanzmetriken
-
 
 # Methodik
+## Bewertungskriterien für Clustering
+### Silhouettenkoeffizient
+### Timeline
 ## Clustern mit den Originaldaten
-
+### Clara, Mahalanobis und PCA
 
 ### Filter Ansatz
 
@@ -194,7 +195,7 @@ In Abschnitt \textcolor{red}{wahrscheinlich 1...} wurde bereits beschrieben, das
 Da bereits Variablen extrahiert wurden, die die Verteilung der Parameter an verschiedenen Tagen beschreiben, ist jetzt noch die räumliche Ebene von Interesse. Dafür wird das 8x20 Grid in 9 Quadranten unterteilt, also in Nord - Süd, Ost - West und jeweils die Mitte bzw. das Zentrum, wie man in Bild \ref{fig:quadranten} sehen kann.
 
 ```{r quadranten, echo = FALSE, fig.cap="\\label{fig:quadranten}Aufteilung in 9 Quadranten", fig.align="center", out.width="80%"}
-include_graphics("quadranten.png")
+include_graphics("assets/quadranten.png")
 ```
 
 Es wird jeden Tag angegeben, in welchem der 9 Quadranten sich die Extremwerte, also Minimum sowie Maximum für je Luftdruck und Geopotential, befinden. Ursprünglich waren diese Variablen kategorial, da die Quadranten von eins bis neun durch nummeriert wurden, z.B. 
@@ -205,7 +206,7 @@ Zudem werden die Distanzen zwischen Extrempunkten mit einbezogen. Zum einen die 
 
 Zuletzt werden die Kategorien, Verteilung der Parameter und räumliche Ebene, vermischt, indem die Mittelwerte für beide Parameter in allen 9 Quadranten angegeben wird. Das sind somit 18 weitere Variablen.
 
-Insgesamt umfasst der neu extrahierte Datensatz 48 Variablen. Die Variablen wurden in Absprache mit den Projektpartner bestimmt und es lassen sich bestimmt auch noch weitere inhaltlich sinnvolle Variablen definieren. In Tabelle \ref{tab:variablen} sind die extrahierten Variablen für je das Geopotential sowie den Luftdruck zusammengefasst.
+Insgesamt umfasst der neu extrahierte Datensatz 48 Variablen. Die Variablen wurden in Absprache mit dem Projektpartner definiert und es lassen sich bestimmt auch noch weitere inhaltlich sinnvolle Variablen definieren. In Tabelle \ref{tab:variablen} sind die extrahierten Variablen für je das Geopotential sowie den Luftdruck zusammengefasst.
 
 ```{r variablen, echo=FALSE, fig.cap="\\label{tab:variablen}Extrahierte Variablen. Each row represents a list element"}
 data.table(
@@ -229,8 +230,25 @@ data.table(
   kable(booktabs = TRUE, format =  "latex", escape = FALSE, label = "variablen", caption = "Extrahierte Variablen") %>%
   kable_styling(latex_options = "striped", full_width = TRUE)
 ```
+
+### Distanzmetrik
+Cluster können gefunden werden, indem die Distanzen von allen Beobachtungen in einem Datensatz miteinander verglichen werden. \textcolor{red}{finde Quelle}. Dafür muss ein Distanz- oder Ähnlichkeitsmaß festgelegt werden oder neu implementiert werden. Die Wahl für diese Clusteranalyse fiel auf die Manhattan-Distanz, die für zwei Beobachtungen *a* und *b* definiert ist als
+
+$$
+d(a, b) = \sum_{i = 1}^{p} |a_{i} - b_{i}|
+$$
+$$
+wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
+$$
+
+
+
+Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben.
+
 ### Entscheidung des Clusterverfahrens
+
 ## Analyse der Clusterergebnisse
+
 # Schluss
 
 
