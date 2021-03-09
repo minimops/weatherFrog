@@ -100,6 +100,15 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 
 
 # Methodik
+
+## Clusterbewertungskriterien
+
+  Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskritereien fix etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Längen in aufeinanderfolgenden Tage jeweils im selben Cluster; im Folgenden *Timeline* benannt.
+  #### silhouettenkoeffizient
+  \textcolor{red}{insert here}
+  #### Timeline  
+  
+
 ## Clustern mit den Originaldaten
 
 
@@ -170,6 +179,12 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
   Folgend wurde eine Distanzmetrik definiert, die über beide Tage alle Messpunkte, die jeweils als Noise definiert wurden, nicht betrachtet und mit den verbleibenden jeweils nur vergleicht, welche Gebietszugehörigkeit die Messpunkte jeweils aufweisen.
   \textcolor{red}{insert Formula}
   
+$$
+d(A, B) = 1 - (\frac{\text{Anzahl Messpunkte mit gleichem Clusterindiz}}{\text{Anzahl Messpunkte gesamt}})
+$$
+$$
+\text{wobei die Messpunkte in Noise jeweils nicht miteinbezogen werden}
+$$
 
 #### Ergebnisse
 
@@ -231,6 +246,10 @@ data.table(
 ```
 ### Entscheidung des Clusterverfahrens
 ## Analyse der Clusterergebnisse
+
+##weitere ergebnis ansaetze
+###pam + filter
+
 # Schluss
 
 
