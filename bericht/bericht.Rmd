@@ -96,6 +96,8 @@ Die Lage "West zyklonal" kommt am häufigsten vor.
 ## Daten
 Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Außerdem ist uns die GWL für jeden Tag im Zeitraum von 1900 bis 2010 bekannt. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert.
 
+\textcolor{red}{insert limitation to 30 years and average}
+
 
 # Methodik
 
@@ -103,11 +105,15 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 ## Clusterbewertungskriterien
 
   Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskritereien fix etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tage jeweils im selben Cluster; im Folgenden *Timeline* benannt.
-  #### Silhouettenkoeffizient
-  \textcolor{red}{insert here}
-  #### Timeline  
-  -was ist das
-  -wie sieht das bei gwl aus
+  
+  **Silhouettenkoeffizient**
+   \textcolor{red}{insert here}
+   
+  **Timeline**  
+  Da die zeitliche Struktur der Daten, sprich das Aufeinanderfolgen der Tage in spezifischer Reihenfolge bei der weiteren Analyse nicht mitbeachtet wird, lässt sich hiermit die Sinnhaftigkeit einer Clustereinteilung gut bewerten. Eine Aufteilung, bei der keine zeitliche Struktur erkennbar ist, beispielsweise ein konstanter Wechsel der Clusterzugehörigkeit in aufeinanderfolgenden Tagen, ist hier nicht als sinnvoll zu betrachten. Gleichermaßen unerwünscht ist jedoch eine Aufteilung die sehr lange Intervalle von Tagen gleicher Clusterzugehörigkeit aufweist. Die am längsten anhaltende GWL nach \textcolor{red}{Hess und Brezowski} in der hier zu untersuchenden Zeitperiode beträgt 23 Tage. Allgemein zeigen Großwetterlagen jedoch kürzere Längen auf.
+  \textcolor{red}{insert gwl timeline plot}
+  
+  -plot etwas beschreiben
   -wie erwarten wir es am besten
   -wie ist es zu einem Wert zu bringen
 
