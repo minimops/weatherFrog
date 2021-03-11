@@ -240,6 +240,7 @@ $$
 $$
 wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
 $$
+#### Skalierung 
 
 
 
