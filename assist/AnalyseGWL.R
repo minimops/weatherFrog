@@ -274,7 +274,7 @@ sdMedianJahreszeitenGeo <- medianJahreszeitenGeo[, lapply(.SD, function(x) sd(x)
 
 
 
-#barplot: mean of mslp in every season
+#barplot: mean of mslp in every GWL
 mslpValue <- sdMeanJahreszeitenMslp$value
 names(mslpValue) <- sdMeanJahreszeitenMslp$gwl
 
@@ -282,14 +282,14 @@ jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plot
 barplot(mslpValue, main = "Mslp Mean")
 dev.off()
 
-# barplot: median of mslp in every season
+# barplot: median of mslp in every GWL
 GeoValue <- sdMeanJahreszeitenGeo$value
 names(GeoValue) <- sdMeanJahreszeitenGeo$gwl
 jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/streungGeoMeanProJahreszeit.jpeg")
 barplot(GeoValue, main = "Geo Mean")
 dev.off()
 
-# median for mslp in every season
+# median for mslp in every GWL
 mslpValueMedian <- sdMedianJahreszeitenMslp$value
 names(mslpValueMedian) <- sdMedianJahreszeitenMslp$gwl
 jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/streungMslpMedianProJahreszeit.jpeg")
@@ -393,12 +393,14 @@ rangesDiffInner <- na.omit(rangesDiffInner)
 colnames(rangesDiffInner) <- c("index_length_gwl","MslpInner","GeoInner")
 rangesGWL <- merge(rangesDiff, rangesDiffInner, by = "index_length_gwl")
 
-
+# boxplot: range of mslp per GWL over all days and over inner days (without first and last day of a GWL)
 jpeg(width = 1000,height = 1700, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/rangeGWLMslp.jpeg")
 boxplot(rangesGWL[,c(2,4)], main = "Vergleich ranges pro GWL ohne 
         und mit ersten und letzen Tag einer GWL",
         ylab = "Luftdruck in Pa",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
 dev.off()
+
+# boxplot: range of geopt per GWL over all days and over inner days (without first and last day of a GWL)
 
 jpeg(width = 1000,height =1700, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/rangeGWLGeo.jpeg")
 boxplot(rangesGWL[,c(3,5)], main = "Vergleich ranges pro GWL ohne 

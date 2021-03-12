@@ -7,8 +7,8 @@ source("assist/functions_for_cluster_description.R")
 
 
 # Histogram for every extracted variable in every cluster
-
-#import PAMres and f_data fro our cluster solution
+############
+#import PAMres and f_data from our cluster solution
 cluster <- PAMres$clustering
 f_data$mean.mslp <- f_data$mean.mslp/100
 f_data$max.mslp <- f_data$max.mslp/1000
@@ -165,11 +165,10 @@ ggsave(plot, file="final_cluster/min_max_geopot.png")
 # histogram: distribution of the cluster over the years
 
 data <-f_data 
-# data <- cbind(Jahreszeit, data) Jahreszeitvektor als spalte hinzufügen
 data$year <- format(data$date,"%Y")
 data$year <- as.numeric(data$year)
 
-plot <-  ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluster)), data = data) +
+ plot <- ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluster)), data = data) +
   geom_histogram(aes(y = ..density..), alpha = 0.9, bins = 30) +
   facet_wrap(~as.factor(cluster), scale="free_x") +
   theme_bw() +
@@ -192,25 +191,6 @@ ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
 
 # Distribution of clusters split in seasons
 # wie Farben ändern?
-
-data1 <- as.data.table(table(as.factor(data$cluster),data$Jahreszeit))
-colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
-
- (plot <- ggplot(aes(x = as.factor(cluster), y = Anzahl, group = Jahreszeit,fill = Jahreszeit), data = data1) +
-  geom_bar(position = "dodge", stat = "identity") +
-  theme_bw() +
-  theme(
-    legend.position = "none"
-  ) +
-  scale_fill_brewer(palette="Set1") + 
-  ggtitle("Verteilung der Cluster über die Jahre aufgeteilt 
-           nach Sommer und Winterzeit") +
-  xlab("Cluster") +
-  ylab("relative Häufigkeit"))
- 
-
-
-ggsave(plot,file = "final_cluster/distribution of years over cluster_ splited_in_seasons1.png")
 
 
 
@@ -256,26 +236,6 @@ custPal <- data.frame(rbind(
 custPal[order(as.numeric(custPal$X1)), ]$X2 
   
 
-#same, not grouped, but as mosaic plot
-
-data1 <- as.data.table(table(as.factor(data$cluster),data$Jahreszeit))
-colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
-
-(plot <- ggplot(aes(x = as.factor(cluster), y = Anzahl, group = Jahreszeit,fill = Jahreszeit), data = data1) +
-    geom_bar(position = "fill", stat = "identity") +
-    theme_bw() +
-    theme(
-      legend.position = "none"
-    ) +
-    scale_fill_brewer(palette="Set1") + 
-    ggtitle("Verteilung der Cluster über die Jahre aufgeteilt 
-           nach Sommer und Winterzeit") +
-    xlab("Cluster") +
-    ylab("relative Häufigkeit"))
-
-
-
-ggsave(plot,file = "final_cluster/mosail_seasons_cluster.png")
 
 # barplot of mean mslp
 
