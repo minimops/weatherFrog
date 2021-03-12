@@ -1,4 +1,4 @@
-
+# Attention: don´t run this file unless you do not need your computer one day
 
 
 source("clustering/Var_Extraction_Method/f_extr_funs.R")
@@ -24,19 +24,12 @@ extract_data_30_gwl <- attachGwl(extract_data_30)
 ###################### 
 #Gustavon_Kessel: Mahalnaobis
 
-# Jackpot: Fuzzy k means mit Gustafon-Kessel-Extention
-# benutzt statt eukldischer Distanz die Mahalanobis Distanz 
-# euklidische Dustanz führt zu spherischen Clusterlösungen, dadurch können
-#eventuell die Cluster nicht richtig erkannt werden 
 
+unscaled_gk_5_26 <- best_cluster_number(5,26,extract_data_30)
+scaled_gk_5_26 <- best_cluster_number(5,26,extract_data_30,scale = TRUE)
 
-# lieber nicht durchlaufen lassen, dauert ewig, habe aber den output in github hochgeladen
-
-#unscaled_gk_5_26 <- best_cluster_number(5,26,extract_data_30)
-#scaled_gk_5_26 <- best_cluster_number(5,26,extract_data_30,scale = TRUE)
-
-#save(unscaled_gk_5_26,file = "clustering/fuzzyClustering/unscaled_gk_6_26_30.RData")
-#save(scaled_gk_5_26,file = "clustering/fuzzyClustering/scaled_gk_6_26_30.RData")
+save(unscaled_gk_5_26,file = "clustering/fuzzyClustering/unscaled_gk_6_26_30.RData")
+save(scaled_gk_5_26,file = "clustering/fuzzyClustering/scaled_gk_6_26_30.RData")
 
 
 
@@ -58,8 +51,7 @@ data <- cbind(gk11$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1", titleAdd = "Clustering gk with cluster number 8",seperated = T)
 sil_fun(gk11,extract_data_30[,-1])
 mosaic(extract_data_30_gwl,gk15$cluster,title = "fuzzy gk unscaled with 8 ")
-#noiseAllocation(gk5$cluster,gk5$u)
-manovaFUN(extract_data_30[,-1],gk5$cluster)
+
 
 
 # gk scaled
@@ -71,8 +63,7 @@ data <- cbind(gk11_scaled$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1", titleAdd = "Clustering gk with cluster number 6 scaled",seperated = T)
 sil_fun(gk11_scaled,extract_data_30[,-1])
 mosaic(extract_data_30_gwl,gk11_scaled$cluster,title = "fuzzy gk scaled with 6 ")
-#noiseAllocation(gk5$cluster,gk5$u)
-manovaFUN(extract_data_30[,-1],gk5$cluster)
+
 
 
 
@@ -80,21 +71,20 @@ manovaFUN(extract_data_30[,-1],gk5$cluster)
 ############################################
 # Fuzzy clustering with sqared eucledeam distance fcm
 
-# Achtung: nicht durchlaufen lassen, sondern entsprechende R Objekte laden
 
 #squared_ unscaled
 
-#fcm_squared_unscaled_6 <- fcm(extract_data_30[,-1],6) 
-#fcm_squared_unscaled_8 <- fcm(extract_data_30[,-1],8,iter.max = 500)
-#fcm_squared_unscaled_9 <- fcm(extract_data_30[,-1],9,iter.max = 500) 
-#fcm_squared_unscaled_10 <- fcm(extract_data_30[,-1],10,iter.max = 500)
-#fcm_squared_unscaled_11 <- fcm(extract_data_30[,-1],11,iter.max = 500)
-#fcm_squared_unscaled_15 <- fcm(extract_data_30[,-1],15,iter.max = 500)
-#fcm_squared_unscaled_list <- list(fcm_squared_unscaled_6,fcm_squared_unscaled_8,fcm_squared_unscaled_9,fcm_squared_unscaled_10,fcm_squared_unscaled_11, fcm_squared_unscaled_15)
-#name <- c("fcm6","fcm8","fcm9","fcm10","fcm11","fcm15")
-#names(fcm__squared_unscaled_list) <- name
+fcm_squared_unscaled_6 <- fcm(extract_data_30[,-1],6) 
+fcm_squared_unscaled_8 <- fcm(extract_data_30[,-1],8,iter.max = 500)
+fcm_squared_unscaled_9 <- fcm(extract_data_30[,-1],9,iter.max = 500) 
+fcm_squared_unscaled_10 <- fcm(extract_data_30[,-1],10,iter.max = 500)
+fcm_squared_unscaled_11 <- fcm(extract_data_30[,-1],11,iter.max = 500)
+fcm_squared_unscaled_15 <- fcm(extract_data_30[,-1],15,iter.max = 500)
+fcm_squared_unscaled_list <- list(fcm_squared_unscaled_6,fcm_squared_unscaled_8,fcm_squared_unscaled_9,fcm_squared_unscaled_10,fcm_squared_unscaled_11, fcm_squared_unscaled_15)
+name <- c("fcm6","fcm8","fcm9","fcm10","fcm11","fcm15")
+names(fcm__squared_unscaled_list) <- name
 
-#save(fcm_squared_unscaled_list,file = "clustering/fuzzyClustering/squared_unscaled_fcm_6_26_30.RData")
+save(fcm_squared_unscaled_list,file = "clustering/fuzzyClustering/squared_unscaled_fcm_6_26_30.RData")
 
 fcm_unscaled_squared_list <- fcm_unscaled_list
 
@@ -112,8 +102,8 @@ data <- cbind(fcm_squared_unscaled_6$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1",seperated = T)
 sil_fun(fcm_squared_unscaled_6,extract_data_30[,-1])
 mosaic(extract_data_30_gwl,fcm_squared_unscaled_6$cluster,title = "mosaic")
-noiseAllocation(cluster_solution$cluster,cluster_solution$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
+
+
 
 # 7 cluster 
 fcm_squared_unscaled_7  <- fcm(extract_data_30[,-1],7)
@@ -124,8 +114,7 @@ Cl.timeline(data, "V1",seperated = T)
 
 sil_fun(fcm_squared_unscaled_7,extract_data_30[,-1])
 mosaic(extract_data_30_gwl,fcm_squared_unscaled_7$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_unscaled_7$cluster,fcm_squared_unscaled_7$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
+
 
 # 8 cluster 
 fcm_squared_unscaled_8  <- fcm(extract_data_30[,-1],8)
@@ -135,8 +124,7 @@ data <- cbind(fcm_squared_unscaled_8$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1",seperated = T)
 sil_fun(fcm_squared_unscaled_8,extract_data_30[,-1])
 mosaic(extract_data_30_gwl,fcm_squared_unscaled_8$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_unscaled_8$cluster,fcm_squared_unscaled_8$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
+
 
 # 9 cluster 
 fcm_squared_unscaled_9  <- fcm(extract_data_30[,-1],9)
@@ -146,8 +134,7 @@ data <- cbind(fcm_squared_unscaled_9$cluster,extract_data_30_gwl)
 Cl.timeline(data, "V1",seperated = T)
 sil_fun(fcm_squared_unscaled_9,extract_data_30[,-1])
 mosaic(extract_data_30_gwl,fcm_squared_unscaled_9$cluster,title = "mosaic")
-noiseAllocation(fcm_squared_unscaled_9$cluster,fcm_squared_unscaled_9$u)
-#manovaFUN(extract_data_30[,-1],fcm_unscaled69$cluster)
+
 
 
 
@@ -195,7 +182,6 @@ Cl.timeline(data, "V1",seperated = F)
 silhoette_fun(fcm_squared_scaled_7)
 sil_fun(fcm_squared_scaled_7,extract_data_30_scaled[,-1])
 mosaic(extract_data_30_gwl,fcm_squared_scaled_7$cluster,title = "mosaic")
-manova_squared_scaled_7 <- manova.fun(data = extract_data_30_scaled,fcm_squared_scaled_7$cluster)
 manova_squared_scaled_7[c(which(manova_squared_scaled_7$significance == "no")),1]
 save(manova_squared_scaled_7,file = "clustering/fuzzyClustering/manova_squared_scaled_7.RData")
 

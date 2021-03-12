@@ -41,20 +41,11 @@ sil_fun <- function(cluster_output, data,distance = "euclidean"){
   sil <- silhouette(cluster_output$cluster, (dist(data,distance))^2)
   fviz_silhouette(sil)
   
-  #b <- silhouette(cluster_output$cluster,dist(data))
-  #plot(b)
-#}
 
-  
-  #b <- silhouette(cluster_output$cluster,dist(data))
-  #plot(b)
 }
 
 # Function for selecting the optimal cluster number in fuzzy clustering: gustavon kessel
 
-#Anmerkung: in dieser function wurde validation function verwendet:
-# wenn ich weis, wo ich validation fkt. abspeichere, kann ich es mit require
-#hier aufrufen
 
 # begin : start value for cluster number
 # end: end value for cluster number
@@ -127,9 +118,6 @@ best_cluster_number <- function(begin,end,x,scale = FALSE){
 
 # Select best cluster number of different cluster solution
 
-#Anmerkung: in dieser function wurde validation function verwendet:
-# wenn ich weis, wo ich validation fkt. abspeichere, kann ich es mit require
-#hier aufrufen
 
 # cluster_object: list, that contains cluster outputs for different clster numbers
 # cluster_number: numeric vector with clusternumber 
