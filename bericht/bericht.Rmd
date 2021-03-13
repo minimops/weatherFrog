@@ -71,8 +71,8 @@ longrun = FALSE # set to TRUE to rerun all code
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise", "Ludwig-Maximilians-Universität", "Spatial Clustering around Points of Interest"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU", "SCAPOI")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise", "Ludwig-Maximilians-Universität", "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindiz)", "Timeline-Score"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU", "SCAPOI", "CWL", "TLS")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -113,11 +113,52 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
    
   **Timeline**  
   Da die zeitliche Struktur der Daten, sprich das Aufeinanderfolgen der Tage in spezifischer Reihenfolge bei der weiteren Analyse nicht mitbeachtet wird, lässt sich hiermit die Sinnhaftigkeit einer Clustereinteilung gut bewerten. Eine Aufteilung, bei der keine zeitliche Struktur erkennbar ist, beispielsweise ein konstanter Wechsel der Clusterzugehörigkeit in aufeinanderfolgenden Tagen, ist hier nicht als sinnvoll zu betrachten. Gleichermaßen unerwünscht ist jedoch eine Aufteilung die sehr lange Intervalle von Tagen gleicher Clusterzugehörigkeit aufweist. Die am längsten anhaltende GWL nach \textcolor{red}{Hess und Brezowski} in der hier zu untersuchenden Zeitperiode beträgt 23 Tage. Allgemein zeigen Großwetterlagen jedoch kürzere Längen auf.
-  \textcolor{red}{insert gwl timeline plot}
+
+```{r timeline_GWL, echo = FALSE, fig.cap="\\label{fig:timeline_GWL}Timeline der GWL 1971-2000", fig.align="center", out.width="80%"}
+include_graphics("assets/timeline_GWL_mult.png")
+```
   
-  -plot etwas beschreiben
-  -wie erwarten wir es am besten
-  -wie ist es zu einem Wert zu bringen
+  Bei der Darstellung wie in Bild \ref{fig:timeline_GWL} ist die Anzahl jeweils mit der Länge multipliziert, sodass jeder Tag dasselbe Gewicht in der Darstellung besitzt. Die GWL, die hier nur eine Länge von 1 oder 2 Tagen aufweisen, sind jeweils als *U* (Undefiniert/Übergang) definiert. Es ist zu erkennen, dass die meisten Tage sich in Großwetterlagen der Längen zwischen 3 und 8 Tagen befinden, längere Großwetterlagen immer seltener werden und ab einer Länge von 15 Tagen nur noch einige wenige zu beobachten sind. 
+  Anhand dieser Erkenntnisse werden nun Anforderungen an die Timeline der Clusterergebnisse gestellt. 
+  
+  Folglich sollen Cluster-Wetterlagen (folgend immer mit *CWL* abgekürzt) auch eine Mindestlänge von 3 Tagen besitzten, sprich Längen von 1 oder 2 Tagen sind bestenfalls nicht zu beobachten. Gleichermaßen sollen CWL nicht zu lang werden. Da in der Zeitperiode 1971-2000 die maximal beobachtete Länge 23 Tage beträgt, die Clusterzahl aber geringer als die Anzahl der GWL (29) sein soll, wird hier festgelegt, optimalerweise CWL nicht länger als \textcolor{red}{40 Tage} zu beobachten. Darüber hinaus sollen CWL eher mit den Längen 3 bis 12 Tagen auftreten. \textcolor{red}{Diese Optimierungsannahmen wurden hier allein in Bezug auf den Vergleich der GWL Timeline getroffen.}
+  
+  Um die Timeline einer Clusterlösung quantifizierbar und vergleichbar zu gestalten, wird über die Timeline eine Gewichtungsfunktion gelegt (siehe Bild \ref{fig:timeline_weights}). Der *Timeline-Score* (TLS) ergibt sich dann aus der Summe der Gewichteten Längen der CWL. Um den Definitionsbereich auf [0,1] zu beschränken, entspricht der *Timeline-Score* der Clusterlösung das Verhältnis zur Optimalen Timeline Verteilung.
+  
+```{r timeline_weights, echo = FALSE, fig.cap="\\label{fig:timeline_weights}Gewichte zum Quantifizieren der Timeline", fig.align="center", out.width="80%"}
+include_graphics("assets/timeline_weights.png")
+```
+  
+$$
+  TLS = \frac{\sum_{i = 1}^{40}{w_i  x_i}}{\sum_{j = 1}^{n}{x_i w_{max}}}
+$$
+$$
+  wobei: X = (x_1, ..., x_n) := \text{Anzahl Tage der jeweiligen CWL-Länge}
+$$
+$$
+  W = (w_1, ..., w_{40}) := \text{Gewichtungsvektor}; w_{max} := max(W)
+$$
+  
+  **ODER:**
+  
+  Um die Timeline einer Clusterlösung quantifizierbar und vergleichbar zu gestalten, wird der Timeline eine Verteilung unterlegt (siehe Bild \ref{fig:timeline_vtlg}). Der *Timeline-Score* (TLS) ergibt sich dann aus der Summe der punktweisen Abweichungen der Timeline der Clusterlösung zur optimalen Timeline Verteilung. Um den Definitionsbereich auf [0,1] zu beschränken, wird hier noch mit dem maximal möglichen Abstand normiert.
+  
+```{r timeline_vtlg, echo = FALSE, fig.cap="\\label{fig:timeline_vtlg}Erwünschte Verteilung der Timeline einer Clusterlösung", fig.align="center", out.width="80%"}
+include_graphics("assets/timeline_vtlg.png")
+```
+
+$$
+  TLS = 1 - \frac{\sum_{l = 1}^{40}{|x_l - n_l w_l|}}{N}
+$$
+$$
+  wobei: X = (x_1, ..., x_l) := \text{Anzahl Tage der jeweiligen CWL-Länge}
+$$
+$$
+  N := \text{Anzahl Tage gesamt}
+$$
+$$
+  W = (w_1, ..., w_{40}) := \text{Ausprägungen der optimalen Timeline Verteilung}
+$$
 
 ## Clustern mit den Originaldaten
 ### Clara, Mahalanobis und PCA
