@@ -7,8 +7,8 @@ source("assist/functions_for_cluster_description.R")
 
 
 # Histogram for every extracted variable in every cluster
-
-#import PAMres and f_data fro our cluster solution
+############
+#import PAMres and f_data from our cluster solution
 cluster <- PAMres$clustering
 f_data$mean.mslp <- f_data$mean.mslp/100
 f_data$max.mslp <- f_data$max.mslp/1000
@@ -165,11 +165,10 @@ ggsave(plot, file="final_cluster/min_max_geopot.png")
 # histogram: distribution of the cluster over the years
 
 data <-f_data 
-# data <- cbind(Jahreszeit, data) Jahreszeitvektor als spalte hinzufügen
 data$year <- format(data$date,"%Y")
 data$year <- as.numeric(data$year)
 
-plot <-  ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluster)), data = data) +
+ plot <- ggplot(aes(x =year, fill = as.factor(cluster), color = as.factor(cluster)), data = data) +
   geom_histogram(aes(y = ..density..), alpha = 0.9, bins = 30) +
   facet_wrap(~as.factor(cluster), scale="free_x") +
   theme_bw() +
@@ -193,26 +192,7 @@ ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
 # Distribution of clusters split in seasons
 # wie Farben ändern?
 
-data1 <- as.data.table(table(as.factor(data$cluster),data$Jahreszeit))
-colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
 
- (plot <- ggplot(aes(x = as.factor(cluster), y = Anzahl, group = Jahreszeit,fill = Jahreszeit), data = data1) +
-  geom_bar(position = "dodge", stat = "identity") +
-  theme_bw() +
-  theme(
-    legend.position = "none"
-  ) +
-  scale_fill_brewer(palette="Set1") + 
-  ggtitle("Verteilung der Cluster über die Jahre aufgeteilt 
-           nach Sommer und Winterzeit") +
-  xlab("Cluster") +
-  ylab("relative Häufigkeit"))
- 
-
-
-ggsave(plot,file = "final_cluster/distribution of years over cluster_ splited_in_seasons1.png")
-
-<<<<<<< HEAD
 
 data1 <- data.table(cluster = data$cluster, season = getWinSum(data$date))
 
@@ -255,25 +235,72 @@ custPal <- data.frame(rbind(
 
 custPal[order(as.numeric(custPal$X1)), ]$X2 
   
-=======
-#same, not grouprd, but as mosaic plot
 
-data1 <- as.data.table(table(as.factor(data$cluster),data$Jahreszeit))
-colnames(data1) <- c("cluster","Jahreszeit","Anzahl")
 
-(plot <- ggplot(aes(x = as.factor(cluster), y = Anzahl, group = Jahreszeit,fill = Jahreszeit), data = data1) +
-    geom_bar(position = "fill", stat = "identity") +
-    theme_bw() +
-    theme(
-      legend.position = "none"
-    ) +
-    scale_fill_brewer(palette="Set1") + 
-    ggtitle("Verteilung der Cluster über die Jahre aufgeteilt 
-           nach Sommer und Winterzeit") +
-    xlab("Cluster") +
-    ylab("relative Häufigkeit"))
+# barplot of mean mslp
+
+clusterDescription <- descriptive_array(f_data[,-c(1,2)],PAMres$clustering) 
+descriptive_mean <- as.data.table(clusterDescription[,,1])
+descriptive_mean <- as.data.table(sapply(descriptive_mean,as.numeric))
+cluster <- as.factor(c(1,2,3,4,5,6))
+descriptive_mean <- cbind(cluster,descriptive_mean)
 
 
 
-ggsave(plot,file = "final_cluster/mosail_seasons_cluster.png")
->>>>>>> d6238190e3513a6a3a9528ca0678717406e98cd1
+ggplot(descriptive_mean,aes(x = cluster,y = mean.mslp)) +
+  geom_bar(stat="identity", fill= cluster, alpha=0.7, width=0.5) +
+  theme_bw() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size = 12)) +
+  ggtitle("mean mslp in every cluster") +
+  xlab("cluster number")+
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/mean_mslp_for_every_cluster.png")
+
+# barplot of scaled means, mean.mslp
+
+data <- as.data.table(scale(descriptive_mean[,-1], scale = FALSE))
+data <-cbind(cluster, data)
+
+plot <- ggplot(data,aes(x = cluster,y = mean.mslp, fill = cluster)) +
+  geom_bar(stat="identity", alpha=0.7, width=0.5) +
+  theme_bw() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size = 12)) +
+  ggtitle("Unterschiede des mittleren Luftdrucks in den Clustern zum 
+                                  Gesamtmittelwert") +
+  xlab("Cluster")+
+  ylab("Luftdruck in [hPa]") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/scaled_mean.mslp in every cluster.png") 
+
+
+# barplot of scaled means, mean.geopot
+
+data <- as.data.table(scale(descriptive_mean[,-1], scale = FALSE))
+data <-cbind(cluster, data)
+
+plot <- ggplot(data,aes(x = cluster,y = mean.geopot, fill = cluster)) +
+  geom_bar(stat="identity", alpha=0.7, width=0.5) +
+  theme_bw() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size = 12)) +
+  ggtitle("Unterschiede des mittleren Geopotentials in den Clustern zum 
+                                    Gesamtmittelwert") +
+  xlab("Cluster")+
+  ylab("Geopotential in gpm") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/scaled_geopot.mslp in every cluster.png") 
+
+
+
+
+

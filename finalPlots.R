@@ -83,7 +83,44 @@ d$time <- time
 d
 
 
-
 ggsave("documentation/plots/PAMfinal/timelineSepCut.png",timelineSepCut, device = "png",
        width = 10, height = 6)
 
+##timeline gwl multiplied
+
+gwl <- readRDS("Data/gwl.rds")[format(date, "%Y") %in% seq(1971, 2000), ]
+
+gwlTLm <- Cl.timeline(gwl, "gwl", multiplied = TRUE) + 
+        labs(y = "Anzahl Tage", title = "Timeline GWL") +
+        scale_x_continuous(breaks = c(seq(1, 25, by = 2)),
+                           limits = c(0, 25))
+
+ggsave("bericht/assets/timeline_GWL_mult.png", gwlTLm, device = "png",
+       width = 5, height = 3)
+
+##timeline Verteilung
+TL.distr <- data.frame(weights = c(0,0, rep(2, 9), seq(2, 0, by = -2/28), 0, 0),
+                      count = seq(1, 42))
+
+Tl.weight <- ggplot(TL.distr, aes(x = count, y = weights)) +
+        geom_line() +
+        geom_point() +
+        scale_x_continuous(breaks = c(seq(1, 42, by = 2)),
+                           limits = c(0, 42)) +
+        labs(x = "Länge", y = "Gewicht", title = "Timeline - Gewichtungsfunktion") +
+        theme_bw()
+
+ggsave("bericht/assets/timeline_weights.png", Tl.weight, device = "png",
+       width = 5, height = 3)
+
+
+Tl.vtlg <- ggplot(TL.distr, aes(x = count, y = weights / 148)) +
+        geom_line() +
+        geom_point() +
+        scale_x_continuous(breaks = c(seq(1, 42, by = 2)),
+                           limits = c(0, 42)) +
+        labs(x = "Länge", y = "Anteil", title = "Optimale Timeline Verteilung") +
+        theme_bw()
+
+ggsave("bericht/assets/timeline_vtlg.png", Tl.vtlg, device = "png",
+       width = 5, height = 3)
