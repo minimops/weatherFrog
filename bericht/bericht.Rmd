@@ -13,13 +13,13 @@ subtitle: |
 author: "Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto"
 date: "01. März 2021"
 output:
-  word_document: default
   pdf_document:
     fig_caption: yes
     fig_height: 3
     fig_width: 7
     highlight: tango
     number_sections: yes
+  word_document: default
 fontsize: 11pt
 geometry: margin=2.5cm
 header-includes:
@@ -306,18 +306,66 @@ $$
 wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
 $$
 
+Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. Außerdem wurde die Mahalanobis-Distanz in Betracht gezogen. Diese berücksichtigt Korrelationen zwischen verschiedenen Variablen. Der extrahierte Datensatz weist zum Teil hohe Korrelationen auf, z.B. liegt der Wert des Korrelationskoeffizienten nach Pearson für den Mittelwert und Median des Luftdrucksbei bei ungefähr 0.9. \textcolor{red}{Mahalanobis abchecken}
+
 #### Skalierung 
-Die Variablen haben verschiedene Skalen. Werte des Luftdrucks liegen beispielsweise immer zwischen \textcolor{red}{99000 - 106000 (?)} und die des Geopotentials zwischen \textcolor{red}{50000 - 59000 (?)}.  Außerdem gibt es auch Variablen, wie zum Beispiel die Zeilen oder Spalten die nur Werte von eins, zwei oder drei aufweisen. Der Abstand von verschiedenen Variablen kann somit sehr groß sein und da zum Berechnen einer Distanzmatrix diese Werte betrachtet werden, muss der Datensatz vor dem Clustering skaliert werden. Die Skalierung erfolgt hier durch eine Standardisierung, d.h. $x_{i,neu} = \frac{x_{i} - mu_{i}}{sigma_{i}}\ mit\ i = 1, ... , 48$. Dabei wird für jede Beobachtung einer Variable i der Erwartungswert dieser Variablen abgezogen und schließlich durch die Standardabweichung der Variable dividiert. Dies wird für alle im Datensatz enthaltenen, also 48 Variablen durchgeführt. Nach der Skalierung sind die resultierenden Werte vergleichbar, da sie die gleichen Skalen haben \textcolor{red}{stimmt das?} und somit sind auch die Distanzen zwischen Beobachtungen vergleichbar.
+Die Variablen haben verschiedene Skalen. Werte des Luftdrucks liegen beispielsweise immer zwischen \textcolor{red}{99000 - 106000 (?)} und die des Geopotentials zwischen \textcolor{red}{50000 - 59000 (?)}.  Außerdem gibt es auch Variablen, wie zum Beispiel die Zeilen oder Spalten die nur Werte von eins, zwei oder drei aufweisen. Der Abstand von verschiedenen Variablen kann somit sehr groß sein und da zum Berechnen einer Distanzmatrix diese Werte betrachtet werden, muss der Datensatz vor dem Clustering skaliert werden. Die Skalierung erfolgt hier durch eine Standardisierung, d.h. $x_{i,neu} = \frac{x_{i} - \mu_{i}}{\sigma_{i}}\ mit\ i = 1, ... , 48$. Dabei wird für jede Beobachtung einer Variable i der Erwartungswert dieser Variablen abgezogen und schließlich durch die Standardabweichung der Variable dividiert. Dies wird für alle im Datensatz enthaltenen, also 48 Variablen durchgeführt. Nach der Skalierung sind die resultierenden Werte vergleichbar, da sie die gleichen Skalen haben \textcolor{red}{stimmt das?} und somit sind auch die Distanzen zwischen Beobachtungen vergleichbar.
 
 #### Gewichtung
-Des Weiteren soll der extrahierte Datensatz gewichtet werden. Das bedeutet, es wird fachlich entschieden, wie wichtig bestimmte Variablen sind. Da die Gewichtung Einfluss auf das Bilden einer Distanzmatrix hat, ...\textcolor{red}{Satz noch fertig schreiben!} 
+Des Weiteren soll der extrahierte Datensatz gewichtet werden. Das bedeutet, es wird fachlich entschieden, wie wichtig bestimmte Variablen sind. Da die Gewichtung Einfluss auf das Bilden einer Distanzmatrix hat, sollen Variablen, die von besonderem Interesse sind, höher gewichtet werden, sodass dies bei der Distanzmetrik berücksichtigt werden kann.
 
-Dafür werden die Variablen zuerst in verschiedene Kategorien aufgeteilt. Die Kategorien sollen alle insgesamt das gleiche Gewicht haben. Hier wurden 7 Kategorien gewählt: Die Verteilungsvariablen Minimum, Maximum und Mittelwert ergeben je eine Kategorie für das Geopotential und den Luftdruck. Die restlichen Verteilungsvariablen, Median, Quartile, Intensität und Veränderung über den Tag sind 2 weitere Kategorien. Die fünfte und sechste Kategorie setzen sich aus den räumlichen Variablen Zeile, Spalte, Distanzen zwischen Extrema zusammen und die Mittelwerte in den Quadranten bilden die letzten zwei. Die Kategorien summieren sich jeweils auf eins und die Variablen werden innerhalb einer Kategorie gleich gewichtet.  
+Dafür werden die Variablen zuerst in verschiedene Kategorien aufgeteilt. Die Kategorien sollen alle insgesamt das gleiche Gewicht haben. Hier wurden 8 Kategorien gewählt: Die Verteilungsvariablen Minimum, Maximum und Mittelwert ergeben je eine Kategorie für das Geopotential und den Luftdruck. Die restlichen Verteilungsvariablen, Median, Quartile, Intensität und Veränderung über den Tag sind 2 weitere Kategorien. Die fünfte und sechste Kategorie setzen sich aus den räumlichen Variablen Zeile, Spalte, Distanzen zwischen Extrema zusammen und die Mittelwerte in den Quadranten bilden die letzten zwei. Die Kategorien summieren sich jeweils auf eins und die Variablen werden innerhalb einer Kategorie gleich gewichtet.  
 
-Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben.
+In Tabelle \ref{tab:Gewichtung} sieht man die Kategorien mit ihren Variablen und Gewichten.
+
+```{r Gewichtung, echo=FALSE, fig.cap="\\label{tab:Gewichtung}Gewichte für Variablen. Each row represents a list element"}
+data.table(
+  Nummer = c("1", "2", "3", "4", "5", "6", "7", "8"),
+  Kategorie = c("Verteilungsvariablen Mslp I", "Verteilungsvariablen Geopotential I",  "Verteilungsvariablen Mslp II", "Verteilungsvariablen Geopotential II",
+                "Räumliche Ebene für Mslp", "Räumliche Ebene für Geopotential",
+                "Mittelwerte in  den Quadranten für Mslp", "Mittelwerte in den Quadranten für Geopotential"),
+  Variable = c("Minimum, Maximum, Mittelwert", "Minimum, Maximum, Mittelwert", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag","Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Mittelwerte in den 9 Quadranten", "Mittelwerte in den 9 Quadranten"),
+  Gewichte = lapply(c(1 / 3, 1 / 3, rep(1 / 6, 4), rep(1 / 9, 2)), 
+                    function(x) round(x, 7))) %>%
+  kable(booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen") %>%
+  kable_styling(latex_options = "striped", full_width = TRUE)
+```
+
 
 ### Entscheidung des Clusterverfahrens
+Um eine Clusteranalyse durchzuführen, gibt es viele verschiedene Methodik bzw. Algorithmen. Hier ist die Wahl auf den Clusteralgorithmus PAM (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist @multivariate. \textcolor{red}{evtl Bild bei dem Unterschied zw medoid und mean gezeigt wird} Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten. Bei anderen Algorithmen, wie z.B. k-means, kann man mitunter nur einen Dataframe eingeben und der Algorithmus berechnet die Distanzmartix somit selber. Dabei ist aber oft die Wahl der Distanzmetriken eingeschränkt. Da auch die Mahalanobis-Distanz und die Gower-Distanz zur Debatte standen, die k-means beispielsweise nicht berechnen kann, war für dieses Projekt PAM die bessere Wahl.
 
+#### Partitioning Around Medoids
+Bei PAM wird angegeben, wie viele Cluster $k$ gebildet werden sollen. Der Algorithmus sucht dann anfänglich $k$ repräsentative Beobachtungen, die das Zentrum der entstandenen Cluster darstellen, um danach iterativ bessere Repräsentanten zu finden. Alle möglichen Kombinationen von repräsentativen und nicht-repräsentativen Beobachtungen werden analysiert und die Qualität der jeweiligen Clusterings wird anhand eines Gütekriteriums evaluiert. Dieses Gütekriterium ist hier die Summe $S$ der Distanzen von allen Datenpunkten zu deren jeweiligen Medoids. Anhand dieses Gütekriteriums werden die nicht-repräsentativen Datenpunkte dem Cluster zugefügt, das die Summe $S$ am stärksten minimiert. Dann werden zufällig weitere $k$ Objekte gewählt und es werden die Kosten $C$ berechnet, die entstehen, wenn man diese Objekte mit den repräsentativen Punkten gewtauscht werden würden. Dabei sind die Kosten definiert als die Veränderung des Gütekriteriums $S$, wenn die ein repräsentativer Punkt mit einem anderen Datenpunkt getauscht wird. Das bedeutet, die Kosten können sowohl negativ als auch positiv sein. Sind sie negativ, so wird die Summe $S$ der Distanzen von allen Datenpunkten zu deren Medoids kleiner und die Punkte werden vertauscht @kmedoid2. \textcolor{red}{nochmal genauer abchecken} 
+
+Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
+
+&nbsp;
+
+ \begin{algorithm}[H]
+ \KwData{Datensatz $D$ mit $n$ Beobachtungen $o$}
+ \KwResult{Set mit $k$ Clustern}
+ Suche zufällig $k$ Punkte aus $D$ als erste repräsentative Objekte\;
+ \While{Stop-Kriterium nicht erreicht wurde}{
+  \For{jeden weiteren Datenpunkt $o$ in $D$}{
+    Finde den am nächsten liegenden repräsentativen Datenpunkt und teile $o$ diesem Cluster zu
+    }
+    Wähle zufällig einen nicht-repräsentativen Punkt $o_{rand}$\;
+    Berechne die Kosten $C$ für einen möglichen Tausch von $o_{rand}$ und einem repräsentativen Datenpunkt $o_{i}$\;
+    \If{$C < 0$}{
+    Tausche $o_{i}$ mit $o_{rand}$ und forme ein neues Set mit $k$ repräsentativen Punkten
+    }
+ }
+ Gebe das Cluster Ergebnis aus\;
+ \caption{PAM Pseudocode}
+\end{algorithm}
+  
+&nbsp;
+
+#### Wahl der Clusteranzahl 
+
+  
+### Ergebnisse
 
 Dieser Abschnitt präsentiert die Ergebnisse der deskriptiven Analyse der finalen Clusterlösung. Hierbei wird in Abschnitt 3.1 betrachtet, wie die Cluster eins bis sechs über die Jahre 1971 bis 2010 verteilt sind. Zudem wird das Verhältnis von Sommer- und Wintertagen in den einzelnen Clustern betrachtet.  Abschnitt 3.2 befasst sich mit den Ähnlichkeiten und Unterschieden der extrahierten 49 Variablen in den Clustern. Abschließend wird in Abschnitt 3.3 die Clusterlösung mit der GWL Einteilung nach Hess und Brezowsky verglichen, also in welchem Ausmaß die GWLs über die Cluster verteilt sind.
 
@@ -405,9 +453,9 @@ include_graphics("assets/mosaicLegend.png")
 
 
 
-##weitere ergebnis ansaetze
+## weitere ergebnis ansaetze
 
-###pam + filter
+### pam + filter
 
 # Schluss
 
