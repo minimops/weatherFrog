@@ -71,8 +71,8 @@ longrun = FALSE # set to TRUE to rerun all code
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise", "Ludwig-Maximilians-Universität", "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindiz)", "Timeline-Score"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "LMU", "SCAPOI", "CWL", "TLS")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindiz)", "Timeline-Score"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -109,7 +109,7 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
   Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskritereien fix etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tage jeweils im selben Cluster; im Folgenden *Timeline* benannt.
   
   **Silhouettenkoeffizient**
-   \textcolor{red}{insert here}
+  Der Silhouettenkoeffizient ist eine Maßzahl für die Qualität eines Clusterings. 
    
   **Timeline**  
   Da die zeitliche Struktur der Daten, sprich das Aufeinanderfolgen der Tage in spezifischer Reihenfolge bei der weiteren Analyse nicht mitbeachtet wird, lässt sich hiermit die Sinnhaftigkeit einer Clustereinteilung gut bewerten. Eine Aufteilung, bei der keine zeitliche Struktur erkennbar ist, beispielsweise ein konstanter Wechsel der Clusterzugehörigkeit in aufeinanderfolgenden Tagen, ist hier nicht als sinnvoll zu betrachten. Gleichermaßen unerwünscht ist jedoch eine Aufteilung die sehr lange Intervalle von Tagen gleicher Clusterzugehörigkeit aufweist. Die am längsten anhaltende GWL nach \textcolor{red}{Hess und Brezowski} in der hier zu untersuchenden Zeitperiode beträgt 23 Tage. Allgemein zeigen Großwetterlagen jedoch kürzere Längen auf.
@@ -336,7 +336,7 @@ data.table(
 Um eine Clusteranalyse durchzuführen, gibt es viele verschiedene Methodik bzw. Algorithmen. Hier ist die Wahl auf den Clusteralgorithmus PAM (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist @multivariate. \textcolor{red}{evtl Bild bei dem Unterschied zw medoid und mean gezeigt wird} Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten. Bei anderen Algorithmen, wie z.B. k-means, kann man mitunter nur einen Dataframe eingeben und der Algorithmus berechnet die Distanzmartix somit selber. Dabei ist aber oft die Wahl der Distanzmetriken eingeschränkt. Da auch die Mahalanobis-Distanz und die Gower-Distanz zur Debatte standen, die k-means beispielsweise nicht berechnen kann, war für dieses Projekt PAM die bessere Wahl.
 
 #### Partitioning Around Medoids
-Bei PAM wird angegeben, wie viele Cluster $k$ gebildet werden sollen. Der Algorithmus sucht dann anfänglich $k$ repräsentative Beobachtungen, die das Zentrum der entstandenen Cluster darstellen, um danach iterativ bessere Repräsentanten zu finden. Alle möglichen Kombinationen von repräsentativen und nicht-repräsentativen Beobachtungen werden analysiert und die Qualität der jeweiligen Clusterings wird anhand eines Gütekriteriums evaluiert. Dieses Gütekriterium ist hier die Summe $S$ der Distanzen von allen Datenpunkten zu deren jeweiligen Medoids. Anhand dieses Gütekriteriums werden die nicht-repräsentativen Datenpunkte dem Cluster zugefügt, das die Summe $S$ am stärksten minimiert. Dann werden zufällig weitere $k$ Objekte gewählt und es werden die Kosten $C$ berechnet, die entstehen, wenn man diese Objekte mit den repräsentativen Punkten gewtauscht werden würden. Dabei sind die Kosten definiert als die Veränderung des Gütekriteriums $S$, wenn die ein repräsentativer Punkt mit einem anderen Datenpunkt getauscht wird. Das bedeutet, die Kosten können sowohl negativ als auch positiv sein. Sind sie negativ, so wird die Summe $S$ der Distanzen von allen Datenpunkten zu deren Medoids kleiner und die Punkte werden vertauscht @kmedoid2. \textcolor{red}{nochmal genauer abchecken} 
+Bei PAM wird angegeben, wie viele Cluster $k$ gebildet werden sollen. Der Algorithmus sucht dann anfänglich $k$ repräsentative Beobachtungen, die das Zentrum der entstandenen Cluster darstellen, um danach iterativ bessere Repräsentanten zu finden. Alle möglichen Kombinationen von repräsentativen und nicht-repräsentativen Beobachtungen werden analysiert und die Qualität der jeweiligen Clusterings wird anhand eines Gütekriteriums evaluiert. Dieses Gütekriterium ist hier die Summe $S$ der Distanzen von allen Datenpunkten zu deren jeweiligen Medoids. Anhand dieses Gütekriteriums werden die nicht-repräsentativen Datenpunkte dem Cluster zugefügt, das die Summe $S$ am stärksten minimiert. Dann werden zufällig ein weiterer Datenpunkt gewählt und es werden die Kosten $C$ berechnet, die entstehen, wenn man diesen mit den repräsentativen Punkten tauschen würde. Dabei sind die Kosten definiert als die Veränderung des Gütekriteriums $S$, wenn die ein repräsentativer Punkt mit einem anderen Datenpunkt getauscht wird. Das bedeutet, die Kosten können sowohl negativ als auch positiv sein. Sind sie negativ, so wird die Summe $S$ der Distanzen von allen Datenpunkten zu deren Medoids kleiner und die Punkte werden vertauscht @kmedoid2. \textcolor{red}{nochmal genauer abchecken} 
 
 Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
 
@@ -363,7 +363,12 @@ Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
 &nbsp;
 
 #### Wahl der Clusteranzahl 
+Die Wahl der Clusteranzahl$k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt 2.1 beschrieben, unabhägig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} \textcolor{red}{Überschrift weg?!} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. 
+Somit wird das resultierende Clusterergebnis mit dem Algorithmus PAM, der Distanzmetrik Manhattan und 6 Clustern gebildet.
 
+```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Clustern", fig.align="center", out.width="80%"}
+include_graphics("assets/numclust.png")
+```
   
 ### Ergebnisse
 
