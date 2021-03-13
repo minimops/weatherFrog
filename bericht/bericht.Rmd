@@ -262,9 +262,14 @@ $$
 $$
 wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
 $$
+
 #### Skalierung 
+Die Variablen haben verschiedene Skalen. Werte des Luftdrucks liegen beispielsweise immer zwischen \textcolor{red}{99000 - 106000 (?)} und die des Geopotentials zwischen \textcolor{red}{50000 - 59000 (?)}.  Außerdem gibt es auch Variablen, wie zum Beispiel die Zeilen oder Spalten die nur Werte von eins, zwei oder drei aufweisen. Der Abstand von verschiedenen Variablen kann somit sehr groß sein und da zum Berechnen einer Distanzmatrix diese Werte betrachtet werden, muss der Datensatz vor dem Clustering skaliert werden. Die Skalierung erfolgt hier durch eine Standardisierung, d.h. $x_{i,neu} = \frac{x_{i} - mu_{i}}{sigma_{i}}\ mit\ i = 1, ... , 48$. Dabei wird für jede Beobachtung einer Variable i der Erwartungswert dieser Variablen abgezogen und schließlich durch die Standardabweichung der Variable dividiert. Dies wird für alle im Datensatz enthaltenen, also 48 Variablen durchgeführt. Nach der Skalierung sind die resultierenden Werte vergleichbar, da sie die gleichen Skalen haben \textcolor{red}{stimmt das?} und somit sind auch die Distanzen zwischen Beobachtungen vergleichbar.
 
+#### Gewichtung
+Des Weiteren soll der extrahierte Datensatz gewichtet werden. Das bedeutet, es wird fachlich entschieden, wie wichtig bestimmte Variablen sind. Da die Gewichtung Einfluss auf das Bilden einer Distanzmatrix hat, ...\textcolor{red}{Satz noch fertig schreiben!} 
 
+Dafür werden die Variablen zuerst in verschiedene Kategorien aufgeteilt. Die Kategorien sollen alle insgesamt das gleiche Gewicht haben. Hier wurden 7 Kategorien gewählt: Die Verteilungsvariablen Minimum, Maximum und Mittelwert ergeben je eine Kategorie für das Geopotential und den Luftdruck. Die restlichen Verteilungsvariablen, Median, Quartile, Intensität und Veränderung über den Tag sind 2 weitere Kategorien. Die fünfte und sechste Kategorie setzen sich aus den räumlichen Variablen Zeile, Spalte, Distanzen zwischen Extrema zusammen und die Mittelwerte in den Quadranten bilden die letzten zwei. Die Kategorien summieren sich jeweils auf eins und die Variablen werden innerhalb einer Kategorie gleich gewichtet.  
 
 Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben.
 
@@ -273,6 +278,7 @@ Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidis
 ## Analyse der Clusterergebnisse
 
 ##weitere ergebnis ansaetze
+
 ###pam + filter
 
 # Schluss
