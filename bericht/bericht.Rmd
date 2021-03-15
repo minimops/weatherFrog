@@ -68,7 +68,7 @@ longrun = FALSE # set to TRUE to rerun all code
 ```
 \newpage
 
-\\section\*{Abkürzungen}
+\section\*{Abkürzungen}
 
 ```{r Abkürzungen, echo=FALSE}
 data.table(
