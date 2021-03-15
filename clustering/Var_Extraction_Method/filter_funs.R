@@ -4,6 +4,7 @@ library(data.table)
 library(KneeArrower)
 library(checkmate)
 library(dbscan)
+library(akmedoids)
 
 
 ###CAUTION: This files gets sourced###
@@ -65,9 +66,12 @@ filterDay <- function(data, param) {
   sc_oneDay <- sc_oneDay[, c(negparam) := NULL]
 
   #get density threshold
-  eps <- findCutoff(seq(1, nrow(sc_oneDay)),
+  # eps <- elbowPoint(seq(1, nrow(sc_oneDay)),
+  #                               kNNdist(sc_oneDay, k = 10))$y
+  #   
+    eps <- findCutoff(seq(1, nrow(sc_oneDay)),
                   kNNdist(sc_oneDay, k = 10)
-                  , method = "curvature")$y  + 0.008
+                  , method = "curvature")$y  #+ 0.008
 
   startingPoints <- getMinMax(sc_oneDay, param)
   runIndex <- 0
@@ -134,4 +138,34 @@ euclDist <- function(data, pointNr) {
   useMat <- as.matrix(data)
   apply(useMat, MARGIN = 1, FUN = function(x) dist(rbind(useMat[pointNr, ], x)))
   
+}
+
+
+
+###distance functions for clustering between days
+
+library(fossil)
+
+rand_distance <- function(x, y) {
+  rand.index(x, y)
+}
+
+
+#custom distances
+custom_distance <- function(x, y) {
+  #max nonzero
+  maxPoints <- max(length(which(x != 0)), length(which(y != 0)))
+  #eliminate all points of both vectors, where x has 0
+  ifelse(length(which(x == 0)) <= length(which(y == 0)),
+         zeros <- which(x == 0), zeros <- which(y == 0))
+  
+  if(length(zeros) > 0){
+    x <- x[-zeros]
+    y <- y[-zeros]
+  }
+  
+  #get points of x, where point is in same cluster in y
+  equal <- length(which(x == y))
+  #number of points where true/number of points
+  1 - equal / maxPoints
 }

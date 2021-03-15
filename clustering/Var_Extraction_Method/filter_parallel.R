@@ -79,6 +79,8 @@ rand_distance <- function(x, y) {
 
 #custom distance
 custom_distance <- function(x, y) {
+  #max nonzero
+  maxPoints <- max(length(which(x != 0)), length(which(y != 0)))
   #eliminate all points of both vectors, where x has 0
   ifelse(length(which(x == 0)) <= length(which(y == 0)),
     zeros <- which(x == 0), zeros <- which(y == 0))
@@ -88,12 +90,10 @@ custom_distance <- function(x, y) {
     y <- y[-zeros]
   }
   
-  #TODO maybe add penalty for subset 100 percent
-  
   #get points of x, where point is in same cluster in y
   equal <- length(which(x == y))
   #number of points where true/number of points
-  1 - equal / length(x)
+  1 - equal / maxPoints
 }
 
 ###

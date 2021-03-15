@@ -124,3 +124,53 @@ Tl.vtlg <- ggplot(TL.distr, aes(x = count, y = weights / 148)) +
 
 ggsave("bericht/assets/timeline_vtlg.png", Tl.vtlg, device = "png",
        width = 5, height = 3)
+
+
+
+#kNN-dist plot
+library(KneeArrower)
+library(dbscan)
+data <- readRDS("Data/cli_data_05_avgDay.rds")[date %in% 
+                                as.Date("2006-01-01"),][, ":=" (date = NULL,
+                                        avg_geopot = NULL)]
+sc_oneDay <- as.data.table(scale(data))
+
+#get density threshold
+eps <- findCutoff(seq(1, nrow(sc_oneDay)),
+                  sort(kNNdist(sc_oneDay, k = 10))
+                  , method = "curvature")$y 
+
+kNNdistplot(sc_oneDay, k = 10)
+
+dist <- sort(kNNdist(sc_oneDay, k = 10))
+
+kNN.dist <- ggplot(data = data.frame(x =seq(1, nrow(sc_oneDay)),
+                         y = sort(kNNdist(sc_oneDay, k = 10))), 
+       aes(x = x, y = y)) +
+        geom_line()+
+        geom_hline(aes(yintercept = findCutoff(seq(1, nrow(sc_oneDay)),
+                                           sort(kNNdist(sc_oneDay, k = 10))
+                                           , method = "curvature")$y, 
+                       linetype = "eps"), 
+                   colour = "red", show.legend = T)+
+        scale_linetype_manual(name="max Wölbung", values = c(1))+
+        theme_bw() +
+        labs(title = "10-NN Distanz", x = "Beobachtung", y = "Distanz")
+        
+
+
+ggsave("bericht/assets/kNN_dist.png", kNN.dist, device = "png",
+       width = 5, height = 3)
+
+
+library(akmedoids)
+
+ggplot(data = data.frame(x =seq(1, nrow(sc_oneDay)),
+                         y = sort(kNNdist(sc_oneDay, k = 10))), 
+       aes(x = x, y = y)) +
+        geom_line()+
+        geom_hline(yintercept = elbowPoint(seq(1, nrow(sc_oneDay)),
+                                           sort(kNNdist(sc_oneDay, k = 10)))$y, 
+                   colour = "red", linetype = "dashed")+
+        theme_bw() +
+        labs(title = "10-NN Distanz", x = "Beobachtung", y = "Distanz")
