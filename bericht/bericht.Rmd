@@ -103,10 +103,8 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 
 # Methodik
 
-
 ## Clusterbewertungskriterien
-
-  Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskriterien textcolor{red}{fix} etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tagen jeweils im selben Cluster; \textcolor{red}{, das im Folgenden Timeline genannt wird} im Folgenden *Timeline* benannt.
+Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskriterien textcolor{red}{fix} etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tagen jeweils im selben Cluster; \textcolor{red}{, das im Folgenden Timeline genannt wird} im Folgenden *Timeline* benannt.
   
 ### Silhouettenkoeffizient
 Der Silhouettenkoeffizient ist eine Maßzahl für die Qualität eines Clusterings. Außerdem ist dieser unabhängig von der Anzahl der Cluster, weshalb der Silhouettenkoeffizient auch zum Festlegen der Clusteranzahl bei folgenden Analysen verwendet wird. 
@@ -124,7 +122,7 @@ wobei $dist(A, o) :=$ durchschnittliche Distanz zu allen anderen Objekten dessel
 $dist(B, o) :=$ durchschnittliche Distanz zu allen anderen Objekten des nächstgelegenen Clusters ist.
 Der Silhouettenkoeffizient $s$ ist dann definiert durch die durchschnittliche Silhouettenwerte von allen $n$ Beobachtungen $o$ in einem Datensatz $D$, also 
 $$
-s = \frac{1}{n} \sum_{o \in D}{S(o)} \text{,    mit } -1 \le s \le 1
+s = \frac{1}{n} \sum_{o \in D}{S(o)} \text{,    mit } -1 \le S(o) \le 1
 $$
 Sowohl die Silhouetten der Beobachtungen als auch der Silhouettenkoeffizient selber können zwischen -1 und 1 liegen. Ist die Silhouette für ein Objekt $o$ nahe der eins, so bedeutet das inhaltlich, dass die Distanz zu dem nächstgelegendem Cluster, dem $o$ nicht zugehört, deutlich größer ist, als die Distanz zu seinem eigenen Cluster. Ist $S(o)$ negativ, so wäre die Beobachtung eher dem anderen Cluster zuzuordnen @silhouette.
    
@@ -178,15 +176,42 @@ $$
 $$
 
 ## Clustern mit den Originaldaten
+Die Grundidee des Clustern ist, Objekte so in Gruppen aufzuteilen, dass Beobachtungen innerhalb der Cluster möglichst homogen und die Gruppen untereinander möglichst heterogen sind. Um ein Clustering durchzuführen wird zum einen ein Distanzmaß benötigt, das die Distanzen zwischen Beobachtungen in einem Datensatz angibt. Zum anderen muss ein Clusteralgorithmus verwendet werden, der resultierende Cluster aus dem Datensatz ausgibt. Sowohl Distanzmaß als auch der Algorithmus können selber implementiert werden. Allerdings gibt es auch schon viele verschiedene Metriken und Algorithmen, die für eine Clusteranalyse geeignet sind. 
+
+**Distanzmaß** 
+Ein Distanzmaß gibt die Distanz von allen Beobachtungen eines Datensatzes untereinander an. Es ist somit metrisch und ein Distanzmaß für die Menge an Beobachtungen $\Omega = \{o_1, ... , o_n\}$ bildet auf die reellen Zahlen ab $d : \Omega \text{ } \mathsf{x} \text{ } \Omega \to \mathbb{R}, \text{ mit } d := \text{ Distanzmaß }$. Die Distanz zwischen zwei Beobachtungen $a_i$ und $a_l$ wird also geschrieben als $d(a_i, a_l)$. Für metrische Distanzmaße postuliert man nach Folien Annika Hoyer \textcolor{red}{wie zitiert man Folien?}
+
+$$
+\begin{aligned}
+& d(o_i, o_l) = d(o_l, o_i)\\
+& d(o_i, o_i) = 0\\
+& d(o_i, o_l) \ge 0 \text{  } \forall i,l\\
+& d(o_i, o_l) \le d(o_i, o_l) + d(o_l, o_r).
+\end{aligned}
+$$
+
+**Clusteralgorithmus**
+Es gibt verschiedene Ansätze zu clustern. In diesem Projekt werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optmial Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimesionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der K-Means oder K-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren. 
+
+Dichtebasiertes Clustern...
+
 ### Clara, Mahalanobis und PCA
+Der zur Verfügung gestellte Reanalyse Datensatz beträgt ursprünglich 1280 Dimensionen, da für jeden Tag zu vier Uhrzeiten an 160 Standorten zwei Parameter, Luftdruck und Geopotential, gemessen wurden. Da diese Anzahl an Dimensionen rechentechnisch sehr groß ist, wird, wie in Abschnitt 1.2 beschrieben, der Mittelwert für beide Parameter über die 4 Uhrzeiten betrachtet, sodass die Dimensionen auf 320 reduziert werden. Um den Rechenaufwand noch weiter einzuschränken, werden im Folgenden ausschließlich die Jahre 1971 bis 2000 betrachtet.
+
+Anfangs wurden verschiedene Clusterversuche mit diesem Datensatz durchgeführt. 
+**CLARA**
+
+**Mahalanobis**
+
+**PCA**
 
 ### Filter Ansatz
 
 #### Motivation
 
-  Beim genaueren Blick in die Beschreibungen einzelner GWL ist zu erkennen, dass diese häufig duch Position oder Formation bestimmter Gebiete mit erkennbar höheren oder tieferen Messwerten definiert sind. \textcolor{red}{Beispiele?}
+Beim genaueren Blick in die Beschreibungen einzelner GWL ist zu erkennen, dass diese häufig duch Position oder Formation bestimmter Gebiete mit erkennbar höheren oder tieferen Messwerten definiert sind. \textcolor{red}{Beispiele?}
 
-  Beispielsweise wird die GWL Trog Westeuropa (TRW) definiert durch ein sich vertikal erstreckendes Tiefdruckgebiet von Skandinavien bis zur Iberischen Halbinsel, flankiert von Hochdruckgebieten über dem Atlantik und Westrussland. Hingegen die GWL Hoch Britische Inseln (HB) ist, wie der Name bereits vermuten lässt, beschrieben durch ein Hochdruckgebiet über dem Vereinigten Königreich und Irland, umgeben von mehreren Tiefdruckgebieten @sklima. Ähnlich ist dies bei allen weiteren Großwetterlagen zu beobachten.
+Beispielsweise wird die GWL Trog Westeuropa (TRW) definiert durch ein sich vertikal erstreckendes Tiefdruckgebiet von Skandinavien bis zur Iberischen Halbinsel, flankiert von Hochdruckgebieten über dem Atlantik und Westrussland. Hingegen die GWL Hoch Britische Inseln (HB) ist, wie der Name bereits vermuten lässt, beschrieben durch ein Hochdruckgebiet über dem Vereinigten Königreich und Irland, umgeben von mehreren Tiefdruckgebieten @sklima. Ähnlich ist dies bei allen weiteren Großwetterlagen zu beobachten.
   
   Demnach lässt sich vermuten, dass die GWL sich anhand der Position und Form, der an dem Tag respektiven Hoch- und Tief(druck)gebiete, sinnvoll gruppieren \textcolor{red}{ließen}.
   
@@ -289,8 +314,7 @@ Zudem werden die Distanzen zwischen Extrempunkten mit einbezogen. Zum einen die 
 Zuletzt werden die Kategorien, Verteilung der Parameter und räumliche Ebene, vermischt, indem die Mittelwerte für beide Parameter in allen 9 Quadranten angegeben wird. Das sind somit 18 weitere Variablen.
 
 Insgesamt umfasst der neu extrahierte Datensatz 48 Variablen. Die Variablen wurden in Absprache mit dem Projektpartner definiert und es lassen sich bestimmt auch noch weitere inhaltlich sinnvolle Variablen definieren. In Tabelle \ref{tab:variablen} sind die extrahierten Variablen für je das Geopotential sowie den Luftdruck zusammengefasst.
-
-```{r variablen, echo=FALSE, fig.cap="\\label{tab:variablen}Extrahierte Variablen. Each row represents a list element"}
+```{r variablen, echo=FALSE}
 data.table(
   Variable = c("Minimum", "Maximum", "Mittelwert", "Median", "Quartile", "Intensität Hoch", "Intensität Tief", 
                "Veränderung über den Tag", "Spalte Minimum", "Zeile Minimum", "Spalte Maximum", "Zeile Maximum",
@@ -387,7 +411,7 @@ Somit wird das resultierende Clusterergebnis mit dem Algorithmus PAM, der Distan
 include_graphics("assets/numclust.png")
 ```
   
-### Ergebnisse
+# Ergebnisse
 
 Dieser Abschnitt präsentiert die Ergebnisse der deskriptiven Analyse der finalen Clusterlösung. Hierbei wird in Abschnitt 3.1 betrachtet, wie die Cluster eins bis sechs über die Jahre 1971 bis 2010 verteilt sind. Zudem wird das Verhältnis von Sommer- und Wintertagen in den einzelnen Clustern betrachtet.  Abschnitt 3.2 befasst sich mit den Ähnlichkeiten und Unterschieden der extrahierten 49 Variablen in den Clustern. Abschließend wird in Abschnitt 3.3 die Clusterlösung mit der GWL Einteilung nach Hess und Brezowsky verglichen, also in welchem Ausmaß die GWLs über die Cluster verteilt sind.
 
