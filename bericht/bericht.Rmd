@@ -204,12 +204,12 @@ $$
 & d(o_i, o_l) = d(o_l, o_i)\\
 & d(o_i, o_i) = 0\\
 & d(o_i, o_l) \ge 0 \text{  } \forall i,l\\
-& d(o_i, o_l) \le d(o_i, o_l) + d(o_l, o_r).
+& d(o_i, o_l) \le d(o_i, o_r) + d(o_r, o_l).
 \end{aligned}
 $$
 
 **Clusteralgorithmus**
-Es gibt verschiedene Ansätze zu clustern. In diesem Projekt werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optmial Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimesionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der K-Means oder K-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren. 
+Es gibt verschiedene Ansätze zu clustern. In diesem Projekt werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optmial Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimensionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum ist. s. Hoyer Folien. Der K-Means oder K-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren. 
 
 Dichtebasiertes Clustern...
 
@@ -394,6 +394,25 @@ $$
 $$
 wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
 $$
+Die Manhattan Distanz wird in Abbildung \ref{fig:manhattan} für einen zweidimensionalen Fall, also $p = 2$, beispielhaft veranschaulicht.
+
+```{r manhattan, echo = FALSE, warning = FALSE, fig.cap="\\label{fig:manhattan}Beispiel Manhattan Distanz für zweidimensionalen Fall"}
+data_manhat <- data.frame(x = c(1, 3), y = c(1, 2))
+ggplot(data_manhat, aes(x, y)) + 
+  geom_point(size = 3, stroke = 2, shape = 4) + 
+  geom_segment(aes(x = 1, y = 1, xend = 3, yend = 1), color = "darkgreen", size = 1.2) +
+  geom_segment(aes(x = 3, y = 1, xend = 3, yend = 2), color = "darkblue", size = 1.2) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4), limits = c(0, 4)) +
+  scale_y_continuous(breaks = 0:3, limits = c(0,3)) +
+  theme_classic() +
+  geom_text(label = expression(italic("d(a, b) = |1 - 3| + |1 - 2| = 3")), x = 1, y = 2.5, size = 5)+
+  geom_text(label = "a = (1, 1)", x = 1, y = 0.75) +
+  geom_text(label = "b = (3, 2)", x = 3, y = 2.25) +
+  geom_text(label = "|1 - 3|", x = 2, y = 0.85) +
+  geom_text(label = "|1 - 2|", x = 3.1, y = 1.5, angle = 90)
+
+```
+
 
 Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. Außerdem wurde die Mahalanobis-Distanz in Betracht gezogen. Diese berücksichtigt Korrelationen zwischen verschiedenen Variablen. Der extrahierte Datensatz weist zum Teil hohe Korrelationen auf, z.B. liegt der Wert des Korrelationskoeffizienten nach Pearson für den Mittelwert und Median des Luftdrucksbei bei ungefähr 0.9. \textcolor{red}{Mahalanobis abchecken}
 
