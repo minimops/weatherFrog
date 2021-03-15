@@ -29,10 +29,12 @@ header-includes:
 - \usepackage[font={small,it}, labelfont={bf}]{caption}
 - \usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
 - \usepackage{graphics}
+- \usepackage[german]{babel}
 bibliography: references.bib
 abstract: |
   to be written.
 ---
+
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.pos = "H", out.extra = "")
@@ -68,7 +70,7 @@ longrun = FALSE # set to TRUE to rerun all code
 ```
 \newpage
 
-\section\*{Abkürzungen}
+\section*{Abkürzungen}
 
 ```{r Abkürzungen, echo=FALSE}
 data.table(
@@ -552,4 +554,4 @@ include_graphics("assets/mosaicLegend.png")
 
 # Schluss
 
-\section{References}
+\section{Referenzen}
