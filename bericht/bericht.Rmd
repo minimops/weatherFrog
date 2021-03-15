@@ -165,7 +165,8 @@ S(o) =
   0,                                                              &\text{ wenn }x \text{ einziges Element von }A\\
   \frac{dist(B, o) - dist(A, o)}{max\{dist(B, o),\ dist(A, o)\}}, &\text{ sonst}
 \end{cases}
-$$ wobei $dist(A, o) :=$ durchschnittliche Distanz zu allen anderen
+$$ 
+wobei $dist(A, o) :=$ durchschnittliche Distanz zu allen anderen
 Objekten desselben Clusters und $dist(B, o) :=$ durchschnittliche
 Distanz zu allen anderen Objekten des nächstgelegenen Clusters ist. Der
 Silhouettenkoeffizient $s$ ist dann definiert durch die
@@ -174,7 +175,8 @@ einem Datensatz $D$, also
 
 $$
 s = \frac{1}{n} \sum_{o \in D}{S(o)} \text{,    mit } -1 \le S(o) \le 1
-$$ Sowohl die Silhouetten der Beobachtungen als auch der
+$$ 
+Sowohl die Silhouetten der Beobachtungen als auch der
 Silhouettenkoeffizient selber können zwischen -1 und 1 liegen. Ist die
 Silhouette für ein Objekt $o$ nahe der eins, so bedeutet das inhaltlich,
 dass die Distanz zu dem nächstgelegendem Cluster, dem $o$ nicht
@@ -732,6 +734,32 @@ Geopotential sowie den Luftdruck zusammengefasst.
 
 : Extrahierte Variablen
 
+```{r variablen, echo=FALSE}
+dt <- data.table(
+  Variable = c("Minimum", "Maximum", "Mittelwert", "Median", "Quartile", "Intensität Hoch", "Intensität Tief", 
+               "Veränderung über den Tag", "Spalte Minimum", "Zeile Minimum", "Spalte Maximum", "Zeile Maximum",
+               "Distanz zwischen Extrema", "Distanz der beiden Minima", "Distanz der beiden Maxima", 
+               "Mittelwerte in den Quadranten"),
+  Definition = c("Minimaler Wert pro Tag", "Maximaler Wert pro Tag", "Mittelwert pro Tag", "Median pro Tag", 
+                 "Quartile pro Tag", 
+                 "Anzahl der Messpunkte am Tag, die über alle Daten über dem 0.75-Quantil liegen", 
+                 "Anzahl der Messpunkte am Tag, die über alle Daten unter dem 0.25-Quantil liegen", 
+                 "Summierte Differenzen von vier Messzeitpunkten am Tag für alle Standorte",
+                 "Spalte x, in dem sich Minimum befindet; x = 1, 2, 3",
+                 "Zeile y, in dem sich Minimum befindet; y = 1, 2, 3",
+                 "Spalte x, in dem sich Maximum befindet; x = 1, 2, 3",
+                 "Spalte y, in dem sich Maximum befindet; y = 1, 2, 3",
+                 "Euklidische Distanz zwischen Minimum und Maximum",
+                 "Euklidische Distanz vom Minimum Geopotential zu Minimum Mslp",
+                 "Euklidische Distanz vom Maximum Geopotential zu Minimum Mslp",
+                 "Mittelwerte in jeweils 9 Quadranten"))
+kbl(dt, caption = "Extrahierte Variablen", booktabs = TRUE, format =  "latex", escape = FALSE, label = "variablen",)  %>%
+  kable_styling(latex_options = "striped", full_width = FALSE) %>%
+  pack_rows("Verteilungsvariablen", 1, 8) %>%
+  pack_rows("Räumliche Ebene", 9, 16) %>%
+  column_spec(2, width = "25em")
+```
+
 ### Distanzmetrik
 
 Cluster können gefunden werden, indem die Distanzen von allen
@@ -819,12 +847,12 @@ in den Quadranten bilden die letzten zwei. Die Kategorien summieren sich
 jeweils auf eins und die Variablen werden innerhalb einer Kategorie
 gleich gewichtet.
 
-In Tabelle \ref{tab:gewichte} sieht man die Kategorien
-mit ihren Variablen und Gewichten.
+In Tabelle \ref{tab:gewichte} sieht man die Kategorien mit ihren
+Variablen und Gewichten.
 
 +----+----------------------+----------------------+------+-----------+
-| Nr | Kategorie            | Variablen            |Anzahl| Gewicht   |
-|    |                      |                      |      |           |
+| Nr | Kategorie            | Variablen            | An   | Gewicht   |
+|    |                      |                      | zahl |           |
 +====+======================+======================+:====:+:=========:+
 | 1  | Verteilungsvariablen | Minimum, Maximum,    | 3    | $\frac    |
 |    | Mslp I               | Mittelwert           |      |   {1}{3}$ |
@@ -877,7 +905,27 @@ mit ihren Variablen und Gewichten.
 |    | Geopotential II      | Quadranten           |      |   {1}{9}$ |
 +----+----------------------+----------------------+------+-----------+
 
-: Gewichtung für Variablen 
+: Gewichtung für Variablen
+
+```{r Gewichtung, echo=FALSE, fig.cap="\\label{tab:Gewichtung}Gewichte für Variablen. Each row represents a list element"}
+dt2 <- data.table(
+  
+  Variable = c("Minimum, Maximum, Mittelwert", "Minimum, Maximum, Mittelwert", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag","Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema,\nDistanz der beiden Minima/Maxima", "Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema,\nDistanz der beiden Minima/Maxima", "Mittelwerte in den 9 Quadranten", "Mittelwerte in den 9 Quadranten"),
+  Gewichte = lapply(c(1 / 3, 1 / 3, rep(1 / 6, 4), rep(1 / 9, 2)), 
+                    function(x) round(x, 3))) 
+dt2$Variable = linebreak(dt2$Variable)
+kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen") %>%
+  kable_styling(latex_options = "striped", full_width = FALSE)%>%
+  pack_rows("1  Verteilungsvariablen Mslp I", 1, 1) %>%
+  pack_rows("2  Verteilungsvariablen Geopotential I", 2, 2) %>%
+  pack_rows("3  Verteilungsvariablen Mslp II", 3, 3) %>%
+  pack_rows("4  Verteilungsvariablen Geopotential II", 4, 4) %>%
+  pack_rows("5  Räumliche Ebene für Mslp", 5, 5) %>%
+  pack_rows("6  Räumliche Ebene für Geopotential", 6,6) %>%
+  pack_rows("7  Mittelwerte in  den Quadranten für Mslp", 7, 7) %>%
+  pack_rows("8  Mittelwerte in den Quadranten für Geopotential", 8, 8)
+```
+
 
 ### Entscheidung des Clusterverfahrens
 
