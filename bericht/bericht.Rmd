@@ -198,7 +198,6 @@ $$
 
 **Clusteralgorithmus** Es gibt verschiedene Ansätze zu clustern. In diesem Projekt werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optmial Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimesionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der K-Means oder K-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren.
 
-
 Dichtebasiertes Clustern...
 
 ### Clara, Mahalanobis und PCA
@@ -376,10 +375,9 @@ $$
 d(a, b) = \sum_{i = 1}^{p} |a_{i} - b_{i}|
 $$ $$
 wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
-$$
-Die Manhattan Distanz wird in Abbildung \ref{fig:manhattan} für einen zweidimensionalen Fall, also $p = 2$, beispielhaft veranschaulicht.
+$$ Die Manhattan Distanz wird in Abbildung \ref{fig:manhattan} für einen zweidimensionalen Fall, also $p = 2$, beispielhaft veranschaulicht.
 
-```{r manhattan, echo = FALSE, warning = FALSE, fig.cap="\\label{fig:manhattan}Beispiel Manhattan Distanz für zweidimensionalen Fall"}
+```{r manhattan, echo = FALSE, warning = FALSE, fig.align="center", out.width="80%", fig.cap="\\label{fig:manhattan}Beispiel Manhattan Distanz für zweidimensionalen Fall"}
 data_manhat <- data.frame(x = c(1, 3), y = c(1, 2))
 ggplot(data_manhat, aes(x, y)) + 
   geom_point(size = 3, stroke = 2, shape = 4) + 
@@ -395,7 +393,6 @@ ggplot(data_manhat, aes(x, y)) +
   geom_text(label = "|1 - 2|", x = 3.1, y = 1.5, angle = 90)
 
 ```
-
 
 Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. Außerdem wurde die Mahalanobis-Distanz in Betracht gezogen. Diese berücksichtigt Korrelationen zwischen verschiedenen Variablen. Der extrahierte Datensatz weist zum Teil hohe Korrelationen auf, z.B. liegt der Wert des Korrelationskoeffizienten nach Pearson für den Mittelwert und Median des Luftdrucksbei bei ungefähr 0.9. \textcolor{red}{Mahalanobis abchecken}
 
@@ -533,9 +530,25 @@ Der Mosaikplot in Abb.\ref{fig:mosaic_GWL} stellt die Aufteilung der GWLs auf di
 include_graphics("assets/mosaicLegend.png")
 ```
 
-## weitere ergebnis ansaetze
+\textcolor{red}{fringe change, 1u2er tage raus, Saisionbezogen}
 
-### pam + filter
+
+## Diskussion
+
+### Saison und einzenld betrachtet
+
+### 3er gwl tage entfernen und anschauen
+
+### Geopot raeumlich importance
+
+### weitere ergebnis ansaetze
+#### pam + filter
+
+### Gewichtungsvektor wahl
+
+### Ausblick
+#### variablen
+#### zeitliche struktur
 
 # Schluss
 
