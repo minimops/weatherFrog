@@ -227,11 +227,8 @@ Anfangs wurden verschiedene Clusterversuche mit diesem Datensatz durchgeführt.
 
 #### Motivation
 
-<<<<<<< HEAD
 Beim genaueren Blick in die Beschreibungen einzelner GWL ist zu erkennen, dass diese häufig duch Position oder Formation bestimmter Gebiete mit erkennbar höheren oder tieferen Messwerten definiert sind. \textcolor{red}{Beispiele?}
-=======
-  Beim genaueren Blick in die Beschreibungen einzelner GWL ist zu erkennen, dass diese häufig duch Position oder Formation bestimmter Gebiete mit erkennbar höheren oder tieferen Messwerten definiert sind.
->>>>>>> 90920d84a7a6d957701248672ba653b09e78828b
+
 
 Beispielsweise wird die GWL Trog Westeuropa (TRW) definiert durch ein sich vertikal erstreckendes Tiefdruckgebiet von Skandinavien bis zur Iberischen Halbinsel, flankiert von Hochdruckgebieten über dem Atlantik und Westrussland. Hingegen die GWL Hoch Britische Inseln (HB) ist, wie der Name bereits vermuten lässt, beschrieben durch ein Hochdruckgebiet über dem Vereinigten Königreich und Irland, umgeben von mehreren Tiefdruckgebieten @sklima. Ähnlich ist dies bei allen weiteren Großwetterlagen zu beobachten.
   
