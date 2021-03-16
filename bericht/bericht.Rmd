@@ -13,13 +13,13 @@ subtitle: |
 author: "Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto"
 date: "01. März 2021"
 output:
+  word_document: default
   pdf_document:
     fig_caption: yes
     fig_height: 3
     fig_width: 7
     highlight: tango
     number_sections: yes
-  word_document: default
 fontsize: 11pt
 geometry: margin=2.5cm
 header-includes:
