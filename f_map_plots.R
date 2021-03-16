@@ -177,7 +177,7 @@ ggsave("documentation/plots/fplots/avgClustIMG_geopot.rds", geopot_avgC, width =
 
 
 ##filter method for 01-01-2006
-filterDayData("2006-01-01", "custom", type = "geopot")
+filterDayData("2008-01-01", "custom", type = "mslp")
 
 day <- "2006-01-01"
 plots <- list()
