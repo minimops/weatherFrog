@@ -30,6 +30,7 @@ header-includes:
 - \usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
 - \usepackage{graphics}
 - \usepackage[german]{babel}
+- \usepackage{xfrac}
 bibliography: references.bib
 abstract: |
   to be written.
@@ -96,13 +97,15 @@ Es ist bekannt, dass der Klimawandel viele Veränderungen mit sich bringt. Magda
 
 Es gibt zwei Kategorien, um die Großwetterlagen zu unterteilen, einmal die objektiven und subjektiven Großwetterlagen. Die uns zur Verfügung gestellte Einteilung in Großwetterlagen beruht auf subjektiven Einteilung, nach dem Katalog nach Hess und Brezowsky, der im Jahr 1952 veröffentlicht wurde. Es wurden 29 Großwetterlagen über Europa und dem Atlantik definiert. Zudem gibt es die Kategorie Unbestimmt (U), die angegeben wurde, wenn sich ein Tag keiner GWL zuordnen ließ (siehe @pik119). Die jeweiligen Tage lassen sich anhand von mehreren Variablen einteilen. Die Einteilung erfolgt nach den Zirkulationsformen in Bodennäheund in mittleren tropesphärischen Niveau. Die Zirkulationsformen sind zyklonal und antizyklonal Die Lage "West zyklonal" kommt am häufigsten vor.
 
-## Daten
+## Fragestellung
+.....
 
+# Methodik
+
+## Daten
 Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Außerdem ist uns die GWL für jeden Tag im Zeitraum von 1900 bis 2010 bekannt. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert.
 
 \textcolor{red}{insert limitation to 30 years and average} \textcolor{red}{wie sehen die Daten aus?}
-
-# Methodik
 
 ## Clusterbewertungskriterien
 
@@ -207,15 +210,6 @@ $$
 
 Dichtebasiertes Clustern...
 
-### Clara, Mahalanobis und PCA
-
-Der zur Verfügung gestellte Reanalyse Datensatz beträgt ursprünglich 1280 Dimensionen, da für jeden Tag zu vier Uhrzeiten an 160 Standorten zwei Parameter, Luftdruck und Geopotential, gemessen wurden. Da diese Anzahl an Dimensionen rechentechnisch sehr groß ist, wird, wie in Abschnitt 1.2 beschrieben, der Mittelwert für beide Parameter über die 4 Uhrzeiten betrachtet, sodass die Dimensionen auf 320 reduziert werden. Um den Rechenaufwand noch weiter einzuschränken, werden im Folgenden ausschließlich die Jahre 1971 bis 2000 betrachtet.
-
-Anfangs wurden verschiedene Clusterversuche mit diesem Datensatz durchgeführt. **CLARA**
-
-**Mahalanobis**
-
-**PCA**
 
 ### Filter Ansatz
 
@@ -351,43 +345,6 @@ Zuletzt werden bei der räumlichen Ebene für beide Parameter die Mittelwerte in
 
 Insgesamt umfasst der neu extrahierte Datensatz 48 Variablen. Die Variablen wurden in Absprache mit dem Projektpartner definiert und in Tabelle \ref{tab:variablen} sind die extrahierten Variablen für je das Geopotential sowie den Luftdruck zusammengefasst.
 
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Variable                            | Erklärung                                                                       |
-+=====================================+=================================================================================+
-| Minimum                             | Minimaler Wert pro Tag                                                          |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Maximum                             | Maximaler Wert pro Tag                                                          |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Mittelwert                          | Mittelwert pro Tag                                                              |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Median                              | Median pro Tag                                                                  |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Quartile                            | Quartile pro Tag                                                                |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Intensität Hoch                     | Anzahl der Messpunkte am Tag, die über alle Daten über dem 0.75-Quantil liegen  |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Intensität Tief                     | Anzahl der Messpunkte am Tag, die über alle Daten unter dem 0.25-Quantil liegen |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Veränderung über den Tag            | Summierte Differenzen von vier Messzeitpunkten am Tag für alle Standorte        |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Spalte Minimum                      | Spalte $x_{min}$, in dem sich Minimum befindet; $x_{min} = 1, 2, 3$             |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Zeile Minimum                       | Zeile $y_{min}$, in dem sich Minimum befindet; $y_{min} = 1, 2, 3$              |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Spalte Maximum                      | Spalte $x_{max}$, in dem sich Maximum befindet; $x_{max} = 1, 2, 3$             |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Zeile Minimum                       | Zeile $y_{max}$, in dem sich Maximum befindet; $y_{max} = 1, 2, 3$              |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Distanz zwischen Extrema            | Euklidische Distanz zwischen Minimum und Maximum                                |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Distanz der beiden Minima           | Euklidische Distanz vom Minimum Geopotential zu Minimum Mslp                    |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Distanz der beiden Maxima           | Euklidische Distanz vom Maximum Geopotential zu Maximum Mslp                    |
-+-------------------------------------+---------------------------------------------------------------------------------+
-| Mittelwerte in jeweils 9 Quadranten | Mittelwerte in den Quadranten                                                   |
-+-------------------------------------+---------------------------------------------------------------------------------+
-
-: Extrahierte Variablen
 
 ```{r variablen, echo=FALSE}
 dt <- data.table(
@@ -400,13 +357,13 @@ dt <- data.table(
                  "Anzahl der Messpunkte am Tag, die über alle Daten über dem 0.75-Quantil liegen", 
                  "Anzahl der Messpunkte am Tag, die über alle Daten unter dem 0.25-Quantil liegen", 
                  "Summierte Differenzen von vier Messzeitpunkten am Tag für alle Standorte",
-                 "Spalte x, in dem sich Minimum befindet; x = 1, 2, 3",
-                 "Zeile y, in dem sich Minimum befindet; y = 1, 2, 3",
-                 "Spalte x, in dem sich Maximum befindet; x = 1, 2, 3",
-                 "Spalte y, in dem sich Maximum befindet; y = 1, 2, 3",
+                 "Spalte $x_{min}$, in dem sich Minimum befindet; $x_{min} = 1, 2, 3$",
+                 "Zeile $y_{min}$, in dem sich Minimum befindet; $y_{min} = 1, 2, 3$",
+                 "Spalte $x_{max}$, in dem sich Maximum befindet; $x_{max} = 1, 2, 3$",
+                 "Spalte $y_{max}$, in dem sich Maximum befindet; $y_{max} = 1, 2, 3$",
                  "Euklidische Distanz zwischen Minimum und Maximum",
                  "Euklidische Distanz vom Minimum Geopotential zu Minimum Mslp",
-                 "Euklidische Distanz vom Maximum Geopotential zu Minimum Mslp",
+                 "Euklidische Distanz vom Maximum Geopotential zu Maximum Mslp",
                  "Mittelwerte in jeweils 9 Quadranten"))
 kbl(dt, caption = "Extrahierte Variablen", booktabs = TRUE, format =  "latex", escape = FALSE, label = "variablen",)  %>%
   kable_styling(latex_options = "striped", full_width = FALSE) %>%
@@ -429,7 +386,7 @@ $$
 
 Die Manhattan Distanz wird in Abbildung \ref{fig:manhattan} für einen zweidimensionalen Fall, also $p = 2$, beispielhaft veranschaulicht.
 
-```{r manhattan, echo = FALSE, warning = FALSE, fig.align="center", out.width="80%", fig.cap="\\label{fig:manhattan}Beispiel Manhattan Distanz für zweidimensionalen Fall"}
+```{r manhattan, echo = FALSE, warning = FALSE, fig.align="center", out.width="80%", fig.cap="\\label{fig:manhattan}Beispiel für die Manhattan-Distanz im zweidimensionalen Raum"}
 data_manhat <- data.frame(x = c(1, 3), y = c(1, 2))
 ggplot(data_manhat, aes(x, y)) + 
   geom_point(size = 3, stroke = 2, shape = 4) + 
@@ -442,11 +399,12 @@ ggplot(data_manhat, aes(x, y)) +
   geom_text(label = "a = (1, 1)", x = 1, y = 0.75) +
   geom_text(label = "b = (3, 2)", x = 3, y = 2.25) +
   geom_text(label = "|1 - 3|", x = 2, y = 0.85) +
-  geom_text(label = "|1 - 2|", x = 3.1, y = 1.5, angle = 90)
+  geom_text(label = "|1 - 2|", x = 3.1, y = 1.5, angle = 90) +
+  labs(title = "Manhattan-Distanz im zweidimensionalen Raum")
 
 ```
 
-Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. Außerdem wurde die Mahalanobis-Distanz in Betracht gezogen. Diese berücksichtigt Korrelationen zwischen verschiedenen Variablen. Der extrahierte Datensatz weist zum Teil hohe Korrelationen auf, z.B. liegt der Wert des Korrelationskoeffizienten nach Pearson für den Mittelwert und Median des Luftdrucksbei bei ungefähr 0.9. \textcolor{red}{Mahalanobis abchecken}
+Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. Außerdem wurde die Mahalanobis-Distanz in Betracht gezogen. Diese berücksichtigt Korrelationen zwischen verschiedenen Variablen. Der extrahierte Datensatz weist zum Teil hohe Korrelationen auf, z.B. liegt der Wert des Korrelationskoeffizienten nach Pearson für den Mittelwert und Median des Luftdrucks bei ungefähr 0.9. \textcolor{red}{Mahalanobis abchecken}
 
 #### Skalierung
 
@@ -458,52 +416,19 @@ Des Weiteren soll der extrahierte Datensatz gewichtet werden. Das bedeutet, es w
 
 Dafür werden die Variablen zuerst in verschiedene Kategorien aufgeteilt. Die Kategorien sollen alle insgesamt das gleiche Gewicht haben. Hier wurden 8 Kategorien gewählt: Die Verteilungsvariablen Minimum, Maximum und Mittelwert ergeben je eine Kategorie für das Geopotential und den Luftdruck. Die restlichen Verteilungsvariablen, Median, Quartile, Intensität und Veränderung über den Tag sind 2 weitere Kategorien. Die fünfte und sechste Kategorie setzen sich aus den räumlichen Variablen Zeile, Spalte, Distanzen zwischen Extrema zusammen und die Mittelwerte in den Quadranten bilden die letzten zwei. Die Kategorien summieren sich jeweils auf eins und die Variablen werden innerhalb einer Kategorie gleich gewichtet.
 
-In Tabelle \ref{tab:gewichte} sieht man die Kategorien mit ihren Variablen und Gewichten.
+In Tabelle \ref{tab:Gewichtung} sieht man die Kategorien mit ihren Variablen und Gewichten.
 
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| Nr | Kategorie                            | Variablen                                                                                        | An zahl | Gewicht         |
-+====+======================================+==================================================================================================+:=======:+:===============:+
-| 1  | Verteilungsvariablen Mslp I          | Minimum, Maximum, Mittelwert                                                                     | 3       | $\frac  {1}{3}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-|    |                                      |                                                                                                  |         |                 |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| 2  | Verteilungsvariablen Geopotential I  | Minimum, Maximum, Mittelwert                                                                     | 3       | $\frac  {1}{3}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-|    |                                      |                                                                                                  |         |                 |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| 3  | Verteilungsvariablen Mslp II         | Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag                     | 6       | $\frac  {1}{6}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-|    |                                      |                                                                                                  |         |                 |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| 4  | Verteilungsvariablen Geopotential II | Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag                     | 6       | $\frac  {1}{6}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-|    |                                      |                                                                                                  |         |                 |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| 5  | Räumliche Ebene Mslp I               | Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima | 6       | $\frac  {1}{6}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-|    |                                      |                                                                                                  |         |                 |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| 6  | Räumliche Ebene Geopotential I       | Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima | 6       | $\frac  {1}{6}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-|    |                                      |                                                                                                  |         |                 |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| 7  | Räumliche Ebene Mslp II              | Mittelwerte in den 9 Quadranten                                                                  | 9       | $\frac  {1}{9}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-|    |                                      |                                                                                                  |         |                 |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
-| 8  | Räumliche Ebene Geopotential II      | Mittelwerte in den 9 Quadranten                                                                  | 9       | $\frac  {1}{9}$ |
-+----+--------------------------------------+--------------------------------------------------------------------------------------------------+---------+-----------------+
 
-: Gewichtung für Variablen
 
 ```{r Gewichtung, echo=FALSE, fig.cap="\\label{tab:Gewichtung}Gewichte für Variablen. Each row represents a list element"}
-dt2 <- data.table(
+dt2 <- data.frame(
   
-  Variable = c("Minimum, Maximum, Mittelwert", "Minimum, Maximum, Mittelwert", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag","Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema,\nDistanz der beiden Minima/Maxima", "Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema,\nDistanz der beiden Minima/Maxima", "Mittelwerte in den 9 Quadranten", "Mittelwerte in den 9 Quadranten"),
-  Gewichte = lapply(c(1 / 3, 1 / 3, rep(1 / 6, 4), rep(1 / 9, 2)), 
-                    function(x) round(x, 3))) 
-dt2$Variable = linebreak(dt2$Variable)
-kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen") %>%
+  Variable = c("Minimum, Maximum, Mittelwert", "Minimum, Maximum, Mittelwert", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag","Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Mittelwerte in den 9 Quadranten", "Mittelwerte in den 9 Quadranten"),
+  Gewichte = c("$1/3$", "$1/3$", "$1/3$", "$1/6$", "1/6", "1/6", "1/9", "1/9")  #lapply(c(1 / 3, 1 / 3, rep(1 / 6, 4), rep(1 / 9, 2)), 
+                   # function(x) round(x, 3))
+  ) 
+dt2$Gewichte = linebreak(dt2$Gewichte)
+kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen", align = "l") %>%
   kable_styling(latex_options = "striped", full_width = FALSE)%>%
   pack_rows("1  Verteilungsvariablen Mslp I", 1, 1) %>%
   pack_rows("2  Verteilungsvariablen Geopotential I", 2, 2) %>%
@@ -512,10 +437,13 @@ kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung
   pack_rows("5  Räumliche Ebene für Mslp", 5, 5) %>%
   pack_rows("6  Räumliche Ebene für Geopotential", 6,6) %>%
   pack_rows("7  Mittelwerte in  den Quadranten für Mslp", 7, 7) %>%
-  pack_rows("8  Mittelwerte in den Quadranten für Geopotential", 8, 8)
+  pack_rows("8  Mittelwerte in den Quadranten für Geopotential", 8, 8) %>%
+  column_spec(1, width = "29em") %>%
+  column_spec(2, width = "2cm") %>%
+  add_indent(positions = c(2, 3, 4, 6, 8), level_of_indent = 0.3, all_cols = TRUE)
 ```
 
-### Entscheidung des Clusterverfahrens
+### Clusterverfahren
 
 Um eine Clusteranalyse durchzuführen, gibt es viele verschiedene Methodik bzw. Algorithmen. Hier ist die Wahl auf den Clusteralgorithmus PAM (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist @multivariate. \textcolor{red}{evtl Bild bei dem Unterschied zw medoid und mean gezeigt wird} Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R aus dem Package "cluster" sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten.
 
@@ -552,9 +480,21 @@ Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
 
 Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt 2.1 beschrieben, unabhägig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} \textcolor{red}{Überschrift weg?!} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. Somit wird das resultierende Clusterergebnis mit dem Algorithmus PAM, der Distanzmetrik Manhattan und 6 Clustern gebildet.
 
-```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Clustern", fig.align="center", out.width="80%"}
+```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Cluster, hier $k = 6$.", fig.align="center", out.width="80%"}
 include_graphics("assets/numclust.png")
 ```
+
+## Weitere Versuche
+
+### Clara, K-Means und PCA
+
+Der zur Verfügung gestellte Reanalyse Datensatz beträgt ursprünglich 1280 Dimensionen, da für jeden Tag zu vier Uhrzeiten an 160 Standorten zwei Parameter, Luftdruck und Geopotential, gemessen wurden. Da diese Anzahl an Dimensionen rechentechnisch sehr groß ist, wird, wie in Abschnitt 1.2 beschrieben, der Mittelwert für beide Parameter über die 4 Uhrzeiten betrachtet, sodass die Dimensionen auf 320 reduziert werden. Um den Rechenaufwand noch weiter einzuschränken, werden im Folgenden ausschließlich die Jahre 1971 bis 2000 betrachtet.
+
+Anfangs wurden verschiedene Clusterversuche mit diesem Datensatz durchgeführt. **CLARA**
+
+**Mahalanobis**
+
+**PCA**
 
 # Ergebnisse
 
