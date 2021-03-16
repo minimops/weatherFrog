@@ -333,7 +333,9 @@ Tl.weight.fun <- function(timeline){
 }
 
 
-BH.diff.index <- function(data) {
+#input is a datatable of at least dates and cluster ids
+
+HB.diff.index <- function(data) {
   assertDataTable(data)
   assertSubset(c("cluster", "date"), names(data))
   
