@@ -106,7 +106,7 @@ Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa i
 
 ## Clusterbewertungskriterien
 
-Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskriterien \textcolor{red}{fix} etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tagen jeweils im selben Cluster; \textcolor{red}{, das im Folgenden Timeline genannt wird} im Folgenden *Timeline* benannt.
+Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskriterien etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tagen jeweils im selben Cluster, das im Folgenden *Timeline* genannt wird.
 
 ### Silhouettenkoeffizient
 
@@ -140,9 +140,9 @@ include_graphics("assets/timeline_GWL_mult.png")
 
 Bei der Darstellung \textcolor{red}{wie} in \textcolor{red}{Abbildung} \ref{fig:timeline_GWL} ist die Anzahl jeweils mit der Länge multipliziert, sodass jeder Tag dasselbe Gewicht in der Darstellung besitzt. Die GWL, die hier nur eine Länge von 1 oder 2 Tagen aufweisen, sind jeweils als *U* (Undefiniert/Übergang) definiert. Es ist zu erkennen, dass die meisten Tage sich in Großwetterlagen der Längen zwischen 3 und 8 Tagen befinden, längere Großwetterlagen immer seltener werden und ab einer Länge von 15 Tagen nur noch einige wenige zu beobachten sind. Anhand dieser Erkenntnisse werden nun Anforderungen an die Timeline der Clusterergebnisse gestellt.
 
-Folglich sollen Cluster-Wetterlagen (folgend immer mit *CWL* abgekürzt) auch eine Mindestlänge von 3 Tagen besitzen, \textcolor{red}{vielleicht mal also?} sprich Längen von 1 oder 2 Tagen sind bestenfalls nicht zu beobachten. Gleichermaßen sollen CWL nicht zu lang werden. Da in der Zeitperiode 1971-2000 die maximal beobachtete Länge einer GWL 23 Tage beträgt, die Clusterzahl aber geringer als die Anzahl der GWL (29) sein soll, wird hier festgelegt, \textcolor{red}{dass} optimalerweise CWL nicht länger als \textcolor{red}{40 Tage} zu beobachten\textcolor{red}{sind}. Darüber hinaus sollen CWL eher mit den Längen 3 bis 12 Tagen auftreten. \textcolor{red}{Diese Optimierungsannahmen wurden hier allein in Bezug auf den Vergleich der GWL Timeline getroffen.}
+Folglich sollen Cluster-Wetterlagen (folgend immer mit *CWL* abgekürzt) auch eine Mindestlänge von 3 Tagen besitzen, also Längen von 1 oder 2 Tagen sind bestenfalls nicht zu beobachten. Gleichermaßen sollen CWL nicht zu lang werden. Da in der Zeitperiode 1971-2000 die maximal beobachtete Länge einer GWL 23 Tage beträgt, die Clusterzahl aber geringer als die Anzahl der GWL (29) sein soll, wird hier festgelegt, dass optimalerweise CWL nicht länger als 50 Tage zu beobachten sind. Darüber hinaus sollen CWL eher mit den Längen 3 bis 12 Tagen auftreten. Diese Optimierungsannahmen wurden hier allein in Bezug auf den Vergleich der GWL Timeline getroffen.
 
-Um die Timeline einer Clusterlösung quantifizierbar und vergleichbar zu gestalten, wird über die Timeline eine Gewichtungsfunktion gelegt (siehe Bild \ref{fig:timeline_weights}). Der *Timeline-Score* (TLS) ergibt sich dann aus der Summe der Gewichteten Längen der CWL. Um den Definitionsbereich \textcolor{red}{eher Wertebereich oder?} auf [0,1] zu beschränken, entspricht der *Timeline-Score* der Clusterlösung das \textcolor{red}{dem} Verhältnis zur Optimalen Timeline Verteilung.
+Um die Timeline einer Clusterlösung quantifizierbar und vergleichbar zu gestalten, wird über die Timeline eine Gewichtungsfunktion gelegt (siehe Bild \ref{fig:timeline_weights}). Der *Timeline-Score* (TLS) ergibt sich dann aus der Summe der Gewichteten Längen der CWL. Um den Wertebereich auf [0,1] zu beschränken, entspricht der *Timeline-Score* der Clusterlösung dem Verhältnis zur Optimalen Timeline Verteilung.
 
 ```{r timeline_weights, echo = FALSE, fig.cap="\\label{fig:timeline_weights}Gewichte zum Quantifizieren der Timeline", fig.align="center", out.width="80%"}
 include_graphics("assets/timeline_weights.png")
@@ -628,16 +628,24 @@ include_graphics("assets/mosaicLegend.png")
 
 ## Diskussion
 
-### Saison und einzenld betrachtet
+
 
 ### 3er gwl tage entfernen und anschauen
 
-### Geopot raeumlich importance
+  Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den Großwetterlagen von \textcolor{red}{Hess und Brezowski} ist die Anforderung einer GWL mindestens 3 Tage lang zu sein. Man könnte naive vermuten, dass Tage einer bestimmten GWL zugeordnet werden, obwohl sie diese nicht deutlich verkörpern, um eine Länge von 3 Tagen zu erreichen, oder gar eine länger andauernde GWL nicht zu unterbrechen. Die geringe Anzahl der als *U* definierten Tage unterstützt diesen Gedankengang etwas. Folglich wird hier untersucht, wie die GWL, die länger als 3 Tage andauern, über die Cluster verteilt werden.
+  
+  \textcolor{red}{insert plot and analysis of it}
+
+
+### wie sind GWL&Saison kombos in den Clustern verteilt?
 
 ### weitere ergebnis ansaetze
 
+### Saison und einzenld betrachtet
+
 #### pam + filter
 
+### Geopot raeumlich importance
 ### Gewichtungsvektor wahl
 
 ### Ausblick
