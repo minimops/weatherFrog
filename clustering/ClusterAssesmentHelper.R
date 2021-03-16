@@ -332,3 +332,20 @@ Tl.weight.fun <- function(timeline){
   sum(joined$weight * joined$count)
 }
 
+
+#input is a datatable of at least dates and cluster ids
+
+HB.diff.index <- function(data) {
+  assertDataTable(data)
+  assertSubset(c("cluster", "date"), names(data))
+  
+  #attach gwl, but remove U
+  useDat <- attachGwl(data)[gwl != "U"]
+  
+  tabled <- copy(useDat)[, .N, by = .(gwl, cluster)]
+  
+  maxTab <- copy(tabled)[, .(num = max(N) / sum(N), size = sum(N)), by = .(gwl)]
+  
+  sum(maxTab$num) / nrow(maxTab)
+}
+
