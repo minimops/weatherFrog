@@ -99,8 +99,19 @@ ggsave("bericht/assets/timeline_GWL_mult.png", gwlTLm, device = "png",
        width = 5, height = 3)
 
 ##timeline Verteilung
-TL.distr <- data.frame(weights = c(0,0, rep(2, 9), seq(2, 0, by = -2/28), 0, 0),
-                      count = seq(1, 42))
+dec_fun <- function(x) {
+        if(x < 3 || x >= 40) {
+                return(0)
+        } else{
+                if(x < 13){
+                        return(1)
+                }
+        }
+        return((23 / x) - (44 / x^2) - 0.55)
+}
+count <-  seq(1, 42)
+TL.distr <- data.frame(Anteil = vapply(count, dec_fun, FUN.VALUE = numeric(1)),
+                      count)
 
 Tl.weight <- ggplot(TL.distr, aes(x = count, y = weights)) +
         geom_line() +
@@ -114,7 +125,7 @@ ggsave("bericht/assets/timeline_weights.png", Tl.weight, device = "png",
        width = 5, height = 3)
 
 
-Tl.vtlg <- ggplot(TL.distr, aes(x = count, y = weights / 148)) +
+Tl.vtlg <- ggplot(TL.distr, aes(x = count, y = Anteil / sum(TL.distr$Anteil))) +
         geom_line() +
         geom_point() +
         scale_x_continuous(breaks = c(seq(1, 42, by = 2)),
