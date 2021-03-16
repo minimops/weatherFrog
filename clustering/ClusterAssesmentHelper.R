@@ -332,6 +332,35 @@ Tl.weight.fun <- function(timeline){
   sum(joined$weight * joined$count)
 }
 
+TLS <- function(timelineMultiplied) {
+  assertDataTable(timelineMultiplied)
+  
+  ##timeline Verteilung
+  dec_fun <- function(x) {
+    if(x < 3 || x >= 40) {
+      return(0)
+    } else{
+      if(x < 13){
+        return(1)
+      }
+    }
+    return((23 / x) - (44 / x^2) - 0.55)
+  }
+  x <-  seq(1, 40)
+  TL.distr <- data.table(Anteil = vapply(x, dec_fun, FUN.VALUE = numeric(1)),
+                         length = x)
+  TL.distr[, Anteil := Anteil / sum(TL.distr$Anteil)]
+  
+  data <- timelineMultiplied[length <= 40, ][, count := count / 
+                                               sum(timelineMultiplied$count)]
+  
+  joined <- merge(TL.distr, data, all.x=TRUE)
+  joined$count[is.na(joined$count)] <- 0
+  
+  joined[, diff := abs(Anteil - count)]
+  
+  return(2 - sum(joined$diff))
+}
 
 #input is a datatable of at least dates and cluster ids
 
