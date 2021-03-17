@@ -74,8 +74,8 @@ longrun = FALSE # set to TRUE to rerun all code
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PCA / PC")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -266,7 +266,6 @@ Der Nachbarschaftsparameter wird hier für jede Tag-Parameter Kombination berech
 include_graphics("assets/kNN_dist.png")
 ```
 
-\textcolor{red}{use a day in our range}
 
 Eine Verkleinerung des Nachbarschaftsparameters pro Iteration findet hier in linearer Form statt, da dies, rein visuell bewertet, die repräsentativsten Gebiete als Ergebnis lieferte.
 
@@ -279,10 +278,9 @@ $$
 Im Vergleich zu *DBSCAN*, mit dem Gruppierungen von Beobachtungen gesucht werden, die einer bestimmten mindest-Dichte, sowie einer mindest-Größe gerecht werden, wird mit *SCAPOI* versucht um bestimmte, definierte Beobachtungen Gruppen zu bilden, die eine gewisse Dichte aufweisen. Im Fall hier (2 Cluster um min und max respektive), erhält man nun einen Gebietszugehörigkeitsvektor mit den Klassen: Noise, High und Low.
 
 ```{r scapoi_res, echo = FALSE, fig.cap="\\label{fig:scapoi_res}Beispiel der Gebietszuteilung eines Tages durch SCAPOI", fig.align="center", out.width="80%"}
-include_graphics("assets/filterExa.png")
+include_graphics("assets/filterRes.png")
 ```
 
-\textcolor{red}{use a day in our range}
 
 #### Distanzmetrik
 
@@ -490,6 +488,20 @@ Anfangs wurden verschiedene Clusterversuche mit diesem Datensatz durchgeführt. 
 **Mahalanobis**
 
 **PCA**
+  
+  Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust.
+  
+```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Principle Components", fig.align="center", out.width="80%"}
+include_graphics("assets/pcaPlot.png")
+```    
+
+  In Abbildung \ref{fig:pca} sind die ersten beiden *PC* dieses Datensatz abgebildet und es ist zu beobachten, dass diese ca. 44% der Varianz erklären können. Eine auffällige Aufteilung der Beobachtungen in Gruppen ist hier allerdings nicht zu beobachten.
+  
+  Ein Ansatz \textcolor{red}{reference} ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens \textcolor{red}{85}% der Varianz der Daten erklären. Hier ergibt sich dies zu \textcolor{red}{10}. Eine Analyse mit $k$*-means* ($k$ = \textcolor{red}{6}) ergab einen Silouettenkoeffizient von \textcolor{red}{0.1566} und ein *TLS* von \textcolor{red}{0.1373}. 
+
+  \textcolor{red}{HBdiff von 0.4042}
+  
+  \textcolor{red}{erklaerung reicht? plots hinzunehmen?}
 
 # Ergebnisse
 
