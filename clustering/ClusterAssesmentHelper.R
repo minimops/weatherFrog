@@ -346,12 +346,12 @@ TLS <- function(timelineMultiplied) {
     }
     return((23 / x) - (44 / x^2) - 0.55)
   }
-  x <-  seq(1, 40)
+  x <-  seq(1, max(40, timelineMultiplied$length))
   TL.distr <- data.table(Anteil = vapply(x, dec_fun, FUN.VALUE = numeric(1)),
                          length = x)
   TL.distr[, Anteil := Anteil / sum(TL.distr$Anteil)]
   
-  data <- timelineMultiplied[length <= 40, ][, count := count / 
+  data <- timelineMultiplied[, count := count / 
                                                sum(timelineMultiplied$count)]
   
   joined <- merge(TL.distr, data, all.x=TRUE)
@@ -359,7 +359,7 @@ TLS <- function(timelineMultiplied) {
   
   joined[, diff := abs(Anteil - count)]
   
-  return(2 - sum(joined$diff))
+  ifelse(sum(joined$diff) > 1, return(0), return(1 - sum(joined$diff)))
 }
 
 #input is a datatable of at least dates and cluster ids

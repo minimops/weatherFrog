@@ -13,7 +13,6 @@ subtitle: |
 author: "Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto"
 date: "01. März 2021"
 output:
-  word_document: default
   pdf_document:
     fig_caption: yes
     fig_height: 3
@@ -146,14 +145,17 @@ Bei der Darstellung in Abbildung \ref{fig:timeline_GWL} ist die Anzahl der GWL j
 Folglich sollen Cluster-Wetterlagen (*CWL*) auch eine Mindestlänge von 3 Tagen besitzen, also Längen von 1 oder 2 Tagen sind bestenfalls nicht zu beobachten. Gleichermaßen sollen CWL nicht zu lang werden. Da in der Zeitperiode 1971-2000 die maximal beobachtete Länge einer GWL 23 Tage beträgt, die Clusterzahl aber geringer als die Anzahl der GWL (29) sein soll, wird hier festgelegt, dass optimalerweise CWL nicht länger als 40 Tage zu beobachten sind. Darüber hinaus sollen CWL eher mit den Längen 3 bis 12 Tagen auftreten. Diese Optimierungsannahmen wurden hier allein in Bezug auf den Vergleich der GWL Timeline getroffen.
 
 
-Um die Timeline einer Clusterlösung quantifizierbar und vergleichbar zu gestalten, wird der Timeline eine Verteilung unterlegt (Abbildung \ref{fig:timeline_vtlg}). Der *Timeline-Score* (TLS) ergibt sich dann aus der Summe der punktweisen Abweichungen der Timeline der Clusterlösung zur optimalen Timeline Verteilung. Um den Wertebereich auf [0,1] zu beschränken, wird hier noch mit dem maximal möglichen Abstand normiert.
+Um die Timeline einer Clusterlösung quantifizierbar und vergleichbar zu gestalten, wird der Timeline eine Verteilung unterlegt (Abbildung \ref{fig:timeline_vtlg}). Der *Timeline-Score* (TLS) ergibt sich dann aus der Summe der punktweisen Abweichungen der Timeline der Clusterlösung zur optimalen Timeline Verteilung. Um den Wertebereich auf [0,1] zu beschränken, werden noch mögliche negative Ausprägungen auf 0 gesetzt.
 
 ```{r timeline_vtlg, echo = FALSE, fig.cap="\\label{fig:timeline_vtlg}Erwünschte Verteilung der Timeline einer Clusterlösung", fig.align="center", out.width="80%"}
 include_graphics("assets/timeline_vtlg.png")
 ```
 
 $$
-  TLS = 2 - \sum_{l = 1}^{40}{|\frac{x_l}{N} - w_l|}
+  TLS(X) = \begin{cases}
+  1 - \sum_{l = 1}^{40}{|\frac{x_l}{N} - w_l|}\\
+  0,                                 &\text{wenn  } TLS(X) < 0
+  \end{cases}
 $$ $$
   wobei: X = (x_1, ..., x_l) = \text{Anzahl Tage der jeweiligen CWL-Länge}
 $$ $$
@@ -289,11 +291,13 @@ Um nun wieder auf Tagesebene clustern zu können, sprich mit den Tagen als Beoba
 Deshalb wurde folgend eine Distanzmetrik definiert, die über zwei Tage alle Messpunkte, die jeweils als Noise definiert wurden, nicht betrachtet und mit den verbleibenden vergleicht, welche Gebietszugehörigkeit die Messpunkte jeweils aufweisen. Danach wird noch durch die größte Anzahl an Messpunkten nicht in Noise dieser zwei Tagen geteilt, um den Wertebereich auf [0,1] zu beschränken, sowie eine mögliche Ausprägung der Gebiete als Teilmengen voneinander ebenfalls nicht eine Distanz von 0 zuzuweisen.
 
 $$
-d(A, B) = 1 - \left( \frac{\sum_{i = 1}^{160}{\mathbf{I}(a_i = b_i \neq 0)}}{max_{x  \in {A, B} } \left( \sum_{i = 1}^{160}{\mathbf{I}(x_i \neq 0)}\right)} \right)
-$$ $$
-wobei: A = (a_1, ..., a_{160}) ; B =  (b_1, ..., b_{160})
-$$ $$
-  und: \forall_{x \in {A, B}} : x \in \{0 \text(Noise), 1\text(Hoch), 2\text(Tief)\}
+  d(A, B) = 1 - \left( \frac{\sum_{i = 1}^{160}{\mathbf{I}(a_i = b_i \neq 0)}}{max_{x  \in {A, B} } \left( \sum_{i = 1}^{160}{\mathbf{I}(x_i \neq 0)}\right)} \right)
+$$
+$$
+  wobei: A = (a_1, ..., a_{160}) ; B =  (b_1, ..., b_{160})
+$$ 
+$$
+  und: \forall_{x \in {A, B}} : x \in \{0 \text(Noise), 1 \text(Hoch), 2 \text(Tief)\}
 $$
 
 #### Ergebnisse
