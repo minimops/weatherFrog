@@ -72,7 +72,7 @@ plot <- ggplot( aes(x= as.factor(cluster), y= mean.mslp, fill=as.factor(cluster)
   ggtitle("Mittelwert des Luftdrucks in jedem Cluster") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file = "final_cluster/mean_mslp_boxplot.png")
+ggsave(plot, file = "final_cluster/mean_mslp_boxplot.png", height = 3, width = 5)
 
 # Boxplot of mean.geopot in every cluster
 
@@ -85,7 +85,7 @@ plot <- ggplot( aes(x= as.factor(cluster), y= mean.geopot, fill=as.factor(cluste
   ggtitle("Mittelwert des Geopotentials in jedem Cluster") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file = "final_cluster/mean_geopot_boxplot.png")    
+ggsave(plot, file = "final_cluster/mean_geopot_boxplot.png", height = 3, width = 5)    
 
 
 # Boxplot of intensitiy- high. geopot in every cluster
@@ -395,13 +395,14 @@ ggsave("bericht/assets/mosaic_gwl_greater3days.png", plot,
 # Mean. mslp per season
 f_data_gwl <- cbind(Jahreszeit,f_data_gwl)
 
- plot <- ggplot(aes(x=Jahreszeit, y=mean.mslp, fill = Jahreszeit), data = f_data_gwl) + 
+  plot <- ggplot(aes(x=Jahreszeit, y=mean.mslp, fill = Jahreszeit), data = f_data_gwl) + 
   geom_boxplot() +
   theme_bw() +
   theme(legend.position="none") +
   xlab("Jahreszeit") +
   ylab ("Luftdruck in [hPa]")+
-  ggtitle ("Verteilung des mittleren Luftdrucks getrennt nach Jahreszeit") +
+  ggtitle ("Verteilung des Mittelwerts des Luftdrucks 
+ getrennt nach Jahreszeit") +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 
@@ -415,7 +416,8 @@ ggsave(plot, file="final_cluster/jahreszeit_mean.mslp.png", width = 5, height = 
   theme(legend.position="none") +
   xlab("Jahreszeit") +
   ylab ("Geopotential in gpm")+
-  ggtitle ("Verteilung des mittleren Geopotentials getrennt nach Jahreszeit") +
+  ggtitle ("Verteilung des Mittelwerts des Geopotentials 
+ getrennt nach Jahreszeit") +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 
