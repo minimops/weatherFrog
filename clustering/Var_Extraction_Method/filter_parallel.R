@@ -51,8 +51,10 @@ system.time({
 #2455 seconds (41 min)
 
 #Read always after saved once
-testM <- readRDS("Data/filter/clusID_mslp_05.rds")
-testG <- readRDS("Data/filter/clusID_geopot_05.rds")
+testM <- readRDS("Data/filter/clusID_mslp_30.rds")
+testG <- readRDS("Data/filter/clusID_geopot_30.rds")
+
+#testM <- readRDS("clusData/filter/clusID_mslp_05.rds")
 
 library(data.table)
 library(zoo)
@@ -104,12 +106,12 @@ library(usedist)
 #system.time(
     distMat_mslp <- dist_make(as.matrix(copy(mslp_30_filter)[, date := NULL]),
                             custom_distance)
-    saveRDS(distMat_mslp, "Data/filter/distMat_mslp_30.rds")
+    saveRDS(distMat_mslp, "Data/filter/distMat_mslp_30_2.rds")
 #)
 #system.time(
   distMat_geopot <- dist_make(as.matrix(copy(geopot_30_filter)[, date := NULL]),
                               custom_distance)
-  saveRDS(distMat_geopot, "Data/filter/distMat_geopot_30.rds")
+  saveRDS(distMat_geopot, "Data/filter/distMat_geopot_30_2.rds")
 #)
 #85 seconds each
 #this can be parralelized with library parallelDist, 

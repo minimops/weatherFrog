@@ -141,9 +141,9 @@ ggsave("bericht/assets/timeline_vtlg.png", Tl.vtlg, device = "png",
 #kNN-dist plot
 library(KneeArrower)
 library(dbscan)
-data <- readRDS("Data/cli_data_05_avgDay.rds")[date %in% 
-                                as.Date("2006-01-01"),][, ":=" (date = NULL,
-                                        avg_geopot = NULL)]
+data <- readRDS("Data/cli_data_30_avgDay.rds")[date %in% 
+                                as.Date("1980-01-01"),][, ":=" (date = NULL,
+                                        avg_mslp = NULL)]
 sc_oneDay <- as.data.table(scale(data))
 
 #get density threshold
@@ -162,11 +162,11 @@ kNN.dist <- ggplot(data = data.frame(x =seq(1, nrow(sc_oneDay)),
         geom_hline(aes(yintercept = findCutoff(seq(1, nrow(sc_oneDay)),
                                            sort(kNNdist(sc_oneDay, k = 10))
                                            , method = "curvature")$y, 
-                       linetype = "eps"), 
+                       linetype = "eps = 0.877"), 
                    colour = "red", show.legend = T)+
-        scale_linetype_manual(name="max Wölbung", values = c(1))+
+        scale_linetype_manual(name="max. Wölbung", values = c(1))+
         theme_bw() +
-        labs(title = "10-NN Distanz", x = "Beobachtung", y = "Distanz")
+        labs(title = "10-NN Distanz Geopot am 01.01.1980", x = "Beobachtung", y = "Distanz")
         
 
 

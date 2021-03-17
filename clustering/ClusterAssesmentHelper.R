@@ -83,8 +83,11 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           colnames(data) <- c("length", "count")
           data[, ":=" (length = as.numeric(length))]
           
-          print("timeline Value:")
-          print(Tl.weight.fun(data))
+          # print("timeline Value:")
+          # print(Tl.weight.fun(data))
+          
+          print("New Timeline Value:")
+          print(TLS(copy(data)[, count := length * count]))
           
           if (cluster == "cluster") {
             mainAdd <- "Cluster"
@@ -216,6 +219,8 @@ mosaic <- function(data, cluster_vector, title = "PAM") {
   mosaicplot(table(data.gwl.cluster$gwl, data.gwl.cluster$cluster), color = TRUE,
              ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
              main = paste0(title, " Cluster - GWL"))
+  
+  HB.diff.index(data.gwl.cluster)
 }
 
 
