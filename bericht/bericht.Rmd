@@ -31,6 +31,7 @@ header-includes:
 - \usepackage[german]{babel}
 - \usepackage{xfrac}
 bibliography: references.bib
+
 abstract: |
   to be written.
 ---
@@ -619,8 +620,20 @@ include_graphics("assets/mosaicLegend.png")
 ### 3er gwl tage entfernen und anschauen
 
   Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den Großwetterlagen von \textcolor{red}{Hess und Brezowski} ist die Anforderung einer GWL mindestens 3 Tage lang zu sein. Man könnte naive vermuten, dass Tage einer bestimmten GWL zugeordnet werden, obwohl sie diese nicht deutlich verkörpern, um eine Länge von 3 Tagen zu erreichen, oder gar eine länger andauernde GWL nicht zu unterbrechen. Die geringe Anzahl der als *U* definierten Tage unterstützt diesen Gedankengang etwas. Folglich wird hier untersucht, wie die GWL, die länger als 3 Tage andauern, über die Cluster verteilt werden.
+
+
+```{r mosaic_GWL_greater_2days, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL_greater_2days}Mosaikplot, der darstellt, mit welchem Anteil die GWLs auf die Cluster 1 bis 6 aufgeteilt sind. Hierbei sind nur Tage abgebildet, wo mindestens drei aufeinanderfolgende Tage dem selben Cluster zugeordnet sind", fig.align="center", out.width="80%"}
+include_graphics("assets/mosaic_gwl_greater2days.png")
+```
+
+Abb.\ref{fig:mosaic_GWL_greater_2days} stellt die Aufteilung der GWLs auf die Cluster dar. Zudem wird gezeigt, wie häufig eine bestimmte GWL in den betrachteten Zeitraum von 1971 bis 2000 vorkommt. Im Gegensatz zu dem Mosaikplot aus Abb.\ref{fig:mosaic_GWL} sind hier nur Tage vertreten, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind. 
+Während im Fall der ungefilterten Tage (weniger als drei aufeinanderfolgende Tage, die dem selben Cluster angehoren und nicht enfernt wurden) die vier GWLs HNFA,NA,NEZ und SEZ jeweils nur in fünf Clustern waren, waren bei den gefilterten Tagen (weniger als drei aufeinanderfolgende Tage, die dem selben Cluster angehoren und enfernt wurden) fünf GWLs, HNA,HNFA,HNFZ,NEZ und SEZ in nur fünf Cluster und die GWL NA in nur vier Cluster vertreten. 
+Wie schon erwähnt sind bei den ungefilterten Tagen WZ und HNFA zu je 40% in Cluster 2, bzw Cluster 5, SEZ zu 52% in Cluster 3 und WS zu 43% in Cluster 1. 
+Bei den gefilterten Tagen ist nun WZ statt 40% zu 43% in Cluster 2 und HNFA statt 40% zu 41% in Cluster 5 vertreten. SEZ befindet sich nun zu 58% in Cluster 3 statt zu 52%. Und Cluster WS ist zu 45% statt zu 43% in Cluster 1.
+Bei den gefilterten Tagen ist NA zu 40% in Cluster 5, bei den gefilterten Tagen befanden sich hingegen nur 34% in diesem Cluster.
+Letztendlich scheint das Herausfiltern von Tagen, bei denen  weniger drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, zu einer leichten heterogeneren Aufteilung der GWLs auf die Cluster zu führen.
   
-  \textcolor{red}{insert plot and analysis of it}
+ 
 
 
 ### wie sind GWL&Saison kombos in den Clustern verteilt?
