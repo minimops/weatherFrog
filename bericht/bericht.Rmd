@@ -104,7 +104,25 @@ Es gibt zwei Kategorien, um die Großwetterlagen zu unterteilen, einmal die obje
 ## Daten
 Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Außerdem ist uns die GWL für jeden Tag im Zeitraum von 1900 bis 2010 bekannt. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert.
 
-\textcolor{red}{insert limitation to 30 years and average} \textcolor{red}{wie sehen die Daten aus?}
+```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Messpunkte der Parameter auf einer Weltkarte", fig.align="center", out.width="80%"}
+include_graphics("assets/MapDots.png")
+```
+
+```{r mslp_ex, echo = FALSE, fig.cap="\\label{fig:mslp_ex}Messwerte des Mslp an den 160 Messpunkten am 01.01.1980 um 0Uhr", fig.align="center", out.width="80%"}
+include_graphics("assets/dayMslp.png")
+```
+
+```{r geopot_ex, echo = FALSE, fig.cap="\\label{fig:geopot_ex}Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980 um 0Uhr", fig.align="center", out.width="80%"}
+include_graphics("assets/dayGeopot.png")
+```
+
+  \textcolor{red}{insert limitation to 30 years and average} 
+
+```{r avgDay, echo = FALSE, fig.cap="\\label{fig:avgDay}Über den Tag gemittelte Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980", fig.align="center", out.width="80%"}
+include_graphics("assets/avgDay.png")
+```
+
+  \textcolor{red}{wie sehen die Daten aus?}
 
 ## Clusterbewertungskriterien
 
@@ -489,7 +507,7 @@ Anfangs wurden verschiedene Clusterversuche mit diesem Datensatz durchgeführt. 
 
 **PCA**
   
-  Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust.
+  Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust. @pca
   
 ```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Principle Components", fig.align="center", out.width="80%"}
 include_graphics("assets/pcaPlot.png")
