@@ -171,13 +171,13 @@ include_graphics("assets/timeline_vtlg.png")
 ```
 
 $$
-  TLS(X) =  1 - \sum_{l = 1}^{40}{|\frac{x_l}{N} - w_l|}
+  TLS(X) =  1 - \sum_{i = 1}^{l}{|\frac{x_i}{N} - w_i|}
 $$ $$
   wobei: X = (x_1, ..., x_l) = \text{Anzahl Tage der jeweiligen CWL-Länge}
 $$ $$
   N = \text{Anzahl Tage gesamt}
 $$ $$
-  W = (w_1, ..., w_{40}) = \text{Ausprägungen der optimalen Timeline Verteilung}
+  W = (w_1, ..., w_{l}) = \text{Ausprägungen der optimalen Timeline Verteilung}
 $$
 
 ### Vergleich zur GWL-Aufteilung
@@ -302,7 +302,7 @@ include_graphics("assets/filterRes.png")
 
 Um nun wieder auf Tagesebene clustern zu können, sprich mit den Tagen als Beobachtungseinheit Cluster zu bilden, benötigt man eine Metrik, mit der diese Gebietszugehörigkeitsvektoren zweier Tage mieinander verglichen werden können. Der *Rand-Index* präsentiert eine solche Möglichkeit. Dieser vergleicht jeweils, ob pro Clusterlösung Paare zweier Beobachtungen jeweils im selben cluster liegen. Obwohl dies eher gedacht ist, um Lösungen verschiedener Clusterverfahren mit denselben Beobachtungen zu vergleichen, ist der *Rand-Index* hier möglich, da die Messpunkte konstant sind. Allerdings ist dabei irrelevant, in welchem Cluster sich das Paar jeweils befindet, was in diesem Fall nicht erwünscht ist: Zwei Tage mit identischen Gebietsformen und -orten aber gespiegelter Zugehörigkeit sollen nicht eine Distanz von 0 zueinander aufweisen. Zu dem sind natürlich Messpunkte, die als Noise definiert wurden, nicht von Interesse und sollten demnach auch nicht mit einbezogen werden.
 
-Deshalb wurde folgend eine Distanzmetrik definiert, die über zwei Tage alle Messpunkte, die jeweils als Noise definiert wurden, nicht betrachtet und mit den verbleibenden vergleicht, welche Gebietszugehörigkeit die Messpunkte jeweils aufweisen. Danach wird noch durch die größte Anzahl an Messpunkten nicht in Noise dieser zwei Tagen geteilt, um den Wertebereich auf [0,1] zu beschränken, sowie eine mögliche Ausprägung der Gebiete als Teilmengen voneinander ebenfalls nicht eine Distanz von 0 zuzuweisen.
+Deshalb wurde folgend eine Distanzmetrik definiert, die über zwei Tage alle Messpunkte, die jeweils als Noise definiert wurden, nicht betrachtet und mit den verbleibenden vergleicht, welche Gebietszugehörigkeit die Messpunkte jeweils aufweisen. Danach wird noch durch die größte Anzahl an Messpunkten nicht in Noise dieser zwei Tagen geteilt, um den Wertebereich auf [0,1] zu beschränken, sowie einer möglichen Ausprägung der Gebiete als Teilmengen voneinander ebenfalls nicht eine Distanz von 0 zuzuweisen.
 
 $$
   d(A, B) = 1 - \left( \frac{\sum_{i = 1}^{160}{\mathbf{I}(a_i = b_i \neq 0)}}{max_{x  \in {A, B} } \left( \sum_{i = 1}^{160}{\mathbf{I}(x_i \neq 0)}\right)} \right)
@@ -637,7 +637,11 @@ Letztendlich scheint das Herausfiltern von Tagen, bei denen  weniger drei aufein
 
 ### Saison und einzenld betrachtet
 
-### pam + filter
+### Erweiterung Variablen
+  
+#### PAM & Filter
+
+  Die Methode, wie in Absatz [Filter Ansatz] beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. 
 
 ### Räumliche Struktur
 
@@ -675,20 +679,27 @@ $$
  f(S) = avgSil(S) + avgTLS(S) + stab(S)
 $$
 $$
-  avgSil(S) = \frac{1}{3} \sum_{i = 1}^3{\text{Silhouettenkoeffizient}(s_i)}
+  avgSil(S) = \frac{1}{3} \sum_{i = 1}^3{sil(s_i)}
 $$
 $$
   avgTLS(S) = \frac{1}{3} \sum_{i = 1}^3{TLS(s_i)}
 $$
 $$
-  stab(S) = 1-\left( \frac{1}{2} max_{i, j =1,2,3} \left(|sil(S_i) - sil(S_j)|\right) + \frac{1}{2}max_{i,j = 1,2,3}\left(|TLS(S_i) - TLS(S_j)|\right) \right)
+  stab(S) = 1-\left( \frac{1}{2} max_{i, j =1,2,3} \left(|sil(s_i) - sil(s_j)|\right) + \frac{1}{2}max_{i,j = 1,2,3}\left(|TLS(s_i) - TLS(s_j)|\right) \right)
 $$
-  Mit den in Abschnitt [Clustern mit extrahierten Daten] beschriebenen Variablen und dem beschriebenen Clusterverfahren erhält man duch oben genannte *Cluster-boosting* Methode nach \textcolor{red}{XX} Iterationen folgenden Gewichtsvektor \textcolor{red}{insert table of vector} sowie einen *Silhouettenkoeffizienten* von \textcolor{red}{XX} und einen *TLS* von \textcolor{red}{XX}. Außerdem lässt sich ein $HB_{diff}$ von \textcolor{red}{XX} beobachten.
+$$
+ mit: sil = \text{Silhouettenkoeffizient}
+$$
+  Mit den in Abschnitt [Clustern mit extrahierten Daten] beschriebenen Variablen und dem beschriebenen Clusterverfahren erhält man duch oben genannter *Cluster-boosting* Methode nach \textcolor{red}{XX} Iterationen folgenden Gewichtsvektor \textcolor{red}{insert table of vector} sowie einen *Silhouettenkoeffizienten* von \textcolor{red}{XX} und einen *TLS* von \textcolor{red}{XX}. Außerdem lässt sich ein $HB_{diff}$ von \textcolor{red}{XX} beobachten.
 
 
-### variablen
+### Zeitliche Struktur
 
-### zeitliche struktur
+  Allgemein muss erkannt werden, dass jeglicher hier beschriebener Versuch Wetterlagen anhand einer Clusteranalyse der Tage einzuteilen, vernachlässigt, dass die Tage eine zeitliche Reihenfolge mit sich bringen. Anhand der Vorgabe, dass eine *GWL* nach dem Katalog von Hess und Brezowky mindestens 3 Tage lang sein muss, lässt sich vermuten, dass einzelnde Tage keine Wetterlage definieren können, sondern nur einen Teil davon bilden.
+  
+  Eine Möglichkeit dies zu kombatieren liefert eventuell das Einbringen einer "3-Tage Regel" in das Clusterverfahren, die Tage nur einem bestimmten Cluster zuteilt, wenn in eine Richtung die folgenden zwei Tage ebenfalls diesem Cluster zugeteilt werden würden. Womöglich vorstellbar ist dies mit einem Verfahren wie (z.B.) *PAM*, dass seinen Medoid versetzt, wenn dadurch ein bestimmtes Gütekriterium verbessert wird, zumindest annähernd möglich. Das Gütekriterium könnte dann zum Beispiel zum Teil aus dem hier vorgestellten *TLS* bestehen.
+  
+  Grundsätzlich lassen sich die Daten aber auch als Format eines Videos betrachten, da eine Abfolge von Bildern mit zeitlich vorgegebener Reihenfolge vorliegt. Vielleicht ist im Allgemeinen sinnvoller Abschnitte in diesem Video zu suchen, die anderen ähneln. Dafür müsste jedoch auf ein Modell ausgewichen werden, das ein solches Datenformat benutzen kann.
 
 # Schluss
 
