@@ -185,3 +185,28 @@ ggplot(data = data.frame(x =seq(1, nrow(sc_oneDay)),
                    colour = "red", linetype = "dashed")+
         theme_bw() +
         labs(title = "10-NN Distanz", x = "Beobachtung", y = "Distanz")
+
+
+#geopot id plot
+
+source("clustering/Var_Extraction_Method/f_extr_funs.R")
+
+dat <- extrapolate(seq(1971, 2000))
+
+dat_long <- copy(dat)[, c("date", "minGeopot.verID", "maxGeopot.verID")] %>%
+        gather("Stat", "Value", -date) 
+
+dat_long$Value <- factor(dat_long$Value, c(1,2,3))
+levels(dat_long$Value) <-  c("Nord", "Mitte", "Süd")
+
+geopot_verID <- ggplot(dat_long, aes(x =Value, fill = Stat)) +
+        geom_bar(position = "dodge", aes(y = 2*(..count..)/sum(..count..))) +
+        theme_bw() +
+        labs(title = "Verteilung der Geopotential-Extrema", 
+             x = "vertikale Position",
+             y = "Anteil") +
+        scale_fill_manual(values = c("red", "blue"), name = "Wert", 
+                          labels = c("max. Geopot", "min. Geopot"))
+
+ggsave("bericht/assets/geoVerID.png", geopot_verID, device = "png",
+       width = 5, height = 3)
