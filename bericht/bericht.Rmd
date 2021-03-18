@@ -427,7 +427,7 @@ dt2 <- data.frame(
   Gewichte = c("$1/3$", "$1/3$", "$1/3$", "$1/6$", "1/6", "1/6", "1/9", "1/9")  #lapply(c(1 / 3, 1 / 3, rep(1 / 6, 4), rep(1 / 9, 2)), 
                    # function(x) round(x, 3))
   ) 
-dt2$Gewichte = linebreak(dt2$Gewichte)
+
 kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen", align = "l") %>%
   kable_styling(latex_options = "striped", full_width = FALSE)%>%
   pack_rows("1  Verteilungsvariablen Mslp I", 1, 1) %>%
@@ -485,16 +485,43 @@ include_graphics("assets/numclust.png")
 ```
 
 ## Weitere Versuche
+Das endgültige Ergebnis wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus PAM anhand des extrahierten Datensatzes erzielt. Da es aber viele Clustermöglichkeiten gibt, wurden anfangs verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien bewertet. Dabei wurden zuerst die Daten von fünf Jahren verwendet, da 30 Jahren rechentechnisch sehr aufwendig waren. Die Methoden, die am besten abschnitten, wurden dann anhand von 30 Jahren beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
 
-### Clara, K-Means und PCA
+### CLARA, K-Means, PAM und PCA mit Originaldaten
+Bevor die Variablen extrahiert wurden, gab es auch Clusteranalysen mit dem Reanalyse-Datensatz, bei dem für beide Parameter die vier Beobachtungen am Tag jeweils gemittelt wurden, also der Datensatz mit 320 Dimensionen für die Jahre 2006 bis 2010.
 
-Der zur Verfügung gestellte Reanalyse Datensatz beträgt ursprünglich 1280 Dimensionen, da für jeden Tag zu vier Uhrzeiten an 160 Standorten zwei Parameter, Luftdruck und Geopotential, gemessen wurden. Da diese Anzahl an Dimensionen rechentechnisch sehr groß ist, wird, wie in Abschnitt 1.2 beschrieben, der Mittelwert für beide Parameter über die 4 Uhrzeiten betrachtet, sodass die Dimensionen auf 320 reduziert werden. Um den Rechenaufwand noch weiter einzuschränken, werden im Folgenden ausschließlich die Jahre 1971 bis 2000 betrachtet.
-
-Anfangs wurden verschiedene Clusterversuche mit diesem Datensatz durchgeführt. **CLARA**
+**CLARA**
+Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (CLARA) durchgeführt. Dafür wurde die Funktion clara() aus dem Package "cluster" in R verwendet. 
 
 **Mahalanobis**
 
 **PCA**
+
+### PAM, K-Means und Fuzzy mit Extrahierten Daten
+
+```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
+dt3 <- data.table(
+  Algorithmus = c("CLARA", "CLARA", "PAM", "K-Means", "PAM", "PAM", "PAM", "PAM", "K-Means"),
+  Metrik = c("Euklidisch", "Manhattan", "Mahalanobis", "PCA", "Gower", "Euklidisch", "Manhattan", "Mahalanobis", "Euklidisch")
+)
+
+kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden für 5 Jahre") %>%
+  kable_styling(latex_options = "striped", full_width = FALSE)%>%
+  pack_rows("Reanalyse-Datensatz", 1, 4) %>%
+  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)
+  
+  
+```
+
+```{r Clusterentscheidung, echo=FALSE, fig.cap="\\label{tab:Entscheidung}Clusterentscheidung. Each row represents a list element"}
+dt3 <- data.table(
+  Algorithmus = c(),
+  Metrik = c("Manhattan", ),
+  Variablen = c("48 + 3 PCA Komponenten")
+)
+  
+  
+```
 
 # Ergebnisse
 
