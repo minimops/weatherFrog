@@ -99,8 +99,19 @@ ggsave("bericht/assets/timeline_GWL_mult.png", gwlTLm, device = "png",
        width = 5, height = 3)
 
 ##timeline Verteilung
-TL.distr <- data.frame(weights = c(0,0, rep(2, 9), seq(2, 0, by = -2/28), 0, 0),
-                      count = seq(1, 42))
+dec_fun <- function(x) {
+        if(x < 3 || x >= 40) {
+                return(0)
+        } else{
+                if(x < 13){
+                        return(1)
+                }
+        }
+        return((23 / x) - (44 / x^2) - 0.55)
+}
+count <-  seq(1, 42)
+TL.distr <- data.frame(Anteil = vapply(count, dec_fun, FUN.VALUE = numeric(1)),
+                      count)
 
 Tl.weight <- ggplot(TL.distr, aes(x = count, y = weights)) +
         geom_line() +
@@ -114,7 +125,7 @@ ggsave("bericht/assets/timeline_weights.png", Tl.weight, device = "png",
        width = 5, height = 3)
 
 
-Tl.vtlg <- ggplot(TL.distr, aes(x = count, y = weights / 148)) +
+Tl.vtlg <- ggplot(TL.distr, aes(x = count, y = Anteil / sum(TL.distr$Anteil))) +
         geom_line() +
         geom_point() +
         scale_x_continuous(breaks = c(seq(1, 42, by = 2)),
@@ -130,9 +141,9 @@ ggsave("bericht/assets/timeline_vtlg.png", Tl.vtlg, device = "png",
 #kNN-dist plot
 library(KneeArrower)
 library(dbscan)
-data <- readRDS("Data/cli_data_05_avgDay.rds")[date %in% 
-                                as.Date("2006-01-01"),][, ":=" (date = NULL,
-                                        avg_geopot = NULL)]
+data <- readRDS("Data/cli_data_30_avgDay.rds")[date %in% 
+                                as.Date("1980-01-01"),][, ":=" (date = NULL,
+                                        avg_mslp = NULL)]
 sc_oneDay <- as.data.table(scale(data))
 
 #get density threshold
@@ -151,11 +162,11 @@ kNN.dist <- ggplot(data = data.frame(x =seq(1, nrow(sc_oneDay)),
         geom_hline(aes(yintercept = findCutoff(seq(1, nrow(sc_oneDay)),
                                            sort(kNNdist(sc_oneDay, k = 10))
                                            , method = "curvature")$y, 
-                       linetype = "eps"), 
+                       linetype = "eps = 0.877"), 
                    colour = "red", show.legend = T)+
-        scale_linetype_manual(name="max Wölbung", values = c(1))+
+        scale_linetype_manual(name="max. Wölbung", values = c(1))+
         theme_bw() +
-        labs(title = "10-NN Distanz", x = "Beobachtung", y = "Distanz")
+        labs(title = "10-NN Distanz Geopot am 01.01.1980", x = "Beobachtung", y = "Distanz")
         
 
 
@@ -174,3 +185,28 @@ ggplot(data = data.frame(x =seq(1, nrow(sc_oneDay)),
                    colour = "red", linetype = "dashed")+
         theme_bw() +
         labs(title = "10-NN Distanz", x = "Beobachtung", y = "Distanz")
+
+
+#geopot id plot
+
+source("clustering/Var_Extraction_Method/f_extr_funs.R")
+
+dat <- extrapolate(seq(1971, 2000))
+
+dat_long <- copy(dat)[, c("date", "minGeopot.verID", "maxGeopot.verID")] %>%
+        gather("Stat", "Value", -date) 
+
+dat_long$Value <- factor(dat_long$Value, c(1,2,3))
+levels(dat_long$Value) <-  c("Nord", "Mitte", "Süd")
+
+geopot_verID <- ggplot(dat_long, aes(x =Value, fill = Stat)) +
+        geom_bar(position = "dodge", aes(y = 2*(..count..)/sum(..count..))) +
+        theme_bw() +
+        labs(title = "Verteilung der Geopotential-Extrema", 
+             x = "vertikale Position",
+             y = "Anteil") +
+        scale_fill_manual(values = c("red", "blue"), name = "Wert", 
+                          labels = c("max. Geopot", "min. Geopot"))
+
+ggsave("bericht/assets/geoVerID.png", geopot_verID, device = "png",
+       width = 5, height = 3)

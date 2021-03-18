@@ -51,8 +51,10 @@ system.time({
 #2455 seconds (41 min)
 
 #Read always after saved once
-testM <- readRDS("Data/filter/clusID_mslp_05.rds")
-testG <- readRDS("Data/filter/clusID_geopot_05.rds")
+testM <- readRDS("Data/filter/clusID_mslp_30.rds")
+testG <- readRDS("Data/filter/clusID_geopot_30.rds")
+
+#testM <- readRDS("clusData/filter/clusID_mslp_05.rds")
 
 library(data.table)
 library(zoo)
@@ -104,12 +106,12 @@ library(usedist)
 #system.time(
     distMat_mslp <- dist_make(as.matrix(copy(mslp_30_filter)[, date := NULL]),
                             custom_distance)
-    saveRDS(distMat_mslp, "Data/filter/distMat_mslp_30.rds")
+    saveRDS(distMat_mslp, "Data/filter/distMat_mslp_30_2.rds")
 #)
 #system.time(
   distMat_geopot <- dist_make(as.matrix(copy(geopot_30_filter)[, date := NULL]),
                               custom_distance)
-  saveRDS(distMat_geopot, "Data/filter/distMat_geopot_30.rds")
+  saveRDS(distMat_geopot, "Data/filter/distMat_geopot_30_2.rds")
 #)
 #85 seconds each
 #this can be parralelized with library parallelDist, 
@@ -135,18 +137,25 @@ source("clustering/PAM_NumCL_finder.R")
 
 bestClustNumber(distMat_both)
 bestClustNumber(distMat_geopot)
-bestClustNumber(distMat_mslp)
+bestClustNumber(distMat_mslp, range = 5:9)
 
 library(cluster)
 source("clustering/ClusterAssesmentHelper.R")
+
+pam_mslp <- pam(distMat_mslp, diss = TRUE, k = 6)
+
+sil(pam_mslp, pam_mslp$clustering, distMat_mslp, "pam")
+mslp_data <- data.table(date = mslp_30_filter$date, cluster = pam_mslp$clustering)
+Cl.timeline(mslp_data, multiplied = T)
+mosaic(mslp_data, mslp_data$cluster)
 
 #both custom
 pam_both <- pam(distMat_both, diss = TRUE, k = 6)
 
 sil(pam_both, pam_both$clustering, distMat_both, "pam")
 
-both_data <- data.table(date = mslp_05_filter$date, cluster = pam_both$clustering)
-Cl.timeline(both_data)
+both_data <- data.table(date = mslp_30_filter$date, cluster = pam_both$clustering)
+Cl.timeline(both_data, multiplied = T)
 
 data_both_gwl <- attachGwl(both_data)
 mosaic(data_both_gwl, data_both_gwl$cluster)

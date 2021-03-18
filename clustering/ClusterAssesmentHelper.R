@@ -83,8 +83,11 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           colnames(data) <- c("length", "count")
           data[, ":=" (length = as.numeric(length))]
           
-          print("timeline Value:")
-          print(Tl.weight.fun(data))
+          # print("timeline Value:")
+          # print(Tl.weight.fun(data))
+          
+          print("New Timeline Value:")
+          print(TLS(copy(data)[, count := length * count]))
           
           if (cluster == "cluster") {
             mainAdd <- "Cluster"
@@ -216,6 +219,8 @@ mosaic <- function(data, cluster_vector, title = "PAM") {
   mosaicplot(table(data.gwl.cluster$gwl, data.gwl.cluster$cluster), color = TRUE,
              ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
              main = paste0(title, " Cluster - GWL"))
+  
+  HB.diff.index(data.gwl.cluster)
 }
 
 
@@ -330,5 +335,51 @@ Tl.weight.fun <- function(timeline){
   
   joined <- x[data, on = "length"]
   sum(joined$weight * joined$count)
+}
+
+TLS <- function(timelineMultiplied) {
+  assertDataTable(timelineMultiplied)
+  
+  ##timeline Verteilung
+  dec_fun <- function(x) {
+    if(x < 3 || x >= 40) {
+      return(0)
+    } else{
+      if(x < 13){
+        return(1)
+      }
+    }
+    return((23 / x) - (44 / x^2) - 0.55)
+  }
+  x <-  seq(1, max(40, timelineMultiplied$length))
+  TL.distr <- data.table(Anteil = vapply(x, dec_fun, FUN.VALUE = numeric(1)),
+                         length = x)
+  TL.distr[, Anteil := Anteil / sum(TL.distr$Anteil)]
+  
+  data <- timelineMultiplied[, count := count / 
+                                               sum(timelineMultiplied$count)]
+  
+  joined <- merge(TL.distr, data, all.x=TRUE)
+  joined$count[is.na(joined$count)] <- 0
+  
+  joined[, diff := abs(Anteil - count)]
+  
+  return(1 - sum(joined$diff))
+}
+
+#input is a datatable of at least dates and cluster ids
+
+HB.diff.index <- function(data) {
+  assertDataTable(data)
+  assertSubset(c("cluster", "date"), names(data))
+  
+  #attach gwl, but remove U
+  useDat <- attachGwl(data)[gwl != "U"]
+  
+  tabled <- copy(useDat)[, .N, by = .(gwl, cluster)]
+  
+  maxTab <- copy(tabled)[, .(num = max(N) / sum(N), size = sum(N)), by = .(gwl)]
+  
+  sum(maxTab$num) / nrow(maxTab)
 }
 

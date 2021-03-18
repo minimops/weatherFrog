@@ -72,7 +72,7 @@ plot <- ggplot( aes(x= as.factor(cluster), y= mean.mslp, fill=as.factor(cluster)
   ggtitle("Mittelwert des Luftdrucks in jedem Cluster") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file = "final_cluster/mean_mslp_boxplot.png")
+ggsave(plot, file = "final_cluster/mean_mslp_boxplot.png", height = 3, width = 5)
 
 # Boxplot of mean.geopot in every cluster
 
@@ -85,7 +85,7 @@ plot <- ggplot( aes(x= as.factor(cluster), y= mean.geopot, fill=as.factor(cluste
   ggtitle("Mittelwert des Geopotentials in jedem Cluster") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file = "final_cluster/mean_geopot_boxplot.png")    
+ggsave(plot, file = "final_cluster/mean_geopot_boxplot.png", height = 3, width = 5)    
 
 
 # Boxplot of intensitiy- high. geopot in every cluster
@@ -299,6 +299,184 @@ plot <- ggplot(data,aes(x = cluster,y = mean.geopot, fill = cluster)) +
   scale_color_brewer(palette = "Set1")
 
 ggsave(plot, file="final_cluster/scaled_geopot.mslp in every cluster.png") 
+
+# some things and numbers for writing the report
+
+aggregate(f_data[,c(3,5,6,11,13,14)], by = list(as.factor(f_data$cluster)),sd)
+
+gwl <- data_2000$gwl
+f_data_gwl <- cbind(gwl,f_data)
+f_data_gwl$cluster <- f_data_gwl$cluster
+
+table(f_data$cluster,f_data_gwl$gwl)
+prop.table(table(f_data$cluster,f_data_gwl$gwl),2)
+
+
+# filter cluster greater than 2 days
+
+index_length <- rleid(f_data_gwl$cluster)
+f_data_gwl <- cbind(index_length,f_data_gwl)
+
+
+table_cluster <- as.data.table(table(index_length))
+less_equal2 <- table_cluster[table_cluster$N <= 2,]
+
+
+f_data_gwl_greater2 <- f_data_gwl
+
+for ( i in less_equal2$index_length){
+  f_data_gwl_greater2 <- subset(f_data_gwl_greater2,index_length != i)
+  
+}
+
+# proof, if there are no continous days greater 2
+table_cluster <- as.data.table(table(f_data_gwl_greater2$index_length))
+less_equal2 <- table_cluster[table_cluster$N <= 2,]
+
+
+
+# filter cluster greater than 3 days
+
+table_cluster <- as.data.table(table(index_length))
+less_equal3 <- table_cluster[table_cluster$N <= 3,]
+
+
+f_data_gwl_greater3 <- f_data_gwl
+
+for ( i in less_equal3$index_length){
+  f_data_gwl_greater3 <- subset(f_data_gwl_greater3,index_length != i)
+  
+}
+
+# proof, if there are no continous days greater 3
+table_cluster <- as.data.table(table(f_data_gwl_greater3$index_length))
+less_equal3 <- table_cluster[table_cluster$N <= 3,]
+
+
+# mosaicplot without clusterdays smaller than 2 days
+library(ggmosaic)
+ plot <- ggplot(data = f_data_gwl_greater2) +
+  geom_mosaic(aes(x = product(cluster, gwl), fill = cluster), offset = 0.005) +
+  theme_classic() +
+  ggtitle("Mosaikplot für Cluster ~ GWL") +
+  labs(x = "GWL") +
+  scale_fill_brewer(palette = "Set1") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  guides(fill=guide_legend(title = "Cluster", reverse = TRUE)) +
+  theme(axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank())
+
+
+ggsave("bericht/assets/mosaic_gwl_greater2days.png", plot,
+       device = "png", width = 5, height = 3)
+
+# mosaicplot without clusterdays smaller than 3 days
+library(ggmosaic)
+plot <- ggplot(data = f_data_gwl_greater3) +
+  geom_mosaic(aes(x = product(cluster, gwl), fill = cluster), offset = 0.005) +
+  theme_classic() +
+  ggtitle("Mosaikplot für Cluster ~ GWL") +
+  labs(x = "GWL") +
+  scale_fill_brewer(palette = "Set1") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  guides(fill=guide_legend(title = "Cluster", reverse = TRUE)) +
+  theme(axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank())
+
+
+ggsave("bericht/assets/mosaic_gwl_greater3days.png", plot,
+       device = "png", width = 5, height = 3)
+
+
+# Mean. mslp per season
+f_data_gwl <- cbind(Jahreszeit,f_data_gwl)
+
+  plot <- ggplot(aes(x=Jahreszeit, y=mean.mslp, fill = Jahreszeit), data = f_data_gwl) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Luftdruck in [hPa]")+
+  ggtitle ("Verteilung des Mittelwerts des Luftdrucks 
+ getrennt nach Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_mean.mslp.png", width = 5, height = 3)
+
+# mean.geopot per season
+
+ plot <- ggplot(aes(x=Jahreszeit, y=mean.geopot, fill = Jahreszeit), data = f_data_gwl) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Geopotential in gpm")+
+  ggtitle ("Verteilung des Mittelwerts des Geopotentials 
+ getrennt nach Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_mean.geopot.png", width = 5, height = 3)
+
+# min.mslp per season
+ plot <- ggplot(aes(x=Jahreszeit, y=min.mslp, fill = Jahreszeit), data = f_data_gwl) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Luftdruck in [hPa]")+
+  ggtitle ("Verteilung des minimalen Luftdrucks getrennt nach Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_min.mslp.png", width = 5, height = 3)
+
+
+# max.mslp per season
+plot <- ggplot(aes(x=Jahreszeit, y=max.mslp, fill = Jahreszeit), data = f_data_gwl) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Luftdruck in [hPa]")+
+  ggtitle ("Verteilung des maximalen Luftdrucks getrennt nach Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_max.mslp.png", width = 5, height = 3)
+
+
+# min.geopot per season
+plot <- ggplot(aes(x=Jahreszeit, y=min.geopot, fill = Jahreszeit), data = f_data_gwl) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Geopotential in gpm")+
+  ggtitle ("Verteilung des minimalen Geopotentials getrennt nach Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_min.geopot.png", width = 5, height = 3)
+
+# max.geopot per season
+plot <- ggplot(aes(x=Jahreszeit, y=max.geopot, fill = Jahreszeit), data = f_data_gwl) + 
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position="none") +
+  xlab("Jahreszeit") +
+  ylab ("Geopotential in gpm")+
+  ggtitle ("Verteilung des maximalen Geopotentials getrennt nach Jahreszeit") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave(plot, file="final_cluster/jahreszeit_max.geopot.png", width = 5, height = 3)
+
 
 
 

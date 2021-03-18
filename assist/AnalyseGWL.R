@@ -170,6 +170,9 @@ cli_gwl_long_geo2 <- reshape2::melt(cli_gwl_1971_Month_Day, id.vars = c("Jahresz
 boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der 2 Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 dev.off()
+
+
+
 jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GeopotentailRange2Jahreszeiten.jpeg")
 boxplot(cli_gwl_long_geo2$value ~ cli_gwl_long_geo2$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der 2 Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
@@ -182,17 +185,17 @@ boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "range 
 
 cli_gwl_long_mslp2$value <- cli_gwl_long_mslp2$value/100
 
- ggplot(aes(x=Jahreszeit, y=value, fill = Jahreszeit), data = cli_gwl_long_mslp2) + 
+ plot <- ggplot(aes(x=Jahreszeit, y=value, fill = Jahreszeit), data = cli_gwl_long_mslp2) + 
   geom_boxplot() +
   theme_bw() +
   theme(legend.position="none") +
   xlab("Jahreszeit") +
   ylab ("Luftdruck in [hPa]")+
-  ggtitle ("Verteilung des Luftdrucks bezogen auf die Jahreszeit") +
+  ggtitle ("Verteilung des mslp getrennt nach Jahreszeit") +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file="final_cluster/jahreszeit_mslp.png")
+ggsave(plot, file="final_cluster/jahreszeit_mslp.png", width = 5, height = 3)
 
 
 cli_gwl_long_geo2$value <- cli_gwl_long_geo2$value/9.80665
@@ -203,11 +206,11 @@ plot <- ggplot(aes(x=Jahreszeit, y=value, fill = Jahreszeit), data = cli_gwl_lon
   theme(legend.position="none") +
   xlab("Jahreszeit") +
   ylab ("Geopotential in gpm")+
-  ggtitle ("Verteilung des Geopotentials bezogen auf die Jahreszeit") +
+  ggtitle ("Verteilung des geopot getrennt nach Jahreszeit") +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file="final_cluster/jahreszeit_geo.png")
+ggsave(plot, file="final_cluster/jahreszeit_geo.png", width = 5, height = 3)
 
 
 
