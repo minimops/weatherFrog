@@ -364,7 +364,7 @@ TLS <- function(timelineMultiplied) {
   
   joined[, diff := abs(Anteil - count)]
   
-  ifelse(sum(joined$diff) > 1, return(0), return(1 - sum(joined$diff)))
+  return(1 - sum(joined$diff))
 }
 
 #input is a datatable of at least dates and cluster ids
