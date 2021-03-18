@@ -538,8 +538,7 @@ kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung
 
 ```{r Clusterentscheidung, echo=FALSE, fig.cap="\\label{tab:Entscheidung}Clusterentscheidung. Each row represents a list element"}
 dt3 <- data.table(
-  Algorithmus = c(),
-  Metrik = c("Manhattan", ),
+  Metrik = c("Manhattan"),
   Variablen = c("48 + 3 PCA Komponenten")
 )
   
