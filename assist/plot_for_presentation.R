@@ -1,3 +1,6 @@
+# require f_data and PAM_res from our final cluster
+
+
 library(data.table)
 library(ggplot2)
 library(dplyr)
@@ -8,7 +11,7 @@ source("assist/functions_for_cluster_description.R")
 
 # Histogram for every extracted variable in every cluster
 ############
-#import PAMres and f_data from our cluster solution
+
 cluster <- PAMres$clustering
 f_data$mean.mslp <- f_data$mean.mslp/100
 f_data$max.mslp <- f_data$max.mslp/100
@@ -345,7 +348,7 @@ table(f_data$cluster,f_data_gwl$gwl)
 prop.table(table(f_data$cluster,f_data_gwl$gwl),2)
 
 
-# filter cluster greater than 2 days
+# filter days greater than 2 following days in the same cluster
 
 index_length <- rleid(f_data_gwl$cluster)
 f_data_gwl <- cbind(index_length,f_data_gwl)
@@ -353,7 +356,6 @@ f_data_gwl <- cbind(index_length,f_data_gwl)
 
 table_cluster <- as.data.table(table(index_length))
 less_equal2 <- table_cluster[table_cluster$N <= 2,]
-
 
 f_data_gwl_greater2 <- f_data_gwl
 
@@ -366,9 +368,15 @@ for ( i in less_equal2$index_length){
 table_cluster <- as.data.table(table(f_data_gwl_greater2$index_length))
 less_equal2 <- table_cluster[table_cluster$N <= 2,]
 
+# numbers of days smaller than 3  following days in the same cluster
 
+dim(f_data_gwl)[1] - dim(f_data_gwl_greater2)[1]
 
-# filter cluster greater than 3 days
+# relative frequency:
+(dim(f_data_gwl)[1] - dim(f_data_gwl_greater2)[1])/dim(f_data_gwl)[1]
+# 12 percent of all days are days smaller than 3 following days in the same cluster
+
+# filter days greater than 3 following  days in the same cluster
 
 table_cluster <- as.data.table(table(index_length))
 less_equal3 <- table_cluster[table_cluster$N <= 3,]
@@ -384,6 +392,15 @@ for ( i in less_equal3$index_length){
 # proof, if there are no continous days greater 3
 table_cluster <- as.data.table(table(f_data_gwl_greater3$index_length))
 less_equal3 <- table_cluster[table_cluster$N <= 3,]
+
+# numbers of days smaller than 4  following days in the same cluster
+
+dim(f_data_gwl)[1] - dim(f_data_gwl_greater3)[1]
+
+# relative frequency:
+(dim(f_data_gwl)[1] - dim(f_data_gwl_greater3)[1])/dim(f_data_gwl)[1]
+# 20 percent of all days are days smaller than 3 following days in the same cluster
+
 
 
 # mosaicplot without clusterdays smaller than 2 days
