@@ -107,6 +107,7 @@ Es gibt zwei Kategorien, um die Großwetterlagen zu unterteilen, einmal die obje
 
 Seit 1900 wird viermal täglich an 160 Standorten (siehe Abb. \ref{fig:locations}) das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Zudem liegen die GWL für jeden Tag im Zeitraum von 1900 bis 2010 vor. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert. Die Abbildungen \ref{fig:mslp_ex},\ref{fig:geopot_ex} visualisieren die Werte des Luftdrucks, bzw. Geopotentials am 01.01. 1980 um 0 Uhr über alle 160 Standorte. Abb.\ref{fig:avgDay} visualisiert ebenfalls die Werte des Luftdrucks und Geopotential über die 160 Standorte an einem Tag, hier ist aber der Mittelwert über die 4 Messtage pro Tag genommen.
 
+
 ```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Verteilung der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
 include_graphics("assets/MapDots.png")
 ```
@@ -165,8 +166,6 @@ Bei der Darstellung in Abbildung \ref{fig:timeline_GWL} ist die Anzahl der GWL j
 
 Folglich sollen Cluster-Wetterlagen (*CWL*) auch eine Mindestlänge von 3 Tagen besitzen, also Längen von 1 oder 2 Tagen sind bestenfalls nicht zu beobachten. Gleichermaßen sollen CWL nicht zu lang werden. Da in der Zeitperiode 1971-2000 die maximal beobachtete Länge einer GWL 23 Tage beträgt, die Clusterzahl aber geringer als die Anzahl der GWL (29) sein soll, wird hier festgelegt, dass optimalerweise CWL nicht länger als 40 Tage zu beobachten sind. Darüber hinaus sollen CWL eher mit den Längen 3 bis 12 Tagen auftreten. Diese Optimierungsannahmen wurden hier allein in Bezug auf den Vergleich der GWL Timeline getroffen.
 
- 
-
 Um die Timeline einer Clusterlösung quantifizierbar und vergleichbar zu gestalten, wird der Timeline eine Verteilung unterlegt (Abbildung \ref{fig:timeline_vtlg}). Der *Timeline-Score* (TLS) ergibt sich dann aus der Summe der punktweisen Abweichungen der Timeline der Clusterlösung zur optimalen Timeline Verteilung.
 
 ```{r timeline_vtlg, echo = FALSE, fig.cap="\\label{fig:timeline_vtlg}Erwünschte Verteilung der Timeline einer Clusterlösung", fig.align="center", out.width="80%"}
@@ -216,9 +215,11 @@ $$
 
 Dichtebasiertes Clustern...
 
+
 ## Filter Ansatz
 
 ### Motivation
+
 
 Beim genaueren Blick in die Beschreibungen einzelner GWL ist zu erkennen, dass diese häufig duch Position oder Form bestimmter Gebiete mit erkennbar höheren oder tieferen Messwerten definiert sind.
 
@@ -240,11 +241,13 @@ Um der Anforderung der nicht uniformen Gebiete gerecht zu werden, erscheint ein 
 
 Ein Bestimmen der Startpunkte und somit ein Festsetzen der Cluster-Orte ist - zumindest in vorhandenen Implementationen dieses Algorythmus' - nicht möglich. Deswegen lässt sich beobachten, dass die Extrema oft nicht in einem der eingeteilten Clustern befinden, da sie sich oft stark von durchschnittlichen Messwerten abweichen. *DBSCAN* führt somit im besten Fall zu Gebieten, dessen Messpunkte sich eher im Mittelfeld der Skala des Tages befinden und innerhalb der Gebiete kaum Veränderungen aufweisen. Solche Gebiete sind aber hier as nicht von besonderem Interesse vermutet und deshalb wird *DBSCAN* hierfür ausgeschlossen.
 
+
 \textcolor{red}{maybe show example day as dbscan res}
 
 Ein weiterer vielversprechender Ansatz ist das *Fuzzy*-Clustering. *Fuzzy* entpricht vom Prinzip k-Means, es werden also pro Cluster Mittelpunkte festgelegt. Allerdings wird für jede Beobachtung eine Zugehörigkeitswahrscheinlichkeit für jedes Cluster berechnet, anstatt einer Cluster-Id. Hier können Startpunkte angegeben werden und anhand der Clusterzugehörigkeitswahrscheinlichkeit jeder Beobachtung, bestimmte Beobachtungen mithilfe eines Schwellenwertes im Nachhinein zu Rauschen verwandelt werden.
 
 Allerdings ist dieses Verfahren hier auch nicht optimal, da, neben dem, dass *Fuzzy* üblicherweise rechentechnisch sehr teuer implementiert ist, kommt hinzu, dass dieses Verfahren auf einen Mittelpunkt pro Cluster beruht und die Distanz dazu anhand eines gegebenen Distanzmaß' bestimmt wird. Nachdem die Koordinaten als Variablen aufgenommen werden, führt dies zu Clustern gleicher Form und verletzt somit die Anforderung die Form eines Gebietes möglichst getreu darzustellen.
+
 
 \textcolor{red}{maybe beispiel ergebnisse des Beispieltages}
 
@@ -288,7 +291,9 @@ Der Nachbarschaftsparameter wird hier für jede Tag-Parameter Kombination berech
 include_graphics("assets/kNN_dist.png")
 ```
 
+
 Eine Verkleinerung des Nachbarschaftsparameters pro Iteration findet hier in linearer Form statt, da dies, rein visuell bewertet, die repräsentativsten Gebiete als Ergebnis liefert.
+
 
 $$
   eps_{t+1} = eps_t -  \frac{(t-1)eps_t}{6}   
@@ -301,6 +306,7 @@ Im Vergleich zu *DBSCAN*, mit dem Gruppierungen von Beobachtungen gesucht werden
 ```{r scapoi_res, echo = FALSE, fig.cap="\\label{fig:scapoi_res}Beispiel der Gebietszuteilung eines Tages durch SCAPOI", fig.align="center", out.width="80%"}
 include_graphics("assets/filterRes.png")
 ```
+
 
 ### Distanzmetrik
 
@@ -427,7 +433,7 @@ In Tabelle \ref{tab:Gewichtung} sieht man die Kategorien mit ihren Variablen und
 dt2 <- data.frame(
   
   Variable = c("Minimum, Maximum, Mittelwert", "Minimum, Maximum, Mittelwert", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag","Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Mittelwerte in den 9 Quadranten", "Mittelwerte in den 9 Quadranten"),
-  Gewichte = c("$1/3$", "$1/3$", "$1/3$", "$1/6$", "1/6", "1/6", "1/9", "1/9")  #lapply(c(1 / 3, 1 / 3, rep(1 / 6, 4), rep(1 / 9, 2)), 
+  Gewichte = c("$1/3$", "$1/3$", "$1/3$", "$1/6$", "$\\frac{1}{6}$", "1/6", "1/9", "1/9")  #lapply(c(1 / 3, 1 / 3, rep(1 / 6, 4), rep(1 / 9, 2)), 
                    # function(x) round(x, 3))
   ) 
 
@@ -566,6 +572,7 @@ include_graphics("assets/distribution_of_years_over_cluster.png")
 
 Die Werte des Mittelwerts Luftdrucks (Abb. \ref{fig:distribution_season_mslp}) und des Mittelwert des Geopotentials (Abb. \ref{fig:distribution_season_geopot}) sind in der Sommerzeit tendenziell höher als in der Winterzeit. Hierbei sind die saisionalen Unterschiede bei dem Mittelwert des Geopotentials deutlich stärker ausgeprägt als bei dem Mittelwert des Luftdrucks. Diese Aufteilung des Jahres in Sommer- und Winterzeit erfolgt nach Vorlage der Publikation von James P.M. 2006 (@article_james). Um diese saisonalen Unterschiede zu berücksichtigen und die Verteilung der Winter- und Sommertagen in den Clustern zu betrachten, wird das Kalenderjahr in eine Winter- und in eine Sommerzeit aufgeteilt. Alle Tage im Zeitraum 16. Oktober bis 15. April werden als Wintertage definiert, die restlichen Tage folglich als Sommertage (@article_james).
 
+
 ```{r distribution_seasom_mslp, echo = FALSE, fig.cap="\\label{fig:distribution_season_mslp}Darstellung der Verteilung der Variable Mittelwert des Luftdrucks getrennt nach Sommer- und Winterzeit im Zeitraum 1971-2000", fig.align="center", out.width="80%"}
 include_graphics("assets/jahreszeit_mean.mslp.png")
 ```
@@ -579,6 +586,7 @@ Die Graphik in Abb. \ref{fig:mosaic_seasons} visualisiert die relativen Häufigk
 ```{r mosaic_seasons, echo = FALSE, fig.cap="\\label{fig:mosaic_seasons}Gestapeltes Balkendiagramm, der den relativen Anteil an Winter- und Sommertagen je Cluster abbildet", fig.align="center", out.width="90%"}
 include_graphics("assets/mosaic_seasons.png")
 ```
+
 
 ### Unterschiede und Ähnlichkeiten in den Clustern
 
@@ -614,7 +622,7 @@ Nun wird betrachtet, wie sich der Mittelwert des Luftdrucks und der Mittelwert d
 include_graphics("assets/mslp_over_all_measurepoints.png")
 ```
 
-```{r geopot_measurepoints, echo = FALSE, fig.cap="\\label{fig:geopot_measurepoints}Räumliche Verteilung des Geopotentials je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width="100%"}
+```{r geopot_measurepoints, echo = FALSE, fig.cap="\\label{fig:geopot_measurepoints}Räumliche Verteilung des Geopotentials je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width= "100%"}
 include_graphics("assets/geopot_over_all_measurepoints.png")
 ```
 
@@ -626,7 +634,9 @@ Das Cluster 6 ist sowohl bei der Varaible Luftdruck als auch bei der Variable Ge
 
 ### Vergleich der Clusterlösung mit den GWL
 
+
 Der Mosaikplot in Abb. \ref{fig:mosaic_GWL} stellt die Aufteilung der GWLs auf die 6 Cluster dar. Zudem wird gezeigt, wie häufig eine bestimmte GWL in den betrachteten Zeitraum von 1971 bis 2000 vorkommt. Im Allgemeinen ist die Anzahl der auftretenden Wetterlagen heterogen. Hierbei ist die Großwetterlage WZ: Westlage zyklonal am häufigsten vertreten, dicht gefolgt von BM: Hochdruckbrücke Mitteleuropa. Selten vertreten sind die GWL NA: Nordlage antizyklonal, SZ: Südlage zyklonal und undefinierte Tage, also Tage, denen keine GWL zugeordnet werden kann. Außer HNFA, NA und NEZ (nicht in Cluster 2), SEZ (nicht in Cluster 6) ist jede GWL in allen Clustern vertreten. Der Großteil der GWLs verteilen sich hierbei gleichmäßig auf die Cluster. Dennoch gibt es auch GWLs, die hauptsächlich in einem Cluster vorherrschen. WZ und HNFA sind zu je 40% in Cluster 2, bzw. in Cluster 5 vertreten. 52% der GWL SEZ befindet sich in Cluster 3 und 43% der GWL WS in Cluster 1.
+
 
 Zudem wechseln in manchen Fällen die GWLs und die Zugehörigkeit der Tage, die zu einem Cluster gehören, am selben Tag.
 
@@ -642,11 +652,14 @@ include_graphics("assets/mosaicLegend.png")
 
 -Saisonen einzeln geclustered ergebnisse
 
+
 ## CWL-Mindestlänge 3 Tage
+
 
 \textcolor{red}{fringe change}
 
 Abb.\ref{fig:mosaic_GWL_greater_2days} stellt die Aufteilung der GWLs auf die Cluster dar. Zudem wird gezeigt, wie häufig eine bestimmte GWL in den betrachteten Zeitraum von 1971 bis 2000 vorkommt. Im Gegensatz zu dem Mosaikplot aus Abb.\ref{fig:mosaic_GWL} sind hier nur Tage vertreten, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind. Während im Fall der ungefilterten Tage (weniger als drei aufeinanderfolgende Tage, die dem selben Cluster angehoren und nicht enfernt wurden) die vier GWLs HNFA,NA,NEZ und SEZ jeweils nur in fünf Clustern waren, waren bei den gefilterten Tagen (weniger als drei aufeinanderfolgende Tage, die dem selben Cluster angehoren und enfernt wurden) fünf GWLs, HNA,HNFA,HNFZ,NEZ und SEZ in nur fünf Cluster und die GWL NA in nur vier Cluster vertreten. Wie schon erwähnt sind bei den ungefilterten Tagen WZ und HNFA zu je 40% in Cluster 2, bzw Cluster 5, SEZ zu 52% in Cluster 3 und WS zu 43% in Cluster 1. Bei den gefilterten Tagen ist nun WZ statt 40% zu 43% in Cluster 2 und HNFA statt 40% zu 41% in Cluster 5 vertreten. SEZ befindet sich nun zu 58% in Cluster 3 statt zu 52%. Und Cluster WS ist zu 45% statt zu 43% in Cluster 1. Bei den gefilterten Tagen ist NA zu 40% in Cluster 5, bei den gefilterten Tagen befanden sich hingegen nur 34% in diesem Cluster. Letztendlich scheint das Herausfiltern von Tagen, bei denen weniger drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, zu einer leichten heterogeneren Aufteilung der GWLs auf die Cluster zu führen.
+
 
 ```{r mosaic_GWL_greater_2days, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL_greater_2days}Mosaikplot, der darstellt, mit welchem Anteil die GWLs auf die Cluster 1 bis 6 aufgeteilt sind. Hierbei sind nur Tage abgebildet, wo mindestens drei aufeinanderfolgende Tage dem selben Cluster zugeordnet sind", fig.align="center", out.width="80%"}
 include_graphics("assets/mosaic_gwl_greater2days.png")
@@ -654,7 +667,9 @@ include_graphics("assets/mosaic_gwl_greater2days.png")
 
 ## GWL-Mindestlänge 4 Tage
 
+
 Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den Großwetterlagen von Hess und Brezowsky und der angewendeten Clusteranalyse ist die Anforderung einer GWL mindestens 3 Tage lang zu sein. Man könnte naive vermuten, dass Tage einer bestimmten GWL zugeordnet werden, obwohl sie diese nicht deutlich verkörpern, um eine Länge von 3 Tagen zu erreichen, oder gar eine länger andauernde GWL nicht zu unterbrechen. Die geringe Anzahl der als *U* definierten Tage unterstützt diesen Gedankengang etwas. Folglich wird hier untersucht, wie die GWL, die länger als 3 Tage andauern, über die Cluster verteilt werden.
+
 
 \textcolor{red}{insert Analysis of this}
 
@@ -690,6 +705,7 @@ Es lässt sich allerdings anzweifeln, ob so eine starre und ausgeglichene Gewich
 
 Ein Ansatz die Gewichte der Variablen flexibler zu wählen ist, sie durch ein maschinelles Verfahren automatisch zu bestimmen. Zum Beispiel könnte eine Art komponentenweises Boosting durchgeführt werden, das iterativ das Gewicht einer Variable erhöht um einen bestimmten Wert zu optimieren.
 
+
 $$
   W^{(t)} = argmax_{W_j, j = 1,...,k} \left( f\left(cluster(W_j^{(t-1)}X)\right)  \right)
 $$ $$
@@ -700,7 +716,9 @@ $$ $$
   c = \text{Schrittweite , } f = \text{Bewertungsfunktion , } t = \text{Iterationsindex}
 $$
 
+
 Um die benötigte Rechenleistung zu reduzieren sowie auch zu verhindern, dass das Verfahren sich festläuft in dem z.B. immer dasselbe Gewicht erhöht wird, könnte eine Sampling-Strategie durchgeführt werden, sodass pro Iteration immer nur ein Teildatensatz geclustered wird. Ansatzweise werden hier 3 5-Jahres Perioden pro Iteration zufällig gewählt, die den Datensatz einer Iteration darstellen: $S = {s_1, s_2, s_3}$, wobei $s_i = \text{ein 5 Jahres-Datensatz}$ ist. Die zu optimierende Funktion könnte wie folgt zum Beispiel die Summe aus dem Durchschnitt des *Silhouettenwertes* der 3 Datensätze, dem Durchschnitt des *TLS* der 3 Datensätze und einem *Stabilitätswert* ($stab$) sein.
+
 
 $$
  f(S) = avgSil(S) + avgTLS(S) + stab(S)
@@ -712,7 +730,10 @@ $$ $$
   stab(S) = 1-\left( \frac{1}{2} max_{i, j =1,2,3} \left(|sil(s_i) - sil(s_j)|\right) + \frac{1}{2}max_{i,j = 1,2,3}\left(|TLS(s_i) - TLS(s_j)|\right) \right)
 $$ $$
  mit: sil = \text{Silhouettenkoeffizient}
-$$ Mit den in Abschnitt [Clustern mit extrahierten Daten] beschriebenen Variablen und dem beschriebenen Clusterverfahren erhält man duch oben genannter *Cluster-boosting* Methode nach \textcolor{red}{XX} Iterationen folgenden Gewichtsvektor \textcolor{red}{insert table of vector} sowie einen *Silhouettenkoeffizienten* von \textcolor{red}{XX} und einen *TLS* von \textcolor{red}{XX}. Außerdem lässt sich ein $HB_{diff}$ von \textcolor{red}{XX} beobachten.
+$$ 
+
+  Mit den in Abschnitt [Clustern mit extrahierten Daten] beschriebenen Variablen und dem beschriebenen Clusterverfahren erhält man duch oben genannter *Cluster-boosting* Methode nach \textcolor{red}{XX} Iterationen folgenden Gewichtsvektor \textcolor{red}{insert table of vector} sowie einen *Silhouettenkoeffizienten* von \textcolor{red}{XX} und einen *TLS* von \textcolor{red}{XX}. Außerdem lässt sich ein $HB_{diff}$ von \textcolor{red}{XX} beobachten.
+
 
 ## Zeitliche Struktur
 
