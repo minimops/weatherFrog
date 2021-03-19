@@ -536,7 +536,6 @@ Ein Ansatz \textcolor{red}{reference} ist hier, mit der Anzahl an *PC* weiter zu
 
 \textcolor{red}{HBdiff von 0.4042}
 
-\textcolor{red}{erklaerung reicht? plots hinzunehmen?}
 
 ### PAM, K-Means und Fuzzy mit Extrahierten Daten
 
@@ -570,9 +569,9 @@ Dieser Abschnitt beinhaltet die Ergebnisse verschiedner Clusterlösungen. Abschn
 
 ## Filter Ergebnisse
 
-\textcolor{red}{insert results seperated and unified}
+  
 
-\textcolor{red}{discuss results here?}
+\textcolor{red}{insert results seperated and unified}
 
 ## Ergebnisse extrahierte Variablen
 
@@ -587,6 +586,8 @@ include_graphics("assets/f_sil.jpeg")
 Abbildung \ref{fig:tlMultiplied} zeigt den Timeline-Plot für dieses Clustergebnis. Es lässt sich erkennen, dass die meisten Tage in aufeinanderfolgenden Clustern der Länge 1 bis 13 sind. In Bezug auf die Timeline der GWL ist dies auch erwünscht, mit Ausnahme der Längen 1 und 2. Einzelne Tage kommen in den Jahren 1971 - 2000 ungefähr 600 Mal vor. Am häufigsten lassen sich aufeinanderfolgende Cluster der Länge 3 beobachten, mit ca. 800 Tagen. Längen, die größer als 40 sind, sind eher nicht erwünscht, da die längste GWL in diesen 30 Jahren 23 Tage andauerte. Auch hier sind jenseits der Länge 40 nur wenige Tage zu finden. Die CWL, die am längsten andauert, beträgt 89 Tage. Auffällig ist außerdem, die Länge 61 vier Mal auftritt. Insgesamt gehören also ungefähr 250 Tage zu einer CWL, die 61 Tage anhält.
 
 Der Timeline-Score beträgt $TLS = 0.3357$, ist also der höchste, der bisher in diesen Analysen erreicht wurde.
+
+\textcolor{red}{dis true?}
 
 ```{r tlMultiplied, echo = FALSE, fig.cap = "\\label{fig:tlMultiplied}Timeline-Plot für Clusterergebnis mit extrahierten Variablen mit $k = 6$", fig.align="center", out.width = "80%"}
 include_graphics("assets/timelineMultiplied.png")
@@ -658,7 +659,7 @@ include_graphics("assets/avgClustIMG_mslp.png")
 ```
 
 ```{r geopot_measurepoints, echo = FALSE, fig.cap="\\label{fig:geopot_measurepoints}Räumliche Verteilung des Geopotentials je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width= "100%"}
-#include_graphics("assets/avgClustIMG_geopot.rds")
+include_graphics("assets/avgClustIMG_geopot.png")
 ```
 
 Die räumliche Verteilung der gemittelten Werte des Luftdrucks ist pro Cluster unterschiedlich. In Cluster 1 befinden sich nordwestlich sehr hohe Werte während in Cluster 2 ähnlich hohe Werte des Luftdrucks im Süden zu finden sind. Zudem sind dort die hohen Werte über eine größere Fläche verteilt als in Cluster 1. In Cluster 3 ist hingegen das Gebiet mit hohen Luftdruckwerten östlich gelegen, in Cluster 4 und 6 südwestlich. Cluster 5 und 6 sind gekennzeichnet von tendenziell hohen Luftdruckwerten, ein ausgeprägtes Gebiet mit tiefen Luftdruckwerten ist in Cluster 5 nicht enthalten, und in Cluster 6 nur südöstlich. Im Gegensatz dazu befindet sich in Cluster 2 die größte Fläche mit niedrigen Luftdruckwerten, das nördlich gelegen ist. Insgesamt hat jedes Cluster eine eigene, charakteristische Verteilung der Luftdruckwerte.
@@ -673,7 +674,7 @@ Das Cluster 6 ist sowohl bei der Varaible Luftdruck als auch bei der Variable Ge
 Der Mosaikplot in Abb. \ref{fig:mosaic_GWL} stellt die Aufteilung der GWLs auf die 6 Cluster dar. Zudem wird gezeigt, wie häufig eine bestimmte GWL in den betrachteten Zeitraum von 1971 bis 2000 vorkommt. Im Allgemeinen ist die Anzahl der auftretenden Wetterlagen heterogen. Hierbei ist die Großwetterlage WZ: Westlage zyklonal am häufigsten vertreten, dicht gefolgt von BM: Hochdruckbrücke Mitteleuropa. Selten vertreten sind die GWL NA: Nordlage antizyklonal, SZ: Südlage zyklonal und undefinierte Tage, also Tage, denen keine GWL zugeordnet werden kann. Außer HNFA, NA und NEZ (nicht in Cluster 2), SEZ (nicht in Cluster 6) ist jede GWL in allen Clustern vertreten. Der Großteil der GWLs verteilen sich hierbei gleichmäßig auf die Cluster. Dennoch gibt es auch GWLs, die hauptsächlich in einem Cluster vorherrschen. WZ und HNFA sind zu je 40% in Cluster 2, bzw. in Cluster 5 vertreten. 52% der GWL SEZ befindet sich in Cluster 3 und 43% der GWL WS in Cluster 1.
 
 
-```{r mosaic_GWL, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL}Mosaikplot, der darstellt, mit welchem Anteil die GWLs auf die Cluster 1 bis 6 aufgeteilt sind", fig.align="center", out.width="80%"}
+```{r mosaic_GWL, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL}Mosaikplot, der darstellt, mit welchem Anteil die GWLs auf die Cluster 1 bis 6 aufgeteilt sind", fig.align="center", out.width="100%"}
 include_graphics("assets/mosaicLegend.png")
 ```
 
@@ -695,7 +696,7 @@ Abb.\ref{fig:mosaic_GWL_greater_2days} stellt die Aufteilung der GWLs auf die Cl
 Eine Erklärung für diese nur leicht hererogenere Aufteilung ist, dass der relative Anteil der Tage, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind,  ur 12% aller Tage im Zeitraum von 1971 bis 2000 ausmacht.
 
 
-```{r mosaic_GWL_greater_2days, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL_greater_2days}Mosaikplot, der darstellt, mit welchem Anteil die GWLs auf die Cluster 1 bis 6 aufgeteilt sind. Hierbei sind nur Tage abgebildet, wo mindestens drei aufeinanderfolgende Tage dem selben Cluster zugeordnet sind", fig.align="center", out.width="80%"}
+```{r mosaic_GWL_greater_2days, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL_greater_2days}Mosaikplot, der darstellt, mit welchem Anteil die GWLs auf die Cluster 1 bis 6 aufgeteilt sind. Hierbei sind nur Tage abgebildet, wo mindestens drei aufeinanderfolgende Tage dem selben Cluster zugeordnet sind", fig.align="center", out.width="100%"}
 include_graphics("assets/mosaic_gwl_greater2days.png")
 ```
 
@@ -710,6 +711,8 @@ Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den G
 ## Erweiterung Variablen
 
 **Temperatur** - Da der Reanalyse Datensatz bereits Informationen zur Temperatur an den Messpunkten eines Tages beinhaltet, könnte dieser Parameter recht einfach in das Modell als Variable aufgenommen werden oder auch nur als Ausprägung, mithilfe der die bereits vorliegenden Parameter bereinigt werden können.
+
+ 
 
 **Strömungen** - In *GWL*-Beschreibungen tauchen häufig Ausprägungen von Strömungsrichtungen auf. Ein naiver Ansatz, dies zum Teil zu replizieren, ist, aus den gegebenen Daten eines Tages zum Mslp und Geopotential eine Art "Bewegung" zu bestimmen, indem zum Beispiel anhand der Veränderung des Standortes von dem maximal gemessenen Luftdruck über die 4 Messzeiten am Tag ein Vektor berechnet wird, mit dem Aussagen zur Bewegungsrichtung und -stärke des Hochdruckgebietes getroffen werden können.
 
