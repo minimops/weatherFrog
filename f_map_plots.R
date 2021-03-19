@@ -114,6 +114,8 @@ id2Coords <- data.table(id = seq(1, 160), longitude = coordID$longitude,
 
 test <- copy(mslp_clustAvg_long)[copy(id2Coords), on = "id"]
 
+source("clustering/dayDrawer.R")
+
 mslp_avgClust_1 <- drawFinalDay(test[cluster %in% 1, ], "value", "Cluster 1 Mslp", unit = "Pa")
 mslp_avgClust_2 <- drawFinalDay(test[cluster %in% 2, ], "value", "Cluster 2 Mslp", unit = "Pa")
 mslp_avgClust_3 <- drawFinalDay(test[cluster %in% 3, ], "value", "Cluster 3 Mslp", unit = "Pa")
@@ -134,21 +136,29 @@ test2[, value := value / 100]
 
 library(cowplot)
 legend <- get_legend(drawFinalDay(test2[cluster %in% 2, ], "value", 
-                       paste("Cluster", i, "Mslp"), unit = "hPa"))
+                       paste("Cluster", 2, "Mslp"), unit = "hPa") + 
+                       scale_fill_gradient(low = "blue", high = "red", 
+                                           breaks=c(1005, 1010, 1015, 1020, 1025),
+                                           name = "in hPa"))
 
 plots <- list()
 
 for (i in 1:6) {
   plots[[i]] <- drawFinalDay(test2[cluster %in% i, ], "value", 
                paste("Cluster", i), unit = "hPa") +
+                scale_fill_gradient(low = "blue", high = "red", 
+                        breaks=c(1005, 1010, 1015, 1020, 1025), guide = F) +
                 theme(axis.title.x=element_blank(),
-                      axis.title.y=element_blank())
+                      axis.title.y=element_blank(),
+                      legend.title = element_blank()) 
 }
 library(grid)
 mslp_avgC <- grid.arrange(grobs = plots, nrow = 2, left = "Latitude", bottom = "Longitude",
              right = legend, top = textGrob("Mslp im Mittel über Messpunkte",gp=gpar(fontsize=20)))
 
-ggsave("documentation/plots/fplots/avgClustIMG_mslp.rds", mslp_avgC, width = 8, height = 5, device = "png")
+ggsave("documentation/plots/fplots/avgClustIMG_mslp.png", mslp_avgC, width = 8, height = 5, device = "png")
+
+ggsave("bericht/assets/avgClustIMG_mslp.png", mslp_avgC, width = 8, height = 5, device = "png")
 
 
 #now the same for geopot
@@ -170,22 +180,29 @@ geopot_avg_perClus2[value > 5700, value := 5700]
 
 library(cowplot)
 legend <- get_legend(drawFinalDay(geopot_avg_perClus2[cluster %in% 2, ], "value", 
-                                  paste("Cluster", i, "Geopot"), unit = "gpm"))
+                                  paste("Cluster", i, "Geopot"), unit = "gpm") +
+                       scale_fill_gradient(low = "blue", high = "red", 
+                                           breaks= seq(5200, 5700, by = 100),
+                                           name = "in gpm"))
 
 plots <- list()
 
 for (i in 1:6) {
   plots[[i]] <- drawFinalDay(geopot_avg_perClus2[cluster %in% i, ], "value", 
                              paste("Cluster", i), unit = "hPa") +
+    scale_fill_gradient(low = "blue", high = "red", 
+                        breaks=seq(5200, 5700, by = 100), guide = F) +
     theme(axis.title.x=element_blank(),
-          axis.title.y=element_blank())
+          axis.title.y=element_blank(),
+          legend.title = element_blank()) 
 }
 
 geopot_avgC <- grid.arrange(grobs = plots, nrow = 2, left = "Latitude", bottom = "Longitude",
                           right = legend, top = textGrob("Geopot im Mittel über Messpunkte",gp=gpar(fontsize=20)))
 
-ggsave("documentation/plots/fplots/avgClustIMG_geopot.rds", geopot_avgC, width = 8, height = 5, device = "png")
+ggsave("documentation/plots/fplots/avgClustIMG_geopot.png", geopot_avgC, width = 8, height = 5, device = "png")
 
+ggsave("bericht/assets/avgClustIMG_geopot.png", geopot_avgC, width = 8, height = 5, device = "png")
 
 
 ##filter method for 01-01-2006
