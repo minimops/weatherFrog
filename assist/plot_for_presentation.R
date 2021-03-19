@@ -1,6 +1,6 @@
 library(data.table)
 library(ggplot2)
-library(plyr)
+library(dplyr)
 
 source("assist/functions_for_cluster_description.R")
 
@@ -190,8 +190,6 @@ ggsave("documentation/plots/fplots/clust_years.png", plot, device = "png",
 ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
 
 # Distribution of clusters split in seasons
-# wie Farben ändern?
-
 
 
 data1 <- data.table(cluster = data$cluster, season = getWinSum(data$date))
@@ -304,9 +302,44 @@ ggsave(plot, file="final_cluster/scaled_geopot.mslp in every cluster.png")
 
 aggregate(f_data[,c(3,5,6,11,13,14)], by = list(as.factor(f_data$cluster)),sd)
 
-gwl <- data_2000$gwl
+cli_gwl_1971 <- readRDS("Data\\cli_gwl_1971.rds")
+
+#Season vector
+
+cli_gwl_1971_Month_Day <- cli_gwl_1971
+cli_gwl_1971_Month_Day$Month_Day <- format(cli_gwl_1971_Month_Day$date, "%m-%d")
+
+day_16_to_31 <- seq(from = 16, to = 31, by = 1)
+day_16_to_30 <- seq(from = 16, to = 30, by = 1)
+day_1_to_9 <- seq(from = 1, to = 9, by = 1)
+day_1_to_9 <- paste0(0, day_1_to_9)
+day_10_to_15 <- seq(from = 10, to = 15, by = 1)
+day_1_to_15 <- c(day_1_to_9,day_10_to_15)
+
+month_10_day_16_31 <- paste(10,day_16_to_31,sep = "-")
+month_4_day_1_15 <- paste("04",day_1_to_15,sep = "-")
+month_4_day_16_30 <- paste("04",day_16_to_30,sep = "-")
+month_10_day_1_15 <- paste(10,day_1_to_15,sep = "-")
+
+
+
+
+cli_gwl_1971_Month_Day <- cli_gwl_1971_Month_Day %>%
+  mutate(Jahreszeit = case_when(month %in% c("11","12","01","02","03") ~ "Winterzeit",
+                                month %in% c("05","06","07","08","09") ~ "Sommerzeit",
+                                Month_Day %in% month_10_day_16_31 ~ "Winterzeit",
+                                Month_Day %in% month_4_day_1_15 ~ "Winterzeit",
+                                Month_Day %in% month_4_day_16_30 ~ "Sommerzeit",
+                                Month_Day %in% month_10_day_1_15 ~ "Sommerzeit"))
+
+data_2000 <- cli_gwl_1971_Month_Day[cli_gwl_1971_Month_Day$date <= "2000-12-31",]
+Jahreszeit <- data_2000$Jahreszeit
+
+
+gwl_data <- cli_gwl_1971[cli_gwl_1971$date <= "2000-12-31",]
+gwl <- gwl_data$gwl
 f_data_gwl <- cbind(gwl,f_data)
-f_data_gwl$cluster <- f_data_gwl$cluster
+
 
 table(f_data$cluster,f_data_gwl$gwl)
 prop.table(table(f_data$cluster,f_data_gwl$gwl),2)
@@ -355,7 +388,7 @@ less_equal3 <- table_cluster[table_cluster$N <= 3,]
 
 # mosaicplot without clusterdays smaller than 2 days
 library(ggmosaic)
- plot <- ggplot(data = f_data_gwl_greater2) +
+ ggplot(data = f_data_gwl_greater2) +
   geom_mosaic(aes(x = product(cluster, gwl), fill = cluster), offset = 0.005) +
   theme_classic() +
   ggtitle("Mosaikplot für Cluster ~ GWL") +
@@ -371,6 +404,9 @@ library(ggmosaic)
 
 ggsave("bericht/assets/mosaic_gwl_greater2days.png", plot,
        device = "png", width = 5, height = 3)
+
+
+
 
 # mosaicplot without clusterdays smaller than 3 days
 library(ggmosaic)
@@ -390,6 +426,8 @@ plot <- ggplot(data = f_data_gwl_greater3) +
 
 ggsave("bericht/assets/mosaic_gwl_greater3days.png", plot,
        device = "png", width = 5, height = 3)
+
+library(data.table)
 
 
 # Mean. mslp per season
