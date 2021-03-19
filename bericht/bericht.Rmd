@@ -108,7 +108,7 @@ Es gibt zwei Kategorien, um die Großwetterlagen zu unterteilen, einmal die obje
 
 ## Daten
 
-Seit 1900 wird viermal täglich an 160 Standorten (siehe Abb. \ref{fig:locations}) das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Zudem liegen die GWL für jeden Tag im Zeitraum von 1900 bis 2010 vor. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert. Die Abbildungen \ref{fig:mslp_ex},\ref{fig:geopot_ex} visualisieren die Werte des Luftdrucks, bzw. Geopotentials am 01.01. 1980 um 0 Uhr über alle 160 Standorte. Abb.\ref{fig:avgDay} visualisiert ebenfalls die Werte des Luftdrucks und Geopotential über die 160 Standorte an einem Tag, hier ist aber der Mittelwert über die 4 Messtage pro Tag genommen.
+Seit 1900 wird viermal täglich an 160 Standorten in Europa und Teil (siehe Abb. \ref{fig:locations}) das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügung steht. Zudem liegen die GWL für jeden Tag im Zeitraum von 1900 bis 2010 vor. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert. Die Abbildungen \ref{fig:mslp_ex} und \ref{fig:geopot_ex} visualisieren die Werte des Luftdrucks, bzw. Geopotentials am 01.01.1980 um 0 Uhr über alle 160 Standorte. Abb.\ref{fig:avgDay} visualisiert ebenfalls die Werte des Luftdrucks und Geopotential über die 160 Standorte an einem Tag, hier ist aber der Mittelwert über die 4 Messtage pro Tag genommen.
 
 
 ```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Verteilung der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
@@ -658,7 +658,7 @@ include_graphics("assets/avgClustIMG_mslp.png")
 ```
 
 ```{r geopot_measurepoints, echo = FALSE, fig.cap="\\label{fig:geopot_measurepoints}Räumliche Verteilung des Geopotentials je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width= "100%"}
-include_graphics("assets/avgClustIMG_geopot.rds")
+#include_graphics("assets/avgClustIMG_geopot.rds")
 ```
 
 Die räumliche Verteilung der gemittelten Werte des Luftdrucks ist pro Cluster unterschiedlich. In Cluster 1 befinden sich nordwestlich sehr hohe Werte während in Cluster 2 ähnlich hohe Werte des Luftdrucks im Süden zu finden sind. Zudem sind dort die hohen Werte über eine größere Fläche verteilt als in Cluster 1. In Cluster 3 ist hingegen das Gebiet mit hohen Luftdruckwerten östlich gelegen, in Cluster 4 und 6 südwestlich. Cluster 5 und 6 sind gekennzeichnet von tendenziell hohen Luftdruckwerten, ein ausgeprägtes Gebiet mit tiefen Luftdruckwerten ist in Cluster 5 nicht enthalten, und in Cluster 6 nur südöstlich. Im Gegensatz dazu befindet sich in Cluster 2 die größte Fläche mit niedrigen Luftdruckwerten, das nördlich gelegen ist. Insgesamt hat jedes Cluster eine eigene, charakteristische Verteilung der Luftdruckwerte.
