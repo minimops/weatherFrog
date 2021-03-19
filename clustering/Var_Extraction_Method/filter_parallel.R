@@ -123,8 +123,8 @@ library(usedist)
 distMat_both <- distMat_mslp + distMat_geopot
 
 saveRDS(cbind(as.matrix(distMat_both), date = mslp_30_filter$date),
-        "Data/filter/distMat_30_date.rds")
-distMat_both_date <- readRDS("Data/filter/distMat_30_date.rds")
+        "Data/filter/distMat_30_date_2.rds")
+distMat_both_date <- readRDS("Data/filter/distMat_30_date_2.rds")
 distMat_both <- as.dist(distMat_both_date[, -ncol(distMat_both_date)])
 
 library(factoextra)
@@ -135,33 +135,50 @@ fviz_dist(distMat_both)
 
 source("clustering/PAM_NumCL_finder.R")
 
-bestClustNumber(distMat_both)
-bestClustNumber(distMat_geopot)
-bestClustNumber(distMat_mslp, range = 5:9)
+bestClustNumber(distMat_both, range = 5:9, metric = "manhattan", fname = "filter2_both")
+bestClustNumber(distMat_geopot, range = 5:9, metric = "manhattan", fname = "filter2_only_geopot")
+bestClustNumber(distMat_mslp, range = 5:9, metric = "manhattan", fname = "filter2_only_mslp")
 
 library(cluster)
 source("clustering/ClusterAssesmentHelper.R")
 
-pam_mslp <- pam(distMat_mslp, diss = TRUE, k = 6)
-
+#just mslp
+pam_mslp <- pam(distMat_mslp, diss = TRUE, k = 5)
+#k = 5
 sil(pam_mslp, pam_mslp$clustering, distMat_mslp, "pam")
+#sil = 0.1369 
 mslp_data <- data.table(date = mslp_30_filter$date, cluster = pam_mslp$clustering)
 Cl.timeline(mslp_data, multiplied = T)
+#TLS = -0.2027
 mosaic(mslp_data, mslp_data$cluster)
+#HBdiff = 0.3980
+
+#just geopot
+pam_geopot <- pam(distMat_geopot, diss = TRUE, k = 6)
+#k = 6
+sil(pam_geopot, pam_geopot$clustering, distMat_geopot, "pam")
+#sil = 0.1541
+geopot_data <- data.table(date = mslp_30_filter$date, cluster = pam_geopot$clustering)
+Cl.timeline(geopot_data, multiplied = T)
+#TLS = -0.3898
+mosaic(geopot_data, geopot_data$cluster)
+#HBdiff = 0.3162
 
 #both custom
-pam_both <- pam(distMat_both, diss = TRUE, k = 6)
-
+pam_both <- pam(distMat_both, diss = TRUE, k = 5)
+#k = 5
 sil(pam_both, pam_both$clustering, distMat_both, "pam")
-
+#sil = 0.0832
 both_data <- data.table(date = mslp_30_filter$date, cluster = pam_both$clustering)
 Cl.timeline(both_data, multiplied = T)
+#TLS = -0.1527
+mosaic(both_data, both_data$cluster)
+#HBdiff = 0.4100
 
-data_both_gwl <- attachGwl(both_data)
-mosaic(data_both_gwl, data_both_gwl$cluster)
 
 
 #both rand.index
+#CAUTION!!!!
 #This takes way too long in single threaded mode
 distMat_mslp_rand <- dist_make(as.matrix(copy(mslp_05_filter)[, date := NULL]),
                           rand_distance)
@@ -170,56 +187,57 @@ distMat_geopot_rand <- dist_make(as.matrix(copy(geopot_05_filter)[, date := NULL
                             rand_distance)
 
 distMat_both_rand <- distMat_geopot_rand + distMat_mslp_rand
-
-bestClustNumber(distMat_both, "manhattan", "filter_both")
-bestClustNumber(distMat_geopot)
-bestClustNumber(distMat_mslp)
 ###end
+
 
 #adding to extrapolate dataset
 source("clustering/Var_Extraction_Method/f_extr_funs.R")
-
-data <- extrapolate(seq(2006, 2010))
-data <- scaleNweight(data)
-
 library(parallelDist)
+library(parallel)
 
-distMat_data <- parDist(as.matrix(copy(data)[, date := NULL]), method = "manhattan")
-bestClustNumber(distMat_data)
-# use 6
-pam_data <- pam(distMat_data, diss = TRUE, k = 6)
+datextr <- extrapolate(seq(1971, 2000))
 
-sil(pam_data, pam_data$clustering, distMat_data, "pam")
+#copy from finalExplore.R
+weights <- c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+             rep(1/6, 12), rep(1/9, 18), rep(1/6, 2))
+d <- copy(datextr)[readRDS("Data/change_day_mslp.rds"), on = "date"]
+datadiff <- copy(d)[readRDS("Data/change_day_geopot.rds"), on = "date"]
+dataNoRange <- copy(datadiff)[, ":=" (range.mslp = NULL, range.geopot = NULL)]
 
-data_data <- data.table(date = mslp_05_filter$date, cluster = pam_data$clustering)
-Cl.timeline(data_data)
+useDat <- as.data.table(scale(copy(dataNoRange)[, date := NULL]))[, Map("*", .SD, weights)]
+dissimilarity <- parallelDist(as.matrix(useDat), method = "manhattan",
+                              threads = detectCores() - 2)
 
-data_data_gwl <- attachGwl(data_data)
-mosaic(data_data_gwl, data_data_gwl$cluster)
 
 
 #just add them as is because:
-head(distMat_data)
+head(dissimilarity)
 head(distMat_both)
 
-distMat_all <- distMat_both + distMat_data
+sum(dissimilarity) / sum(distMat_both)
+# = 6.86 , sprich Gewicht des Filterns heir auf ca 1/7
+
+
+#1/7
+distMat_all <- distMat_both + dissimilarity
 head(distMat_all)
 
-bestClustNumber(distMat_all)
+bestClustNumber(distMat_all, range = 5:9, metric = "manhattan", fname = "filter+extr")
 #deffo reduces our silhouette like this
 
-pam_all_data <- pam(distMat_all, diss = TRUE, k = 6)
+pam_all_data <- pam(distMat_all, diss = TRUE, k = 5)
 
 sil(pam_all_data, pam_all_data$clustering, distMat_all, "pam")
-
-data_all <- data.table(date = mslp_05_filter$date, cluster = pam_all_data$clustering)
+#sil = 0.0994
+data_all <- data.table(date = mslp_30_filter$date, cluster = pam_all_data$clustering)
 Cl.timeline(data_all)
+#TLS = 0.5663
+mosaic(data_all, data_all$cluster)
+#HBdiff = 0.3878
 
-data_all_gwl <- attachGwl(data_all)
-mosaic(data_all_gwl, data_all_gwl$cluster)
 
 
-#differences?
+#differences in 5 years
 #just filtering to extr data clustering
 rand.index(pam_data$clustering, pam_both$clustering)
 #0.742
@@ -229,7 +247,32 @@ rand.index(pam_data$clustering, pam_all_data$clustering)
 
 
 #test with higher weight
-distMat_all_high <- 4 * distMat_both + distMat_data
-bestClustNumber(distMat_all_high)
+distMat_all_high <- 4 * distMat_both + dissimilarity
+bestClustNumber(distMat_all_high, range = 5:9, metric = "manhattan", fname = "filter+extr")
+
+pam_all_data_higher <- pam(distMat_all_high, diss = TRUE, k = 5)
+#k = 5
+sil(pam_all_data_higher, pam_all_data_higher$clustering, distMat_all_high, "pam")
+#sil = 0.1401
+data_all_high <- data.table(date = mslp_30_filter$date, cluster = pam_all_data_higher$clustering)
+Cl.timeline(data_all_high)
+#TLS = 0.1818
+mosaic(data_all_high, data_all_high$cluster)
+#HBdiff = 0.4405
 
 
+#test with just mslp added 1/4
+
+distMat_extr_mslp <- dissimilarity + 3 * distMat_mslp
+
+bestClustNumber(distMat_extr_mslp, range = 5:9, metric = "manhattan", fname = "filter_mslp+extr")
+
+pam_mslp_extr <- pam(distMat_extr_mslp, diss = TRUE, k = 5)
+#k = 5
+sil(pam_mslp_extr, pam_mslp_extr$clustering, distMat_extr_mslp, "pam")
+#sil = 0.1373
+data_mslp_extr <- data.table(date = mslp_30_filter$date, cluster = pam_mslp_extr$clustering)
+Cl.timeline(data_mslp_extr, multiplied = T)
+#TLS = 0.4118
+mosaic(data_mslp_extr, data_mslp_extr$cluster)
+#HBdiff = 0.4122

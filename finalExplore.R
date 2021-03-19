@@ -186,6 +186,9 @@ PAMhelper(scaleNweight(copy(dataNoRange_f)),
 )
 
 
+
+####final clust
+
 weights <- c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
              rep(1/6, 12), rep(1/9, 18), rep(1/6, 2))
 d <- copy(datextr)[readRDS("Data/change_day_mslp.rds"), on = "date"]
