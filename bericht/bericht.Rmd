@@ -557,7 +557,7 @@ Dieser Abschnitt präsentiert die Ergebnisse der deskriptiven Analyse der finale
 
 ## Verteilung der Cluster über die Zeit
 
-Abb. \ref{fig:distribution_of_years_over_cluster} stellt dar, wie häufig jedes Cluster im Zeitraum 1971 bis 2000 vorkommt. Zu erkennen ist, dass sich ein Cluster nicht auf eine bestimmte Zeitperiode beschränkt, sondern über den gesamten Zeitraum erstreckt. Die Cluster 4,5 und 6 sind hierbei gleichmäßiger über den Zeitraum von 1971 bis 2000 verteilt als die Cluster 1, 2 und 3. Beispielsweise beinhaltet das Jahr 1985 6% aller Tage, die Cluster 1 zugeordnet sind, das Jahr 1990 beinhaltet hingegen nur 2% aller Tage, die Cluster 1 zugeordnet sind. Damit verglichen sind Cluster 4 bis 6 sehr gleichmäßig über alle Jahre verteilt. In Cluster 4 sticht das Jahr 2000 hervor. In diesem sind 6,3% aller Tage, die Cluster 4 zugeordnet sind, vertreten, während in allen anderen Jahren durchschnittlich je 3% aller Tage, die Cluster 4 zugeordnet sind, vertreten sind. Somit beinhaltet das Jahr 2000 ca. doppelt so viele Cluster 4-Tage verglichen mit den anderen Jahren. Von allen Clustern ist Cluster 6 am gleichmäßigsten über alle Jahre verteilt.
+Abb. \ref{fig:distribution_of_years_over_cluster} stellt dar, wie häufig jedes Cluster im Zeitraum 1971 bis 2000 vorkommt. Zu erkennen ist, dass sich ein Cluster nicht auf eine bestimmte Zeitperiode beschränkt, sondern über den gesamten Zeitraum erstreckt. Zudem ist kein Trend in der Aufteilung der Tage innerhalb eines Clusters auf die Jahre 1971 bis 2000 erkennbar. Die Cluster 4,5 und 6 sind hierbei gleichmäßiger über den Zeitraum von 1971 bis 2000 verteilt als die Cluster 1, 2 und 3. Beispielsweise beinhaltet das Jahr 1985 6% aller Tage, die Cluster 1 zugeordnet sind, das Jahr 1990 beinhaltet hingegen nur 2% aller Tage, die Cluster 1 zugeordnet sind. Damit verglichen sind Cluster 4 bis 6 sehr gleichmäßig über alle Jahre verteilt. In Cluster 4 sticht das Jahr 2000 hervor. In diesem sind 6,3% aller Tage, die Cluster 4 zugeordnet sind, vertreten, während in allen anderen Jahren durchschnittlich je 3% aller Tage, die Cluster 4 zugeordnet sind, vertreten sind. Somit beinhaltet das Jahr 2000 ca. doppelt so viele Cluster 4-Tage verglichen mit den anderen Jahren. Von allen Clustern ist Cluster 6 am gleichmäßigsten über alle Jahre verteilt.
 
 ```{r distribution_of_years_over_cluster, echo = FALSE, fig.cap="\\label{fig:distribution_of_years_over_cluste}Aufteilung der Tage auf die Jahre getrennt nach Cluster. Pro Cluster wird dargestellt, welcher relative Anteil aller Tage, die diesem Cluster zugeordnet sind, sich in einem Jahr befinden.", fig.align="center", out.width="80%"}
 include_graphics("assets/distribution_of_years_over_cluster.png")
@@ -609,7 +609,7 @@ include_graphics("assets/mean_mslp_boxplot.png")
 include_graphics("assets/mean_geopot_boxplot.png")
 ```
 
-Alle anderen extrahierten Variablen, die in die Clusteranalyse miteingegangen sind und die die Verteilung beschreiben, ähneln den beschriebenen Ergebnissen von Mittelwert des Luftdrucks und Mittelwert des Geopotentials. Die Verteilungsvariablen des Luftdrucks sind immer höher als die Verteilungsvariablen des Geopotentials, so dass Mittelwert des Luftdrucks und Mittelwert des Geopotentials representativ für die übrigen Verteilungsvariablen.
+Alle anderen extrahierten Variablen, die in die Clusteranalyse miteingegangen sind und die die Verteilung beschreiben, ähneln den beschriebenen Ergebnissen von Mittelwert des Luftdrucks und Mittelwert des Geopotentials hinsichtlich der Verteilung der Werte in und zwischen den Cluster.
 
 Nun wird betrachtet, wie sich der Mittelwert des Luftdrucks und der Mittelwert des Geopotentials räumlich unterscheidet. Abb \ref{fig:mslp_measurepoints} bzw. Abb.\ref{fig:geopot_measurepoints} stellt pro Cluster und für jeden der insgesamt 160 Standorte das arithmetrische Mittel des Luftdrucks bzw. des Geopotentials im Zeitraums 1971 -- 2000 dar. Blau Flächen visualisieren Gebiete mit niedrigerenn, rote Flächen visualisieren Gebiete mit höheren Werten.
 
@@ -633,8 +633,6 @@ Der Mosaikplot in Abb.\ref{fig:mosaic_GWL} stellt die Aufteilung der GWLs auf di
 Außer HNFA, NA und NEZ (nicht in Cluster 2), SEZ ( nicht in Cluster 6) ist jede GWL in allen Clustern vertreten. Der Großteil der GWLs verteilen sich hierbei gleichmäßig auf die Cluster.
 Dennoch gibt es auch GWLs, die hauptsächlich in einem Cluster vorherrschen. WZ und HNFA sind zu je 40% in Cluster 2, bzw. in Cluster 5 vertreten. 
 52% der GWL SEZ befindet sich in Cluster 3 und 43% der GWL WS  in Cluster 1.
-
-Zudem wechseln in manchen Fällen die GWLs und die Zugehörigkeit der Tage, die zu einem Cluster gehören, am selben Tag. 
 
 ```{r mosaic_GWL, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL}Mosaikplot, der darstellt, mit welchem Anteil die GWLs auf die Cluster 1 bis 6 aufgeteilt sind", fig.align="center", out.width="80%"}
 include_graphics("assets/mosaicLegend.png")
