@@ -600,7 +600,7 @@ Dieser Abschnitt befasst sich mit der Fragestellung, wie sich die Werte der 48 e
 Abb. \ref{fig:observation_in_cluster} zeigt die Aufteilung der Tage im Zeitraum 1971 bis 2000 auf die Cluster 1 bis 6. Hierbei bildet Cluster 3 mit einer Anzahl an 1422 Tagen das kleinste Cluster. Cluster 6 beinhaltet die meisten Tage (2565 Tage). Während in Cluster 2 1952 Tage vertreten sind, beinhalten Cluster 1,4 und 5 eine ähnliche Anzahl an Tagen.
 
 ```{r observation_in_cluster, echo = FALSE, fig.cap="\\label{fig:observation_in_cluster}Verteilung der Tage im Zeitraum 1971 - 2000 auf die Cluster 1 bis 6", fig.align="center", out.width="80%"}
-include_graphics("assets/number_of_observations_in_each_cluster.png")
+include_graphics("assets/observation_in_cluster.png")
 ```
 
 Tabelle \ref{fig:descriptive_cluster} bildet Mittelwert und Standardabweichung der Variablen Mittelwert, Maximum und Minimum des Luftdrucks und Mittelwert, Maximum und Minimum des Geopotentials in jedem Cluster ab. Hierbei unterschieden sich die Werte einer Variablen in jedem Cluster nur gering voneinander. Zum Beispiel beträgt die maximale Abweichung der Variable Mittelwert des Luftdrucks in allen Clustern nur 8,2 hPa und die maximale Abweichung der Variable Mittelwert des Geopotentials 287,7 gpm.
