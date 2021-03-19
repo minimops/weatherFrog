@@ -13,7 +13,6 @@ subtitle: |
 author: "Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto"
 date: "01. März 2021"
 output:
-  word_document: default
   pdf_document:
     fig_caption: yes
     fig_height: 3
@@ -106,21 +105,21 @@ Es gibt zwei Kategorien, um die Großwetterlagen zu unterteilen, einmal die obje
 ## Daten
 Seit 1900 wird viermal täglich an 160 Standorten (siehe Abb. \ref{fig:locations}) das Geopotential auf 500 hPa in $m^2/s^2$ und der Luftdruck (Mslp) in Pascal auf Meeresspiegelhöhe erhoben. Diese Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügungung steht. Zudem liegen die GWL für jeden Tag im Zeitraum von 1900 bis 2010 vor. Im Rahmen des Statistischen Praktikums wird mit dem Reanalyse-Datensatz geclustert. Die Abbildungen \ref{fig:mslp_ex},\ref{fig:geopot_ex} visualisieren die Werte des Luftdrucks, bzw. Geopotentials am 01.01. 1980 um 0 Uhr über alle 160 Standorte. Abb.\ref{fig:avgDay} visualisiert ebenfalls die Werte des Luftdrucks und Geopotential über die 160 Standorte an einem Tag, hier ist aber der Mittelwert über die 4 Messtage pro Tag genommen.
 
-```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Messpunkte der Parameter auf einer Weltkarte", fig.align="center", out.width="80%"}
+```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Verteilung der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
 include_graphics("assets/MapDots.png")
 ```
 
-```{r mslp_ex, echo = FALSE, fig.cap="\\label{fig:mslp_ex}Messwerte des Mslp an den 160 Messpunkten am 01.01.1980 um 0Uhr", fig.align="center", out.width="80%"}
+```{r mslp_ex, echo = FALSE, fig.cap="\\label{fig:mslp_ex}Messwerte des Mslp an den 160 Messpunkten am 01.01.1980 um 0Uhr über 160 Standorte", fig.align="center", out.width="80%"}
 include_graphics("assets/dayMslp.png")
 ```
 
-```{r geopot_ex, echo = FALSE, fig.cap="\\label{fig:geopot_ex}Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980 um 0Uhr", fig.align="center", out.width="80%"}
+```{r geopot_ex, echo = FALSE, fig.cap="\\label{fig:geopot_ex}Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980 um 0Uhr über 160 Standorte", fig.align="center", out.width="80%"}
 include_graphics("assets/dayGeopot.png")
 ```
 
   \textcolor{red}{insert limitation to 30 years and average} 
 
-```{r avgDay, echo = FALSE, fig.cap="\\label{fig:avgDay}Über den Tag gemittelte Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980", fig.align="center", out.width="80%"}
+```{r avgDay, echo = FALSE, fig.cap="\\label{fig:avgDay}Über den Tag gemittelte Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980. Hierbei wurde bei den Variablen Luftdruck und Geopotential das arithmetrische Mittel über die vier Tageszeitpunkte (0 Uhr, 6 Uhr, 12 Uhr, 18 Uhr) gebildet", fig.align="center", out.width="80%"}
 include_graphics("assets/avgDay.png")
 ```
 
@@ -156,7 +155,7 @@ Sowohl die Silhouetten der Beobachtungen als auch der Silhouettenkoeffizient sel
 
 Da die zeitliche Struktur der Daten, nämlich das Aufeinanderfolgen der Tage in spezifischer Reihenfolge, bei der weiteren Analyse nicht mitbeachtet wird, lässt sich hiermit die Sinnhaftigkeit einer Clustereinteilung gut bewerten. Eine Aufteilung, bei der keine zeitliche Struktur erkennbar ist, beispielsweise ein konstanter Wechsel der Clusterzugehörigkeit in aufeinanderfolgenden Tagen, ist hier nicht als sinnvoll zu betrachten. Gleichermaßen unerwünscht ist jedoch eine Aufteilung die sehr lange Intervalle von Tagen gleicher Clusterzugehörigkeit aufweist. Die am längsten anhaltende GWL nach Hess und Brezowsky in der hier zu untersuchenden Zeitperiode beträgt 23 Tage. Allgemein zeigen Großwetterlagen jedoch kürzere Längen auf.
 
-```{r timeline_GWL, echo = FALSE, fig.cap="\\label{fig:timeline_GWL}Timeline der GWL 1971-2000", fig.align="center", out.width="80%"}
+```{r timeline_GWL, echo = FALSE, fig.cap="\\label{fig:timeline_GWL}Timeline der GWL 1971-2000. Die Anzahl der GWL wurde mit deren Länge multipliziert, sodass jeder Tag eine Beobachtung darstellt", fig.align="center", out.width="80%"}
 include_graphics("assets/timeline_GWL_mult.png")
 ```
 
@@ -347,7 +346,7 @@ In Abschnitt \textcolor{red}{wahrscheinlich 1...} wurde bereits beschrieben, das
 
 Da bereits Variablen extrahiert wurden, die die Verteilung der Parameter an verschiedenen Tagen beschreiben, ist jetzt noch die räumliche Ebene von Interesse. Dafür wird das 8x20 Grid in 9 Quadranten unterteilt, also in Nord - Süd, Ost - West und jeweils die Mitte bzw. das Zentrum, wie man in Bild \ref{fig:quadranten} sehen kann.
 
-```{r quadranten, echo = FALSE, fig.cap="\\label{fig:quadranten}Aufteilung in 9 Quadranten", fig.align="center", out.width="80%"}
+```{r quadranten, echo = FALSE, fig.cap="\\label{fig:quadranten}Aufteilung der 160 Standorte in 9 Quadranten", fig.align="center", out.width="80%"}
 include_graphics("assets/quadranten.png")
 ```
 
@@ -496,7 +495,7 @@ Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
 
 Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt 2.1 beschrieben, unabhägig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} \textcolor{red}{Überschrift weg?!} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. Somit wird das resultierende Clusterergebnis mit dem Algorithmus PAM, der Distanzmetrik Manhattan und 6 Clustern gebildet.
 
-```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Cluster, hier $k = 6$.", fig.align="center", out.width="80%"}
+```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Cluster.Die Clusteranzahl mit dem maximalen Silhouettenkoeffizient ist die optimale Clusteranzahl, hier $k = 6$.", fig.align="center", out.width="80%"}
 include_graphics("assets/numclust.png")
 ```
 
@@ -515,7 +514,7 @@ Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications
   
   Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust. @pca
   
-```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Principle Components", fig.align="center", out.width="80%"}
+```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Visualisierung der Clusterlösung mittels Principal Component Analysis.Geclustert wurde mit den Originaldaten.", fig.align="center", out.width="80%"}
 include_graphics("assets/pcaPlot.png")
 ```    
 
