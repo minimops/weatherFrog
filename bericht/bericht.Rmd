@@ -125,7 +125,7 @@ include_graphics("assets/dayGeopot.png")
 
 \textcolor{red}{insert limitation to 30 years and average}
 
-```{r avgDay, echo = FALSE, fig.cap="\\label{fig:avgDay}Über den Tag gemittelte Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980. Hierbei wurde bei den Variablen Luftdruck und Geopotential das arithmetrische Mittel über die vier Tageszeitpunkte (0 Uhr, 6 Uhr, 12 Uhr, 18 Uhr) gebildet", fig.align="center", out.width="80%"}
+```{r avgDay, echo = FALSE, fig.cap="\\label{fig:avgDay}Über den Tag gemittelte Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980. Hierbei wurde bei den Variablen Luftdruck und Geopotential das arithmetrische Mittel über die vier Tageszeitpunkte (0 Uhr, 6 Uhr, 12 Uhr, 18 Uhr) gebildet", fig.align="center", out.width="100%"}
 include_graphics("assets/avgDay.png")
 ```
 
@@ -245,14 +245,12 @@ Um der Anforderung der nicht uniformen Gebiete gerecht zu werden, erscheint ein 
 Ein Bestimmen der Startpunkte und somit ein Festsetzen der Cluster-Orte ist - zumindest in vorhandenen Implementationen dieses Algorythmus' - nicht möglich. Deswegen lässt sich beobachten, dass die Extrema oft nicht in einem der eingeteilten Clustern befinden, da sie sich oft stark von durchschnittlichen Messwerten abweichen. *DBSCAN* führt somit im besten Fall zu Gebieten, dessen Messpunkte sich eher im Mittelfeld der Skala des Tages befinden und innerhalb der Gebiete kaum Veränderungen aufweisen. Solche Gebiete sind aber hier as nicht von besonderem Interesse vermutet und deshalb wird *DBSCAN* hierfür ausgeschlossen.
 
 
-\textcolor{red}{maybe show example day as dbscan res}
+ 
 
 Ein weiterer vielversprechender Ansatz ist das *Fuzzy*-Clustering. *Fuzzy* entpricht vom Prinzip k-Means, es werden also pro Cluster Mittelpunkte festgelegt. Allerdings wird für jede Beobachtung eine Zugehörigkeitswahrscheinlichkeit für jedes Cluster berechnet, anstatt einer Cluster-Id. Hier können Startpunkte angegeben werden und anhand der Clusterzugehörigkeitswahrscheinlichkeit jeder Beobachtung, bestimmte Beobachtungen mithilfe eines Schwellenwertes im Nachhinein zu Rauschen verwandelt werden.
 
 Allerdings ist dieses Verfahren hier auch nicht optimal, da, neben dem, dass *Fuzzy* üblicherweise rechentechnisch sehr teuer implementiert ist, kommt hinzu, dass dieses Verfahren auf einen Mittelpunkt pro Cluster beruht und die Distanz dazu anhand eines gegebenen Distanzmaß' bestimmt wird. Nachdem die Koordinaten als Variablen aufgenommen werden, führt dies zu Clustern gleicher Form und verletzt somit die Anforderung die Form eines Gebietes möglichst getreu darzustellen.
 
-
-\textcolor{red}{maybe beispiel ergebnisse des Beispieltages}
 
 ### SCAPOI
 
@@ -306,7 +304,7 @@ $$
 
 Im Vergleich zu *DBSCAN*, mit dem Gruppierungen von Beobachtungen gesucht werden, die einer bestimmten mindest-Dichte, sowie einer mindest-Größe gerecht werden, wird mit *SCAPOI* versucht um bestimmte, definierte Beobachtungen Gruppen zu bilden, die eine gewisse Dichte aufweisen. Im Fall hier (2 Cluster um min und max respektive), erhält man nun einen Gebietszugehörigkeitsvektor mit den Klassen: Noise, High und Low.
 
-```{r scapoi_res, echo = FALSE, fig.cap="\\label{fig:scapoi_res}Beispiel der Gebietszuteilung eines Tages durch SCAPOI", fig.align="center", out.width="80%"}
+```{r scapoi_res, echo = FALSE, fig.cap="\\label{fig:scapoi_res}Beispiel der Gebietszuteilung eines Tages durch SCAPOI", fig.align="center", out.width="100%"}
 include_graphics("assets/filterRes.png")
 ```
 
@@ -510,7 +508,7 @@ Bevor die Variablen extrahiert wurden, gab es auch Clusteranalysen mit dem Reana
 
 Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust. @pca
 
-```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Visualisierung der Clusterlösung mittels Principal Component Analysis.Geclustert wurde mit den Originaldaten.", fig.align="center", out.width="80%"}
+```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Visualisierung der Clusterlösung mittels Principal Component Analysis.", fig.align="center", out.width="80%"}
 include_graphics("assets/pcaPlot.png")
 ```
 
@@ -626,11 +624,11 @@ Alle anderen extrahierten Variablen, die in die Clusteranalyse miteingegangen si
 Nun wird betrachtet, wie sich der Mittelwert des Luftdrucks und der Mittelwert des Geopotentials räumlich unterscheidet. Abb \ref{fig:mslp_measurepoints} bzw. Abb.\ref{fig:geopot_measurepoints} stellt pro Cluster und für jeden der insgesamt 160 Standorte das arithmetrische Mittel des Luftdrucks bzw. des Geopotentials im Zeitraums 1971 -- 2000 dar. Blaue Flächen visualisieren Gebiete mit niedrigeren, rote Flächen visualisieren Gebiete mit höheren Werten.
 
 ```{r mslp_measurepoints, echo = FALSE, fig.cap="\\label{fig:mslp_measurepoints}Räumliche Verteilung des Luftdrucks je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width="100%"}
-include_graphics("assets/mslp_over_all_measurepoints.png")
+include_graphics("assets/avgClustIMG_mslp.png")
 ```
 
 ```{r geopot_measurepoints, echo = FALSE, fig.cap="\\label{fig:geopot_measurepoints}Räumliche Verteilung des Geopotentials je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width= "100%"}
-include_graphics("assets/geopot_over_all_measurepoints.png")
+include_graphics("assets/avgClustIMG_geopot.rds")
 ```
 
 Die räumliche Verteilung der gemittelten Werte des Luftdrucks ist pro Cluster unterschiedlich. In Cluster 1 befinden sich nordwestlich sehr hohe Werte während in Cluster 2 ähnlich hohe Werte des Luftdrucks im Süden zu finden sind. Zudem sind dort die hohen Werte über eine größere Fläche verteilt als in Cluster 1. In Cluster 3 ist hingegen das Gebiet mit hohen Luftdruckwerten östlich gelegen, in Cluster 4 und 6 südwestlich. Cluster 5 und 6 sind gekennzeichnet von tendenziell hohen Luftdruckwerten, ein ausgeprägtes Gebiet mit tiefen Luftdruckwerten ist in Cluster 5 nicht enthalten, und in Cluster 6 nur südöstlich. Im Gegensatz dazu befindet sich in Cluster 2 die größte Fläche mit niedrigen Luftdruckwerten, das nördlich gelegen ist. Insgesamt hat jedes Cluster eine eigene, charakteristische Verteilung der Luftdruckwerte.
