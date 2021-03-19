@@ -1,3 +1,6 @@
+# require f_data and PAM_res from our final cluster
+
+
 library(data.table)
 library(ggplot2)
 library(dplyr)
@@ -8,11 +11,11 @@ source("assist/functions_for_cluster_description.R")
 
 # Histogram for every extracted variable in every cluster
 ############
-#import PAMres and f_data from our cluster solution
+
 cluster <- PAMres$clustering
 f_data$mean.mslp <- f_data$mean.mslp/100
-f_data$max.mslp <- f_data$max.mslp/1000
-f_data$min.mslp <- f_data$min.mslp/1000
+f_data$max.mslp <- f_data$max.mslp/100
+f_data$min.mslp <- f_data$min.mslp/100
 
 f_data$mean.geopot <- f_data$mean.geopot/9.80665
 f_data$max.geopot <- f_data$max.geopot/9.80665
@@ -111,7 +114,7 @@ ggsave(plot, file = "final_cluster/intensity.high.geopot_boxplot.png")
 
 
 plot <- ggplot(cluster_number) +
-  geom_bar( aes(x = V1, y= N,fill = V1),stat = "identity", alpha=0.7, width=0.5) +
+  geom_bar( aes(x = V1, y= N,fill = V1),stat = "identity", alpha=1, width=0.5) +
   theme_bw() +
   theme(
     legend.position="none",
@@ -190,7 +193,7 @@ ggsave("documentation/plots/fplots/clust_years.png", plot, device = "png",
 ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
 
 # Distribution of clusters split in seasons
-
+############noah, lauffähigkeit?
 
 data1 <- data.table(cluster = data$cluster, season = getWinSum(data$date))
 
@@ -245,7 +248,7 @@ descriptive_mean <- cbind(cluster,descriptive_mean)
 
 
 
-ggplot(descriptive_mean,aes(x = cluster,y = mean.mslp)) +
+plot <- ggplot(descriptive_mean,aes(x = cluster,y = mean.mslp)) +
   geom_bar(stat="identity", fill= cluster, alpha=0.7, width=0.5) +
   theme_bw() +
   theme(
@@ -345,7 +348,7 @@ table(f_data$cluster,f_data_gwl$gwl)
 prop.table(table(f_data$cluster,f_data_gwl$gwl),2)
 
 
-# filter cluster greater than 2 days
+# filter days greater than 2 following days in the same cluster
 
 index_length <- rleid(f_data_gwl$cluster)
 f_data_gwl <- cbind(index_length,f_data_gwl)
@@ -353,7 +356,6 @@ f_data_gwl <- cbind(index_length,f_data_gwl)
 
 table_cluster <- as.data.table(table(index_length))
 less_equal2 <- table_cluster[table_cluster$N <= 2,]
-
 
 f_data_gwl_greater2 <- f_data_gwl
 
@@ -366,9 +368,15 @@ for ( i in less_equal2$index_length){
 table_cluster <- as.data.table(table(f_data_gwl_greater2$index_length))
 less_equal2 <- table_cluster[table_cluster$N <= 2,]
 
+# numbers of days smaller than 3  following days in the same cluster
 
+dim(f_data_gwl)[1] - dim(f_data_gwl_greater2)[1]
 
-# filter cluster greater than 3 days
+# relative frequency:
+(dim(f_data_gwl)[1] - dim(f_data_gwl_greater2)[1])/dim(f_data_gwl)[1]
+# 12 percent of all days are days smaller than 3 following days in the same cluster
+
+# filter days greater than 3 following  days in the same cluster
 
 table_cluster <- as.data.table(table(index_length))
 less_equal3 <- table_cluster[table_cluster$N <= 3,]
@@ -385,10 +393,19 @@ for ( i in less_equal3$index_length){
 table_cluster <- as.data.table(table(f_data_gwl_greater3$index_length))
 less_equal3 <- table_cluster[table_cluster$N <= 3,]
 
+# numbers of days smaller than 4  following days in the same cluster
+
+dim(f_data_gwl)[1] - dim(f_data_gwl_greater3)[1]
+
+# relative frequency:
+(dim(f_data_gwl)[1] - dim(f_data_gwl_greater3)[1])/dim(f_data_gwl)[1]
+# 20 percent of all days are days smaller than 3 following days in the same cluster
+
+
 
 # mosaicplot without clusterdays smaller than 2 days
 library(ggmosaic)
- ggplot(data = f_data_gwl_greater2) +
+ plot <- ggplot(data = f_data_gwl_greater2) +
   geom_mosaic(aes(x = product(cluster, gwl), fill = cluster), offset = 0.005) +
   theme_classic() +
   ggtitle("Mosaikplot für Cluster ~ GWL") +
@@ -403,7 +420,7 @@ library(ggmosaic)
 
 
 ggsave("bericht/assets/mosaic_gwl_greater2days.png", plot,
-       device = "png", width = 5, height = 3)
+       device = "png", width = 9, height = 5)
 
 
 
@@ -425,7 +442,7 @@ plot <- ggplot(data = f_data_gwl_greater3) +
 
 
 ggsave("bericht/assets/mosaic_gwl_greater3days.png", plot,
-       device = "png", width = 5, height = 3)
+       device = "png", width = 9, height = 5)
 
 library(data.table)
 
