@@ -496,13 +496,31 @@ include_graphics("assets/numclust.png")
 
 Das endgültige Ergebnis wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus PAM anhand des extrahierten Datensatzes erzielt. Da es aber viele Clustermöglichkeiten gibt, wurden anfangs verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien bewertet. Dabei wurden zuerst die Daten von fünf Jahren verwendet, da 30 Jahren rechentechnisch sehr aufwendig waren. Die Methoden, die am besten abschnitten, wurden dann anhand von 30 Jahren beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
 
-### CLARA, K-Means, PAM und PCA mit Originaldaten
+### CLARA, K-Means und PAM mit Originaldaten
 
 Bevor die Variablen extrahiert wurden, gab es auch Clusteranalysen mit dem Reanalyse-Datensatz, bei dem für beide Parameter die vier Beobachtungen am Tag jeweils gemittelt wurden, also der Datensatz mit 320 Dimensionen für die Jahre 2006 bis 2010.
 
-**CLARA** Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (CLARA) durchgeführt. Dafür wurde die Funktion clara() aus dem Package "cluster" in R verwendet.
+**CLARA** 
 
-**Mahalanobis**
+Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (CLARA) durchgeführt. Dafür wurde die Funktion clara() aus dem Package "cluster" in R verwendet. Dieser basiert auf dem K-Medoids-Ansatz, ist aber speziell für Datensätze, die sehr viele Beobachtungen enthalten, z.B. mehrere Tausend Objekte. Dieser Algorithmus wird von @clara eingeführt und erklärt. 
+
+Dieser Algorithmus wurde mit der Manhattan-Distanz, als auch mit der Euklidischen Distanz ausprobiert. Für eine Clusteranzahl von fünf für CLARA mit Manhattan als Distanzmaß, beträgt der Silhouettenkoeffizient $s = 0.1302$, der Timeline-Wert $TLS = 0.1670$ und der Wert für die Aufteilung der GWL in den Clustern $HB_{diff} = 0.4919$.
+
+Führt man die Clusteranalyse mit CLARA, der Euklidischen Distanz und $k = 6$ Clustern durch, so erhält man für den Silhouettenkoeffizient einen Wert von $s = 0.1239$, der Timeline-Wert beträgt $TLS = 0.1764$ und $HB_{diff} = 0.4882$.
+
+**K-means** 
+
+K-means ist ein bekannter Algorithmus für Clusteranalyse und teilt die Beobachtungen in $k$ disjunkte Cluster. Jedes Cluster wird dabei von einem Centroid repräsentiert, das im Gegensatz zu PAM nicht eine echte Beobachtung ist, sondern der Mittelwerten von allen Objekten im gleichen Cluster. Der K-means Algorithmus wird von @kmeans genauer beschrieben. Für dieses Projekt wurde die Funktion kmeans() aus dem Package "stats" herangezogen. Mit dieser wurde für die Originaldaten ein Clustering durchgeführt. Der Silhouettenkoeffizient beträgt dabei $s = 0.1286$, der Timeline-Wert ist $TLS = 0.2433$ und die Maßzahl für die Güte der Aufteilung der GWL in den Clustern $HB_{diff} = 0.5167$. 
+
+**PAM mit Mahalanobis-Distanz**
+
+Da beim Clustering der Originaldaten nicht beachtet wird, dass es Korrelationen zwischen den Variablen gibt, wurde die Mahalanobis-Distanz in Betracht gezogen. Diese beachtet bei der Berechnung der Distanzen die Korrelation zwischen den verschiedenen Variablen. Korrelationen gibt es in dem Datensatz vor allem zwischen den Parametern Luftdruck und Geopotential sowie dem Standort. Es lässt sich intuitiv vermuten, dass wenn z.B. an einem bestimmten Standpunkt hoher Luftdruck vorliegt, dass der Luftdruck des nebenliegenden Standorts wahrscheinlich auch eher hoch ist. 
+
+Für p-dimensionale Daten $x = (x_1, x_2, ... , x_p)^T$ mit einem Vektor mit Mittelwerten      $\mu = (\mu_1, \mu_2, ... , \mu_p)^T$ und Kovarianzmatrix $\sum$ ist die Mahalanobis-Distanz generell definiert als $D_M(x) = \sqrt{(x - \mu)^T\ \sum^{-1}\ (x - \mu)}$. 
+
+Ist $\sum$ die Einheitsmatrix, so entspricht die Mahalanobis-Distanz der Euklidischen Distanz (@mahalanobis).
+
+Mit der resultierenden Distanzmatrix wurde dann eine Clusteranalyse mit PAM durchgeführt für $k = 6$. Der Silhouettenkoeffizient liegt dabei bei $-0.0014$ und ist somit zum ersten Mal negativ. Auch der Timeline-Wert liegt unter 0 mit $TLS = -0.6657$. Der Wert für die Güte der Aufteilung der GWL in den Clustern $HB_{diff} = 0.4127$.
 
 **PCA**
 
@@ -521,6 +539,7 @@ Ein Ansatz \textcolor{red}{reference} ist hier, mit der Anzahl an *PC* weiter zu
 \textcolor{red}{erklaerung reicht? plots hinzunehmen?}
 
 ### PAM, K-Means und Fuzzy mit Extrahierten Daten
+
 
 ```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
 dt3 <- data.table(
@@ -557,13 +576,25 @@ Dieser Abschnitt beinhaltet die Ergebnisse verschiedner Clusterlösungen. Abschn
 
 ## Ergebnisse extrahierte Variablen
 
-  \textcolor{red}{insert plots sil, tl}
-  
+In diesem Abschnitt werden die Ergebnisse des Clusterings mit den extrahierten Variablen dargelegt. Die Optimale Clusteranzahl lag hier bei $k = 6$. 
+
+In Abbildung \ref{fig:silhouette} ist der Silhouettenplot der resultierenden Cluster zu sehen. Auf der x-Achse sind hier alle Beobachtungen, aufgeteilt nach Cluster und innerhalb der Cluster nach abnehmender Silhouette geordnet, abgebildet. Der Silhouettenkoeffizient beträgt $s = 0.141$. Es lässt sich erkennen, dass Cluster 6 die meisten Beobachtungen aufweist. Außerdem beinhaltet es kaum Beobachtungen, die eine negative Silhouette aufweisen. Der höchste Silhouettenwert lässt zudem in CLuster 6 finden. Cluster 3 enthält wohl die wenigsten Beobachtungen. Es fällt zudem auf, dass Cluster 5 die kleinste Silhouette beinhaltet, mit $S(o) < -0.25$.
+
+```{r f_sil, echo = FALSE, fig.cap="\\label{fig:silhouette}Silhouettenplot für Clusterergebnis mit extrahierten Variablen mit $k = 6$", fig.align="center", out.width="80%"}
+include_graphics("assets/f_sil.jpeg")
+```
+
+Abbildung \ref{fig:tlMultiplied} zeigt den Timeline-Plot für dieses Clustergebnis. Es lässt sich erkennen, dass die meisten Tage in aufeinanderfolgenden Clustern der Länge 1 bis 13 sind. In Bezug auf die Timeline der GWL ist dies auch erwünscht, mit Ausnahme der Längen 1 und 2. Einzelne Tage kommen in den Jahren 1971 - 2000 ungefähr 600 Mal vor. Am häufigsten lassen sich aufeinanderfolgende Cluster der Länge 3 beobachten, mit ca. 800 Tagen. Längen, die größer als 40 sind, sind eher nicht erwünscht, da die längste GWL in diesen 30 Jahren 23 Tage andauerte. Auch hier sind jenseits der Länge 40 nur wenige Tage zu finden. Die CWL, die am längsten andauert, beträgt 89 Tage. Auffällig ist außerdem, die Länge 61 vier Mal auftritt. Insgesamt gehören also ungefähr 250 Tage zu einer CWL, die 61 Tage anhält.
+
+Der Timeline-Score beträgt $TLS = 0.3357$, ist also der höchste, der bisher in diesen Analysen erreicht wurde.
+
+```{r tlMultiplied, echo = FALSE, fig.cap = "\\label{fig:tlMultiplied}Timeline-Plot für Clusterergebnis mit extrahierten Variablen mit $k = 6$", fig.align="center", out.width = "80%"}
+include_graphics("assets/timelineMultiplied.png")
+```
 
 Dieser Abschnitt präsentiert die Ergebnisse der deskriptiven Analyse der finalen Clusterlösung. Hierbei wird in Abschnitt 3.3.1 betrachtet, wie die Cluster 1 bis 6 über die Jahre 1971 bis 2010 verteilt sind. Zudem wird das Verhältnis von Sommer- und Wintertagen in den einzelnen Clustern betrachtet. Abschnitt 3.3.2 befasst sich mit den Ähnlichkeiten und Unterschieden der extrahierten 48 Variablen in den Clustern. Abschließend wird in Abschnitt 3.3.3 die Clusterlösung mit der GWL Einteilung nach Hess und Brezowsky verglichen, also in welchem Ausmaß die GWLs über die Cluster verteilt sind.
 
 
-  
 ### Verteilung der Cluster über die Zeit
 
 Abb. \ref{fig:distribution_of_years_over_cluster} stellt dar, wie häufig jedes Cluster im Zeitraum 1971 bis 2000 vorkommt. Zu erkennen ist, dass sich ein Cluster nicht auf eine bestimmte Zeitperiode beschränkt, sondern über den gesamten Zeitraum erstreckt. Zudem ist kein Trend in der Aufteilung der Tage innerhalb eines Clusters auf die Jahre 1971 bis 2000 erkennbar. Die Cluster 4,5 und 6 sind hierbei gleichmäßiger über den Zeitraum von 1971 bis 2000 verteilt als die Cluster 1, 2 und 3. Beispielsweise beinhaltet das Jahr 1985 6% aller Tage, die Cluster 1 zugeordnet sind, das Jahr 1990 beinhaltet hingegen nur 2% aller Tage, die Cluster 1 zugeordnet sind. Damit verglichen sind Cluster 4 bis 6 sehr gleichmäßig über alle Jahre verteilt. In Cluster 4 sticht das Jahr 2000 hervor. In diesem sind 6,3% aller Tage, die Cluster 4 zugeordnet sind, vertreten, während in allen anderen Jahren durchschnittlich je 3% aller Tage, die Cluster 4 zugeordnet sind, vertreten sind. Somit beinhaltet das Jahr 2000 ca. doppelt so viele Cluster 4-Tage verglichen mit den anderen Jahren. Von allen Clustern ist Cluster 6 am gleichmäßigsten über alle Jahre verteilt.
