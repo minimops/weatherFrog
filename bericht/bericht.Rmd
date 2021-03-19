@@ -70,7 +70,7 @@ longrun = FALSE # set to TRUE to rerun all code
 ```
 \newpage
 
-\section\*{Abkürzungen}
+\section*{Abkürzungen}
 
 ```{r Abkürzungen, echo=FALSE}
 data.table(
@@ -90,8 +90,11 @@ data.table(
 
 # Einleitung
 
-Die Fridays for Future Bewegung ist eine globale soziale Bewegung, die vor allem von Schülern und Studenten ausgeht. Diese gehen jeden Freitag auf die Straße und protestieren, um auf den Klimawandel und ihre Folgen aufmerksam zu machen.\
-Es ist bekannt, dass der Klimawandel viele Veränderungen mit sich bringt. Magdalena Mittermeier vom Department für Geografie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert. Im Rahmen des Statistischen Praktikums unterstützen wir dieses Projekt, indem wir beobachtete Wetterdaten auf täglicher Basis in Cluster einteilen.
+Der Klimawandel und seine Auswirkungen sind in den letzten Jahrzenten spürbar geworden. Immer häufiger kommt zu extremen Wetterereignissen wie langanhaltende Hitzewellen, Überschwemmungen  Dürre und (Wald-)Brände. Grund für den Klimawandel ist neben dem natürlichen Treibhauseffekt das menschliche Verhalten. Durch die Viehzucht, Abholzung der Regenwälder, Nutzung und Verbrennung fossiler Ressourcen gelangt vermehrt Kohlenstoffdioxid in die Atmosphäre. Durch die genannten Gründe steigt die durchschnittliche globale Temperatur. Der Klimawandel hat schwerwiegende Folgen für die Menschheit. Dürren führen zu Hungersnot und Wasserknappheit, Hitzewellen sorgen für mehr Tote.
+Durch den Klimawandel ändert sich auch die Häufigkeit der auftretenden Großwetterlagen.
+Magdalena Mittermeier vom Department für Geografie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert.
+Im Rahmen des Statistischen Praktikums wird dieses Projekt unterstützt, indem man beobachtete Wetterdaten auf täglicher Basis in Cluster einteilt.
+
 
 ## Großwetterlagen
 
