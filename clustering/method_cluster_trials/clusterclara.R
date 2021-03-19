@@ -21,76 +21,59 @@ data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
 data.complete <- readRDS("Data/cli_data_05.rds")
 data.completed <- dcast(data.complete, 
                        "date  ~ longitude + latitude + time", value.var = c("mslp", "geopotential"))
-dim(data.completed)
+dim(data.wide)
 
 # Anzahl Cluster bestimmen
-?fviz_nbclust()
-fviz_nbclust(data, clara, method = "silhouette",k.max = yourMaxValue)+theme_classic()
 fviz_nbclust(as.data.frame(scale(data.wide[, 2:321])), FUNcluster = clara,
               method = "silhouette")
-## geht bei mir leider nicht, da 0.5.0 geladen ist oder so, kann das mal bitte wer anders ausführen?
 
 #### clustern
 set.seed(1289)
 # dist.data.scaled <- dist(scale(data.wide[, 2:321]), method = "euclidean")
-clusterclara <- clara(scale(data.wide[, 2:321]), k = 5, metric = "euclidean", 
+clusterclara <- clara(scale(data.wide[, 2:321]), k = 6, metric = "euclidean", 
                       stand = TRUE, samples = 1000, sampsize = 300)
 summary(clusterclara)
-?clara
 cluster.vector.clara <- clusterclara$clustering
-?clara
-## Measurements EUC ########### 
-# 1.
-sil(clusterclara, cluster.vector.clara, dist(scale(copy(data.wide)[, 2:321])), "kmeans")
-    
-?manova
-dat.clara <- copy(data.wide)[, cluster := cluster.vector.clara]
-# 2.
-Cl.timeline(copy(dat.clara))
-# 3.
-model.clara <- manova(as.matrix(dat.clara[, 2:321]) ~ dat.clara$cluster)
-summary(as.matrix(dat.clara[, 2:321]) ~ dat.clara$cluster, test = "Wilks")
-summary.aov(model.clara)
-# 4.
-mosaic(copy(data.wide), cluster.vector.clara, title = "CLARA WITH EUC")
 
+## Measurements EUC ########### 
+# 1. Silhouette
+sil(clusterclara, cluster.vector.clara, dist(scale(copy(data.wide)[, 2:321])), "kmeans")
+### s = 0.1239335
+
+dat.clara <- copy(data.wide)[, cluster := cluster.vector.clara]
+# 2. Timeline
+Cl.timeline(copy(dat.clara))
+### TLS = 0.1764022
+
+# 3. Mosaikplot
+mosaic(copy(data.wide), cluster.vector.clara, title = "CLARA WITH EUC")
+### HB_diff = 0.4882091
 
 ######### MANHATTAN ##################################
-clusterclara.manhat <- clara(scale(data.wide[, 2:321]), k = 5, metric = "jaccard", 
+clusterclara.manhat <- clara(scale(data.wide[, 2:321]), k = 5, metric = "manhattan", 
                       stand = TRUE, samples = 1000, sampsize = 300)
 summary(clusterclara.manhat)
 cluster.vector.clara.manhat <- clusterclara.manhat$clustering
-?clara
+
 ## Measurements MANHATTAN ########### 
-# 1.
+# 1. Silhouette
 sil(clusterclara.manhat, cluster.vector.clara.manhat, dist(scale(copy(data.wide)[, 2:321])), "kmeans")
+### s = 0.1301552
 
-?manova
+# 2. Timeline
 dat.clara.manhat <- copy(data.wide)[, cluster := cluster.vector.clara.manhat]
-# 2.
 Cl.timeline(copy(dat.clara.manhat))
-# 3.
-model.clara.manhat <- manova(as.matrix(dat.clara.manhat[, 2:321]) ~ dat.clara.manhat$cluster)
-summary(as.matrix(dat.clara.manhat[, 2:321]) ~ dat.clara.manhat$cluster, test = "Wilks")
-summary.aov(model.clara.manhat)
-# 4.
+### TLS = 0.1670198
+
+# 3. Mosaik
 mosaic(copy(data.wide), cluster.vector.clara.manhat, title = "CLARA WITH EUC")
+### HB_diff = 0.4919
 
 
-
-
-
-dist.data.scaled.complete <- dist(scale(data.completed[, 2:1281]), method = "euclidean")
-clusterclara.complete <- clara(scale(data.completed[, 2:1281]), k = 9, metric = "euclidean", 
-                      stand = FALSE, samples = 1000)
-
-summary(clusterclara.complete)
-clusterclara.complete$clustering
-
-data.wide.cluster.complete <- data.completed[, cluster := clusterclara.complete$clustering]
-data.wide.cluster.gwl.complete <- gwl[data.wide.cluster.complete, on = .(date)]
-clara.plot <- autoplot(clusterclara.complete, frame = TRUE, frame.type = "norm")                                                         
+clara.plot <- autoplot(clusterclara, frame = TRUE, frame.type = "norm")                                                         
 clara.plot
 plot(clusterclara)
 
-
+clara.plot.manhat <- autoplot(clusterclara.manhat, frame = TRUE, frame.type = "norm") 
+clara.plot.manhat
+plot(clusterclara.manhat)

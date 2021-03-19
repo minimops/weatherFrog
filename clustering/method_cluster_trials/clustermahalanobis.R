@@ -1,74 +1,47 @@
 ## Cluster mit Mahalanobisdistanz mit 320 Dimensionen
 
-## ertsmal einlesen
-data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
-
-### Pakete laden
+## Pakete laden
 library(data.table)
 library(ggplot2)
 library(ggmosaic)
 library(factoextra)
 library(ggfortify)
 library(cluster)
-#### einmal alles mit gescalten Variablen
-data.scaled <- scale(data.wide[, 2:321], scale=TRUE, center=TRUE)
+
+## erstmal einlesen
+data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
 gwl <- readRDS("Data/gwl.rds")
-## abchecken obs stimmt
-mean <- colMeans(data.scaled)
-# Lovarianzmatrix erstellen
-variance <- var(data.scaled)
-# Anzahl der Iterationen
-n <- nrow(data.scaled)
 
-?mahalanobis
+#### Variaben skalieren
+data.scaled <- scale(data.wide[, 2:321], scale=TRUE, center=TRUE)
 
-dist_mahal_scaled <- matrix(NA, nrow=n, ncol=n)
+#### Distanzmatrix mit NA erstellen
+dist_mahal_scaled <- matrix(NA, nrow = n, ncol = n)
 
-# Mahalanobisdistanz berechnen und in Distanzmatrix abspeichern
-for(i in seq_len(n)){
-  dist_mahal_scaled[i,] <- mahalanobis(data.scaled, data.scaled[i,], variance)
-}
-?mahalanobis
+## Mahalanobisdistanz berechnen und in Distanzmatrix abspeichern
+#for(i in seq_len(n)){
+#  dist_mahal_scaled[i,] <- mahalanobis(data.scaled, data.scaled[i,], variance)
+#}
 
 rownames(dist_mahal_scaled) <- colnames(dist_mahal_scaled) <- rn <- 1:1826
-# dist_mahal_scaled <- as.dist(dist_mahal)
 
-# sollte das eigentlich von alleine machen, aber geht nicht
-??mahalanobis.dist
-saveRDS(dist_mahal_scaled, "Data/dist_mahal_scaled.rds")
+# dist_mahal_scaled <- as.dist(dist_mahal)
+#saveRDS(dist_mahal_scaled, "Data/dist_mahal_scaled.rds")
 
 dist_mahal_scaled <- readRDS("Data/dist_mahal_scaled.rds")
-# erster Clusterversuch, hierarchisch
+
+## erster Clusterversuch, hierarchisch
 complete_linkage <- hclust(as.dist(dist_mahal_scaled), method="complete")
 summary(complete_linkage)
 plot(complete_linkage)
-fviz_dend(complete_linkage) + ggtitle("Complete Linkage - Dendrogramm")
-complete_linkage$order
 
-## zweiter Clusterversuch
+
+## zweiter Clusterversuch, hierarchisch
 clust <- hcut(as.dist(dist_mahal_scaled), k = 9, hc_func = "hclust", hc_method = "complete")
-clust$height
 plot(clust)
 
 
-### Fuzzy analysis
-# teilt nicht in ein festes cluster ein, sondern erlaubt auch mehrdeutigkeit
-# hält mehr detaillierte informationen von den daten
-set.seed(1289)
-?fanny
-clusterfanny <- fanny(as.dist(dist_mahal_scaled), k = 9, diss = TRUE, memb.exp = 1)
-
-data.wide.cluster.fanny <- data.wide[, cluster := clusterfanny$clustering]
-data.wide.cluster.gwl.fanny <- gwl[data.wide.cluster.fanny, on = .(date)]
-fanny.plot <- autoplot(clusterfanny, frame = TRUE, frame.type = "norm")                                                         
-clara.plot
-plot(clusterfanny)
-mosaicplot(table(data.wide.cluster.gwl.fanny$gwl, data.wide.cluster.gwl.fanny$cluster), color = TRUE, main = "Cluster der GWL", 
-           ylab = "Cluster", xlab = "GWL", cex.axis = 0.35)
-mosaicplot(table(data.wide.cluster.gwl.fanny$cluster, data.wide.cluster.gwl.fanny$gwl), color = TRUE)
-# -> funktioniert nicht
-
-### k -means clustering 
+### K-Means Clustering 
 # kmeans-Clustering mit allen Kovariablen, 100 zufaellige Startpartitionen
 km_list <- list()
 wss <- numeric()
@@ -79,10 +52,24 @@ for (k in 1:10){
 }
 
 par(mfrow = c(1,1))
-plot(1:10, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+plot(1:10, wss, type = "b", xlab = "Number of Clusters", ylab = "Within groups sum of squares")
 
-clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers=8, iter.max=10000)
-clusterpam <- pam(as.dist(dist_mahal_scaled), k = 9, diss = TRUE)
+clusterkmeans <- kmeans(as.dist(dist_mahal_scaled), centers = 8, iter.max=10000)
+
+sil_width <- c(NA)
+for(i in 5:9){
+  pam_fit <- pam(as.dist(dist_mahal_scaled),
+                 diss = TRUE,
+                 k = i)
+  
+  sil_width[i-4] <- pam_fit$silinfo$avg.width
+}
+plot(5:9, sil_width,
+     xlab = "Number of clusters",
+     ylab = "Silhouette Width",)
+lines(5:9, sil_width)
+
+clusterpam <- pam(as.dist(dist_mahal_scaled), k = 6, diss = TRUE)
 clusterpam$silinfo
 ?pam
 
