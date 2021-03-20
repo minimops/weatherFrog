@@ -323,6 +323,13 @@ $$ $$
   und: \forall_{x \in {A, B}} : x \in \{0 \text(Noise), 1 \text(Hoch), 2 \text(Tief)\}
 $$
 
+### Kriterien
+
+  Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter aufaddiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] beschrieben (*PAM*).
+  
+  Nach Parametern getrennte Analysen weisen je einen höheren *Silhouettenkoeffizient* auf, aber einen geringeren *TLS*. (Mslp: $sil = 0.1369$, $TLS = -0.2027$ ; Geopot: $sil = 0.1541$, $TLS = -0.3898$)
+  
+  Clusteranzahl ist dabei $5$ für die kombinierte Analyse, sowie Mslp alleine, Geopotential alleine ergibt $6$ Cluster.
 
 ## Clustern mit extrahierten Daten
 
@@ -500,6 +507,8 @@ Das endgültige Ergebnis wurde mit der Distanzmetrik Manhattan und dem Clusteral
 
 Bevor die Variablen extrahiert wurden, gab es auch Clusteranalysen mit dem Reanalyse-Datensatz, bei dem für beide Parameter die vier Beobachtungen am Tag jeweils gemittelt wurden, also der Datensatz mit 320 Dimensionen für die Jahre 2006 bis 2010.
 
+ 
+
 **CLARA** 
 
 Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (CLARA) durchgeführt. Dafür wurde die Funktion clara() aus dem Package "cluster" in R verwendet. Dieser basiert auf dem K-Medoids-Ansatz, ist aber speziell für Datensätze, die sehr viele Beobachtungen enthalten, z.B. mehrere Tausend Objekte. Dieser Algorithmus wird von @clara eingeführt und erklärt. 
@@ -508,9 +517,13 @@ Dieser Algorithmus wurde mit der Manhattan-Distanz, als auch mit der Euklidische
 
 Führt man die Clusteranalyse mit CLARA, der Euklidischen Distanz und $k = 6$ Clustern durch, so erhält man für den Silhouettenkoeffizient einen Wert von $s = 0.1239$, der Timeline-Wert beträgt $TLS = 0.1764$ und $HB_{diff} = 0.4882$.
 
+ 
+
 **K-means** 
 
 K-means ist ein bekannter Algorithmus für Clusteranalyse und teilt die Beobachtungen in $k$ disjunkte Cluster. Jedes Cluster wird dabei von einem Centroid repräsentiert, das im Gegensatz zu PAM nicht eine echte Beobachtung ist, sondern der Mittelwerten von allen Objekten im gleichen Cluster. Der K-means Algorithmus wird von @kmeans genauer beschrieben. Für dieses Projekt wurde die Funktion kmeans() aus dem Package "stats" herangezogen. Mit dieser wurde für die Originaldaten ein Clustering durchgeführt. Der Silhouettenkoeffizient beträgt dabei $s = 0.1286$, der Timeline-Wert ist $TLS = 0.2433$ und die Maßzahl für die Güte der Aufteilung der GWL in den Clustern $HB_{diff} = 0.5167$. 
+
+ 
 
 **PAM mit Mahalanobis-Distanz**
 
@@ -521,6 +534,8 @@ Für p-dimensionale Daten $x = (x_1, x_2, ... , x_p)^T$ mit einem Vektor mit Mit
 Ist $\sum$ die Einheitsmatrix, so entspricht die Mahalanobis-Distanz der Euklidischen Distanz (@mahalanobis).
 
 Mit der resultierenden Distanzmatrix wurde dann eine Clusteranalyse mit PAM durchgeführt für $k = 6$. Der Silhouettenkoeffizient liegt dabei bei $-0.0014$ und ist somit zum ersten Mal negativ. Auch der Timeline-Wert liegt unter 0 mit $TLS = -0.6657$. Der Wert für die Güte der Aufteilung der GWL in den Clustern $HB_{diff} = 0.4127$.
+
+ 
 
 **PCA**
 
@@ -565,13 +580,10 @@ dt3 <- data.table(
 
 # Ergebnisse
 
+\textcolor{red}{needs to be changed angain :/}
+
 Dieser Abschnitt beinhaltet die Ergebnisse verschiedner Clusterlösungen. Abschnitt 3.1 beinhaltet die Ergebnisse des Filteransatzes und Abschnitt 3.2 beinhaltet die Ergebnisse der Clusterversuche mit den extrahierten Variablen. Abschnitt 3.3 beinhaltet die Ergebnisse und deskriptive Analyse der finalen Clusterlösung.
 
-## Filter Ergebnisse
-
-  
-
-\textcolor{red}{insert results seperated and unified}
 
 ## Ergebnisse extrahierte Variablen
 
@@ -680,6 +692,12 @@ include_graphics("assets/mosaicLegend.png")
 
 # Diskussion und Ausblick
 
+## Bewertungkriterien
+
+  Der in Abschnitt [Clusterbewertungskriterien] beschriebenen *Timeline-Score* (*TLS*) ist im Gegensatz zu dem *Silhouettenkoeffizient* nicht unabhängig von der Anzahl der Cluster und somit problematisch um Clusterlösungen mit verschiedener Clusteranzahl zu vergleichen. Die hier vorgestellten Clusterverfahren schwanken in der gewählten Clusteranzahl *nur* zwischen 5 und 6.
+  
+  Gleiches Problem existiert für $HB_{diff}$.
+
 ## Saison
 
 -wie sind GWL&Saison kombos in den Clustern verteilt?
@@ -720,9 +738,11 @@ Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den G
 
 Die Methode, wie in Absatz [Filter Ansatz] beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. Intuitiv lässt sich vermuten, dass ein Zusammenführen mit dem im Absatz [Clustern mit extrahierten Daten] beschriebenen Verfahren zu einer insgesammten Verbesserung führen könnte. Folgendes kann durch Addieren der Distanzmetriken vor dem Clustern auf Tagesebene erreicht werden.
 
+  
+  
 \textcolor{red}{insert results of that and interpretation of it}
 
-Grundsätzlich lässt sich aber auch anmerken, dass der Filter-Ansatz noch sehr unausgereift ist und durch Ausweitung zur Fähigkeit mehrere Gebiete zu erkennen oder ein grundsätzliches Optimieren des Algorithmus', z.B. der Abfallrate des Nachbarschaftsparameters *eps*, verbessert werden könnte.
+Grundsätzlich lässt sich aber auch anmerken, dass der Filter-Ansatz noch sehr unausgereift ist und durch Ausweitung zur Fähigkeit mehrere Gebiete zu erkennen oder ein grundsätzliches Optimieren des Algorithmus', z.B. der Abfallrate des Nachbarschaftsparameters *eps* oder der Wahl des Clusterverfahren auf Tagesebene, verbessert werden könnte.
 
 Allerdings bleibt zu untersuchen, ob ein Convolutional Neural Network (*CNN*) wie in @CNN beschrieben, hierzu nicht allgemein geeigneter ist.
 
@@ -791,6 +811,23 @@ Grundsätzlich lassen sich die Daten aber auch als Format eines Videos betrachte
 # Anmerkungen {.unlisted .unnumbered}
 
 Reproduzierbarer Code und relevante Datein sind in einem Github Repository der Organisation \textcolor{red}{WeatherFrog} zu finden. Für Zugang, Kontakt zu den Autoren aufnehmen.
+
+ 
+
+```{r Funktionen und Pakete, echo=FALSE, fig.cap="\\label{tab:libraries}Benutzte Pakete in R der im Bericht beschriebenen Verfahren", }
+
+dt4 <- data.table(
+  Verfahren = c("CLARA", "PAM", "K-Means", "DBSCAN", "kNN-Distanz"),
+  Funktion = c("clara()", "pam()", "kmeans()", "dbscan()", "kNNdist()")
+)
+
+kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "R Libraries") %>%
+  kable_styling(latex_options = "striped", full_width = FALSE)%>%
+  pack_rows("cluster", 1, 3) %>%
+  pack_rows("dbscan", 4, 5)
+  
+```
+
 
  
 
