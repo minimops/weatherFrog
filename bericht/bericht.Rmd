@@ -696,9 +696,9 @@ include_graphics("assets/mosaicLegend.png")
 
 ## Bewertungkriterien
 
-  Der in Abschnitt [Clusterbewertungskriterien] beschriebenen *Timeline-Score* (*TLS*) ist im Gegensatz zu dem *Silhouettenkoeffizient* nicht unabhängig von der Anzahl der Cluster und somit problematisch um Clusterlösungen mit verschiedener Clusteranzahl zu vergleichen. Die hier vorgestellten Clusterverfahren schwanken in der gewählten Clusteranzahl *nur* zwischen 5 und 6.
+  Der in Abschnitt [Clusterbewertungskriterien] beschriebenen *Timeline-Score* ($TLS$) ist im Gegensatz zu dem *Silhouettenkoeffizient* nicht unabhängig von der Anzahl der Cluster und somit problematisch um Clusterlösungen mit verschiedener Clusteranzahl zu vergleichen. Die hier vorgestellten Clusterverfahren schwanken in der gewählten Clusteranzahl *nur* zwischen 5 und 6.
   
-  Gleiches Problem existiert für $HB_{diff}$.
+  Gleiches Problem existiert für $HB_{diff}$. Hier wird zudem die Häufigkeit der *GWL* nicht mit in Betracht gezogen. Das bedeutet, dass eine *GWL* wie NEA (Nordostlage, antizyklonal), die sehr selten vorkommt, dasselbe Gewicht auf die Maßzahl wie WZ (Westlage, zyklonal), die am häufigsten vorkommende *GWL*, hat.
 
 ## Saison
 
@@ -738,12 +738,34 @@ Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den G
 
 ## PAM & Filter
 
-Die Methode, wie in Absatz [Filter Ansatz] beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. Intuitiv lässt sich vermuten, dass ein Zusammenführen mit dem im Absatz [Clustern mit extrahierten Daten] beschriebenen Verfahren zu einer insgesammten Verbesserung führen könnte. Folgendes kann durch Addieren der Distanzmetriken vor dem Clustern auf Tagesebene erreicht werden.
+Die Methode, wie in Absatz [Filter Ansatz] beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. Intuitiv lässt sich vermuten, dass ein Zusammenführen mit dem im Absatz [Clustern mit extrahierten Daten] beschriebenen Verfahren zu einer insgesammten Verbesserung führen könnte. Folgendes kann durch Addieren der Distanzmetriken vor dem Clustern auf Tagesebene erreicht werden. Die darauf folgende Clusteranalyse wurde hier auch mit *PAM* durchgeführt.
 
-  
-  
-\textcolor{red}{insert results of that and interpretation of it}
+ 
 
+  Ein einfaches Addieren mit Filtern von beiden Parametern, Mslp und Geopotential, führt zu einer Verschlechterung des *Silhouettenkoeffizient* von $sil = 0.141$ zu $sil = 0.099$ aber einer Verbesserung des *TLS* von $TLS = 0.3357$ zu $TLS = 0.5663$. Dabei beträgt die Summe über alle Elemente der Distanzmatrix des Filterns ca $\frac{1}{7}$ der Distanzmatrix der extrahierten Methode. Also grob kann gesagt werden, dass dem Filtern hier ein Gesamtgewicht von etwas größer als $\frac{1}{7}$ zugeteilt wird. 
+  
+  Es ist ein $HB_{diff}$ von $0.3878$ zu beobachten, welcher etwas höher als der $HB_{diff}$ der Clusterlösung der extrahierten Daten mit $HB_{diff} = 0.3309$ ist.
+  
+  Allerdings fällt hierbei die Clusteranzahl von $k = 6$ auf $k = 5$, was den Vergleich des $TLS$ sowie des $HB_{diff}$ wie in Absatz [Bewertungkriterien] beschrieben, problematisiert.
+  
+   
+  
+  Die auf den Clusterbewertungskriterien basierte beste Kombination der beiden Ansätze verspricht die Addition der Distanzmatrix der extrahierten Daten mit der Distanzmatrix des Filterns nur mit Mslp. Dabei wird die Filter Distanzmatrix mit 3 multipliziert, wodurch ein Summenverhältnis von ca. $3.8$ und somit einem ungefähren Gesamtgewicht des Filterns von $\frac{1}{4}$ erreicht wird.
+  
+  Hier ergibt sich mit $k = 5$ Clustern ein *Silhouettenkoeffizient* von $sil = 0.137$ sowie einem *Timeline-Score* von $TLS = 0.4118$. (siehe Abb. \ref{fig:TL_filter+exa})
+  
+  Zudem lässt sich ein $HB_{diff}$ von $0.4122$ beobachten. (siehe Abb. \ref{fig:mosaic_filter+exa})
+  
+```{r TL_filter+exa, echo = FALSE, fig.cap="\\label{fig:TL_filter+exa}Timeline des Clusterergebnis von der Kombination der extrahierten Daten mit dem Filtern der Mslp Daten. Die rote Line bezeichnet die erwünschte Timeline Verteilung.", fig.align="center", out.width="80%"}
+include_graphics("assets/TL_filterMslp_exa.png")
+```
+
+```{r mosaic_filter+exa, echo = FALSE, fig.cap="\\label{fig:mosaic_filter+exa}Mosaikplot der Cluster - GWL Einteilung des Clusterergebnis von der Kombination der extrahierten Daten mit dem Filtern der Mslp Daten.", fig.align="center", out.width="100%"}
+include_graphics("assets/mosaic_filterMslp_exa.png")
+```
+  
+   
+  
 Grundsätzlich lässt sich aber auch anmerken, dass der Filter-Ansatz noch sehr unausgereift ist und durch Ausweitung zur Fähigkeit mehrere Gebiete zu erkennen oder ein grundsätzliches Optimieren des Algorithmus', z.B. der Abfallrate des Nachbarschaftsparameters *eps* oder der Wahl des Clusterverfahren auf Tagesebene, verbessert werden könnte.
 
 Allerdings bleibt zu untersuchen, ob ein Convolutional Neural Network (*CNN*) wie in @CNN beschrieben, hierzu nicht allgemein geeigneter ist.
@@ -756,7 +778,7 @@ Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotenti
 include_graphics("assets/geoVerID.png")
 ```
 
-## Gewichtungsvektor
+## Gewichtungsvektor & Boosting
 
 Grundsätzlich lässt sich feststellen, dass die Wahl des Gewichtungsvektors in der Clustermethode der extrahierten Daten (siehe Abschnitt [Clustern mit extrahierten Daten]) einflussreich gegenüber dem Clusterergebnis ist, bzw. das gezeigte Verfahren sensitiv gegenüber den Variablen-Gewichtungen ist. Dieser Vektor wurde, wie im Abschnitt [Gewichtung] beschrieben, in Absprache mit den Projektpartnern rein auf fachlich sinnvoller Ebene festgelegt.
 

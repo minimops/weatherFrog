@@ -122,10 +122,9 @@ library(usedist)
 #add distMatrix of both parameters together
 distMat_both <- distMat_mslp + distMat_geopot
 
-saveRDS(cbind(as.matrix(distMat_both), date = mslp_30_filter$date),
+saveRDS(as.matrix(distMat_both),
         "Data/filter/distMat_30_date_2.rds")
-distMat_both_date <- readRDS("Data/filter/distMat_30_date_2.rds")
-distMat_both <- as.dist(distMat_both_date[, -ncol(distMat_both_date)])
+
 
 library(factoextra)
 
@@ -255,7 +254,7 @@ pam_all_data_higher <- pam(distMat_all_high, diss = TRUE, k = 5)
 sil(pam_all_data_higher, pam_all_data_higher$clustering, distMat_all_high, "pam")
 #sil = 0.1401
 data_all_high <- data.table(date = mslp_30_filter$date, cluster = pam_all_data_higher$clustering)
-Cl.timeline(data_all_high)
+Cl.timeline(data_all_high, multiplied = T, showOpt = T)
 #TLS = 0.1818
 mosaic(data_all_high, data_all_high$cluster)
 #HBdiff = 0.4405
@@ -272,7 +271,11 @@ pam_mslp_extr <- pam(distMat_extr_mslp, diss = TRUE, k = 5)
 sil(pam_mslp_extr, pam_mslp_extr$clustering, distMat_extr_mslp, "pam")
 #sil = 0.1373
 data_mslp_extr <- data.table(date = mslp_30_filter$date, cluster = pam_mslp_extr$clustering)
-Cl.timeline(data_mslp_extr, multiplied = T)
+tl <- Cl.timeline(data_mslp_extr, multiplied = T, showOpt = T)
 #TLS = 0.4118
-mosaic(data_mslp_extr, data_mslp_extr$cluster)
+ggsave("bericht/assets/TL_filterMslp_exa.png", tl, device = "png",
+       width = 5, height = 3)
+mos <- mosaic(data_mslp_extr, data_mslp_extr$cluster)
 #HBdiff = 0.4122
+ggsave("bericht/assets/mosaic_filterMslp_exa.png", mos, device = "png",
+       width = 9, height = 5)
