@@ -240,6 +240,8 @@ tl <- Cl.timeline(data_pam_summer, multiplied = T, showOpt = T)
 mos <- mosaic(data_pam_summer, data_pam_summer$cluster)
 #HBdiff = 0.3448
 
+
+
 #winter
 dat_Winter <- separateBySeason(f_data, Season = "Winter")
 

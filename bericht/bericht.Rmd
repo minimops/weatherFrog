@@ -333,7 +333,9 @@ $$
 
 ### Kriterien
 
+
 Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] (*PAM*) beschrieben durchgeführt. $HB_{diff}$ ergibt sich hier zu $0.4100$.
+
 
 Nach Parametern getrennte Analysen weisen je einen höheren *Silhouettenkoeffizient* auf, aber einen geringeren *TLS*. (Mslp: $s = 0.1369$, $TLS = -0.2027$, $HB_{diff} = 0.3980$ ; Geopot: $s = 0.1541$, $TLS = -0.3898$, $HB_{diff} = 0.3162$)
 
@@ -512,6 +514,10 @@ Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt fin
 include_graphics("assets/numclust.png")
 ```
 
+### Kriterien
+
+Dieses Clusterergebnis liefert einen Silhouettenkoeffizienten $s = 0.1411$ und einen Timeline-Score von $0.3357$. Die Güte der Verteilung der GWL zu den Clustern $HB_{diff}$ beträgt $0.3309$.
+
 ## Weitere Versuche
 
 Das endgültig gewählte Methode wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus PAM anhand des extrahierten Datensatzes erzielt. Es wurden anfangs aber verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien beurteilt. Dabei wurden zuerst die Daten von fünf Jahren verwendet, da 30 Jahre rechentechnisch sehr teuer waren. Die Methoden, die am besten abschnitten, wurden dann anhand von 30 Jahren beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
@@ -655,6 +661,7 @@ include_graphics("assets/observation_in_cluster.png")
 ```
 
 Tabelle \ref{fig:descriptive_cluster} bildet Mittelwert und Standardabweichung der Variablen Mittelwert, Maximum und Minimum des Luftdrucks und Mittelwert, Maximum und Minimum des Geopotentials in jedem Cluster ab. Hierbei unterschieden sich die Werte einer Variablen über alle Cluster nur gering voneinander. Zum Beispiel beträgt die maximale Abweichung der Variable Mittelwert des Luftdrucks in allen Clustern nur $8.2 hPa$ und die maximale Abweichung der Variable Mittelwert des Geopotentials $287.7 gpm$.
+ 
 
 ```{r descriptive_cluster, echo = FALSE, fig.cap="\\label{fig:descriptive_cluster}Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm ", fig.align="center", out.width="100%"}
 include_graphics("assets/table_descriptive_cluster.png")
@@ -729,7 +736,7 @@ Abbildung \ref{fig:mosaicSummer} stellt einen Mosaikplot nur für die Sommertage
 include_graphics("assets/mosaicSummer.png")
 ```
 
-In Abbildung \ref{fig:mosaicWinter} sieht man wieder einen Mosaikplot, der nun nur Wintertage beinhaltet. Cluster 6 ist hier nicht enthalten, da alle Beobachtungen in diesem Cluster Sommertage sind. Hier sieht man erneut, dass die meisten Wintertage in den Clustern 1, 2 und 3 liegen. Auch hier lässt sich erkennen, dass manche GWL mit mehr als 50% in bestimmten Clustern vertreten sind, beispielsweise liegen ca 75% der Beobachtungen von der Großwetterlage WZ in Cluster 2. $HB_{diff}$ liegt hier bei 0.5246.
+In Abbildung \ref{fig:mosaicWinter} sieht man wieder einen Mosaikplot, der nun nur Wintertage beinhaltet. Cluster 6 ist hier nicht enthalten, da alle Beobachtungen in diesem Cluster Sommertage sind. Hier sieht man erneut, dass die meisten Wintertage in den Clustern 1, 2 und 3 liegen. Auch hier lässt sich erkennen, dass manche GWL mit mehr als 50% in bestimmten Clustern vertreten sind, beispielsweise liegen ca 75% der Beobachtungen von der Großwetterlage WZ in Cluster 2. $HB_{diff}$ liegt hier bei $0.5246$.
 
 ```{r mosaicWinter, echo = FALSE, fig.cap="\\label{fig:mosaicWinter}Mosaikplot nur für Wintertage, der darstellt, mit welchem Anteil die GWL auf die Cluster 1 bis 6 aufgeteilt sind ", fig.align="center", out.width="100%"}
 include_graphics("assets/mosaicWinter.png")
@@ -737,17 +744,15 @@ include_graphics("assets/mosaicWinter.png")
 
 ### Clustern getrennt nach Saison
 
-Des Weiteren wurde auch überlegt, den Datensatz in Sommer- und Winterdaten aufzuteilen und diese getrennt zu clustern (@article_james). Da ein Clustering für 30 Jahre rechentechnisch aufwendig ist, wurden zunächst vier 5-Jahres-Perioden betrachtet, von 1971-1975, 1984-1988, 1996-2000 und 2006-2010 und bewertet. 
+Des Weiteren wurde auch überlegt, den extrahierten Datensatz in Sommer- und Winterdaten aufzuteilen und diese getrennt zu clustern (@article_james). Dafür wurde wiederum das Jahr am 15/16 April, sowie dem 15/16 Oktober getrennt und folgend eine Clusteranalyse mit dem *PAM*-Algorithmus und der Manhattan-Distanzmetrik durchgeführt.
 
-Damit die Ergebnisse vergleichbar sind, wurde Sommer- und Winterzeit zusammen sowie getrennt geclustert. Das Clustering wurde mit PAM und der Manhattan-Distanz durchgeführt. Die Optimale Anzahl an Cluster war für alle Versuche hier $k = 5$. \textcolor{red}{brauchen wir plots?}
+Im Gegensatz zu dem ungetrennten Clustern (\textcolor{red}{ref Absatz}), bei dem $k = 6$ Cluster entstehen, resultiert das nach Saison getrennte Clustern für beide Jahreszeiten in nur $k = 5$ Cluster. Dabei ergibt sich für den Sommer ein *Silhouettenkoeffizient* von $s = 0.1126$, einen *Timeline-Score* von $TLS = 0.4767$ sowie ein $HB_{diff}$ von $0.3448$. Für den Winter $s = 0.0909$, $TLS = 0.2303$ und $HB_{diff} = 0.2970$.
 
-Der Silhouettenkoeffizient hat hierbei für das Clustern der Sommer- und Wintertage zusammen den höchsten Wert mit $s = 0.1148$. Der Silhouettenkoeffizient für die Sommertage beträgt 0.0976 und für die Wintertage ist $s = 0.0945$.
+Auffällig ist dabei, dass der Sommer in allen Kriterien bessere Werte aufweist als der Winter. Dies könnte damit zusammenliegen, dass gewisse Variablen des Luftdrucks im Winter mehr zu streuen scheinen (vgl. Abb. \ref{fig:distribution_seasom_mslp} und Abb. \ref{fig:werteMslp}).
 
-Der Timeline-Score für das Clustern beider Jahreszeiten zusammen beträgt hier 0.2552, wohingegen $TLS_{Sommer} = 0.0199$ und $TLS_{Winter} = -0.0336$.
+Allerdings scheint dieses saisongetrennte Clusterverfahren im Vergleich zur ungetrennten Methode ($s = 0.1411$, $TLS = 0.3357$, $HB_{diff} = 0.3309$) keine Vorteile aufzuweisen, da nur der Sommer bei bestimmten Bewertungskriterien ($TLS$ und  $HB_{diff}$) höhere Werte aufweist, diese aber auch noch durch die andere Anzahl an Cluster beeinflusst werden (vgl. Absatz \textcolor{red}{ref}). Der *Silhouettenkoeffizient* hingegen, der nicht von der Clusterzahl $k$ beeinflusst wird, weist bei der normalen, wie in Absatz \textcolor{red}{ref Abschnitt} beschriebenen Clusermethode den höchsten Wert auf.
 
-Die Werte für die Güte der Aufteilung der GWL in den Clustern liegt für das Cluster beider Jahrezeiten zusammen bei 0.4739. Dieser Wert ist für Clusterings mit jeweils Sommer- und Wintertagen getrennt etwas höher mit $HB_{diff, Sommer} = 0.4916$ und $HB_{diff, Winter} = 0.5126$.
-
-Die Bewertungskriterien Silhouettenkoeffizient und $HB_{diff} weisen hier ähnliche Ergebnisse auf. Es wurde sich letztendlich gegen ein Clustering mit getrennten Jahreszeiten entschieden, da der Silhouettenkoeffizient dafür niedriger wäre.
+Deshalb wurde für dieses Verfahren keine Saison-getrennte Analyse bevorzugt.
 
 
 ## CWL-Mindestlänge 3 Tage
