@@ -18,9 +18,6 @@ library(ggfortify)
 library(ggmosaic)
 ## daten im wide format einlesen
 data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
-data.complete <- readRDS("Data/cli_data_05.rds")
-data.completed <- dcast(data.complete, 
-                       "date  ~ longitude + latitude + time", value.var = c("mslp", "geopotential"))
 dim(data.wide)
 
 # Anzahl Cluster bestimmen
@@ -77,3 +74,36 @@ plot(clusterclara)
 clara.plot.manhat <- autoplot(clusterclara.manhat, frame = TRUE, frame.type = "norm") 
 clara.plot.manhat
 plot(clusterclara.manhat)
+
+
+### kmeans
+
+km_list <- list()
+wss <- numeric()
+
+for (k in 1:10){
+  km_list[[k]] <- kmeans(scale(data.wide[, 2:321]), centers = k, iter.max = 1000)
+  wss[k] <- sum(km_list[[k]]$withinss)
+}
+
+par(mfrow = c(1,1))
+plot(1:10, wss, type = "b", xlab = "Number of Clusters", ylab = "Within groups sum of squares")
+
+clusterkmeans <- kmeans(scale(data.wide[, 2:321]), centers = 7, iter.max = 10000)
+clusterkmeans.vector <- clusterkmeans$cluster
+
+## Measurements Kmeans ########### 
+# 1. Silhouette
+sil(clusterkmeans, clusterkmeans.vector, dist(scale(copy(data.wide)[, 2:321])), "kmeans")
+### s = 0.1286251
+
+# 2. Timeline
+dat.kmeans <- copy(data.wide)[, cluster := clusterkmeans.vector]
+Cl.timeline(copy(dat.kmeans))
+### TLS = 0.2433221
+
+# 3. Mosaik
+mosaic(copy(data.wide), clusterkmeans.vector, title = "CLARA WITH EUC")
+### HB_diff = 0.5166874
+
+

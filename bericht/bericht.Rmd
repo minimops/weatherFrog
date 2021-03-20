@@ -702,6 +702,48 @@ include_graphics("assets/mosaicLegend.png")
 
 ## Saison
 
+Es wurde auch in Betracht gezogen, eine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Saisons, Winter, Frühling, Sommer und Herbst durchzuführen. Nachdem aber Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} betrachtet wurden, ist die Entscheidung gegen eine Saisonbereinigung getroffen worden. \textcolor{red}{das überhaupt rein?}
+
+```{r werteMslp, echo = FALSE, fig.cap="\\label{fig:werteMslp}Werte des Luftdrucks aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
+include_graphics("assets/MslpRangeJahreszeiten.jpeg")
+```
+
+```{r werteGeopot, echo = FALSE, fig.cap="\\label{fig:werteGeopot}Werte des Geopotential aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
+include_graphics("assets/GeopotentailRangeJahreszeiten.jpeg")
+```
+
+Wie in Abschnitt 3.3 beschrieben, kann auch eine Aufteilung nur in Sommer- und Wintertage durchgeführt werden. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt 3.3, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll. 
+### Clusterergebnis nach Saison
+
+Abbildung \ref{fig:mosaicSummer} stellt einen Mosaikplot nur für die Sommertage dar, in dem die Verteilung der GWL innerhalb der Cluster zu sehen ist. Schon erwähnte Ergebnisse spiegeln sich hier wieder. Die Sommertage liegen hauptsächlich in den Clustern 4, 5 und 6. Es lässt sich noch immer sagen, dass fast alle Cluster in den GWL vertreten sind, aber viele treten häufiger in bestimmten Clustern auf. So liegen zum Beipiel über 50% der Beobachtungen von der GWL BM in Cluster 6. Der Wert für die Güte der Aufteilung der GWL $HB_{diff}$ beträgt hier 0.4849. Er ist also größer, als $HB_{diff}$ für beide Saisonen zusammen betrachtet, der bei 0.3309 liegt.
+
+```{r mosaicSummer, echo = FALSE, fig.cap="\\label{fig:mosaicSummer}Mosaikplot nur für Sommertage, der darstellt, mit welchem Anteil die GWL auf die Cluster 1 bis 6 aufgeteilt sind ", fig.align="center", out.width="100%"}
+include_graphics("assets/mosaicSummer.png")
+```
+
+In Abbildung \ref{fig:mosaicWinter} sieht man wieder einen Mosaikplot, der nun nur Wintertage beinhaltet. Cluster 6 ist hier nicht enthalten, da alle Beobachtungen in diesem Cluster Sommertage sind. Hier sieht man erneut, dass die meisten Wintertage in den Clustern 1, 2 und 3 liegen. Auch hier lässt sich erkennen, dass manche GWL mit mehr als 50% in bestimmten Clustern vertreten sind, beispielsweise liegen ca 75% der Beobachtungen von der Großwetterlage WZ in Cluster 2. $HB_diff$ liegt hier bei 0.5246.
+
+```{r mosaicWinter, echo = FALSE, fig.cap="\\label{fig:mosaicWinter}Mosaikplot nur für Wintertage, der darstellt, mit welchem Anteil die GWL auf die Cluster 1 bis 6 aufgeteilt sind ", fig.align="center", out.width="100%"}
+include_graphics("assets/mosaicWinter.png")
+```
+
+### Aufteilen nach Saison vor Clustering
+
+Des Weiteren wurde auch überlegt, den Datensatz in Sommer- und Winterdaten aufzuteilen und diese getrennt zu clustern (@article_james). Da ein Clustering für 30 Jahre rechentechnisch aufwendig ist, wurden zunächst vier 5-Jahres-Perioden betrachtet, von 1971-1975, 1984-1988, 1996-2000 und 2006-2010 und bewertet. \textcolor{red}{reinbringen, dass Variablen anders sind?}
+
+Damit die Ergebnisse vergleichbar sind, wurde Sommer- und Winterzeit zusammen sowie getrennt geclustert. Das Clustering wurde mit PAM und der Manhattan-Distanz durchgeführt. Die Optimale Anzahl an Cluster war für alle Versuche hier $k = 5$. \textcolor{red}{brauchen wir plots?}
+
+Der Silhouettenkoeffizient hat hierbei für das Clustern der Sommer- und Wintertage zusammen den höchsten Wert mit $s = 0.1148$. Der Silhouettenkoeffizient für die Sommertage beträgt 0.0976 und für die Wintertage ist $s = 0.0945$. 
+
+Der Vergleich des Timeline-Scores erweist sich hier als problematisch. Dieser wird gebildet, indem die Anzahl der Tage mit bestimmten Werten einer Funktion multipliziert werden. Da sonst für vorherige Analysen 30 Jahre betrachtet wurden und dies generell eine höhere Anzahl an Tagen mit sich bringt, können die Folgenden Werte nicht mit den bereits vorgestellten verglichen werden. Auch ein Vergleich zwischen Sommer- und Wintertage zusammen bzw. getrennt, ist hier schierig, da bei beiden Zeiten zusammen jeweils vier Mal 5 Jahre betrachtet werden. Für das Cluster der Sommer- und Wintertage getrennt werden hingegen nur ca. 2.5 Jahren betrachtet.
+
+Der Timeline-Score für das Clustern beider Jahreszeiten zusammen beträgt hier 0.2552, wohingegen $TLS_{Sommer} = 0.0199$ und $TLS_{Winter} = -0.0336$.
+
+Die Werte für die Güte der Aufteilung der GWL in den Clustern liegt für das Cluster beider Jahrezeiten zusammen bei 0.4739. Dieser Wert ist für Clusterings mit jeweils Sommer- und Wintertagen getrennt etwas höher mit $HB_{diff, Sommer} = 0.4916$ und $HB_{diff, Winter} = 0.5126$.
+
+Die Bewertungskriterien Silhouettenkoeffizient und Mosaikwert weisen hier ähnliche Ergebnisse auf. Es wurde sich letztendlich gegen ein Clustering mit getrennten Jahreszeiten entschieden, da der Silhouettenkoeffizient dafür niedriger wäre.
+
+
 -wie sind GWL&Saison kombos in den Clustern verteilt?
 
 -Saisonen einzeln geclustered ergebnisse
