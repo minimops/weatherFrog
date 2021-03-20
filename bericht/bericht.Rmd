@@ -75,8 +75,8 @@ longrun = FALSE # set to TRUE to rerun all code
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\mathcal{C}$", "PCA", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PCA / PC")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PCA", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PCA / PC", "$k$")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -713,6 +713,7 @@ include_graphics("assets/GeopotentailRangeJahreszeiten.jpeg")
 ```
 
 Wie in Abschnitt 3.3 beschrieben, kann auch eine Aufteilung nur in Sommer- und Wintertage durchgeführt werden. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt 3.3, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll. 
+
 ### Clusterergebnis nach Saison
 
 Abbildung \ref{fig:mosaicSummer} stellt einen Mosaikplot nur für die Sommertage dar, in dem die Verteilung der GWL innerhalb der Cluster zu sehen ist. Schon erwähnte Ergebnisse spiegeln sich hier wieder. Die Sommertage liegen hauptsächlich in den Clustern 4, 5 und 6. Es lässt sich noch immer sagen, dass fast alle Cluster in den GWL vertreten sind, aber viele treten häufiger in bestimmten Clustern auf. So liegen zum Beipiel über 50% der Beobachtungen von der GWL BM in Cluster 6. Der Wert für die Güte der Aufteilung der GWL $HB_{diff}$ beträgt hier 0.4849. Er ist also größer, als $HB_{diff}$ für beide Saisonen zusammen betrachtet, der bei 0.3309 liegt.
