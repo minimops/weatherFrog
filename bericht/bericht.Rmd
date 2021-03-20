@@ -333,7 +333,7 @@ $$
 
 ### Kriterien
 
-Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] beschrieben (*PAM*) durchgeführt.
+Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse, wie in Abschnitt [Partitioning Around Medoids] (*PAM*) beschrieben, durchgeführt.
 
 Nach Parametern getrennte Analysen weisen je einen höheren *Silhouettenkoeffizient* auf, aber einen geringeren *TLS*. (Mslp: $s = 0.1369$, $TLS = -0.2027$ ; Geopot: $s = 0.1541$, $TLS = -0.3898$)
 
@@ -512,6 +512,10 @@ Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt fin
 include_graphics("assets/numclust.png")
 ```
 
+### Kriterien
+
+Dieses Clusterergebnis liefert einen Silhouettenkoeffizienten $s = 0.1411$ und einen Timeline-Score von $0.3357$. Die Güte der Verteilung der GWL zu den Clustern $HB_{diff}$ beträgt $0.3309$.
+
 ## Weitere Versuche
 
 Das endgültig gewählte Methode wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus PAM anhand des extrahierten Datensatzes erzielt. Es wurden anfangs aber verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien beurteilt. Dabei wurden zuerst die Daten von fünf Jahren verwendet, da 30 Jahre rechentechnisch sehr teuer waren. Die Methoden, die am besten abschnitten, wurden dann anhand von 30 Jahren beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
@@ -655,6 +659,18 @@ include_graphics("assets/observation_in_cluster.png")
 ```
 
 Tabelle \ref{fig:descriptive_cluster} bildet Mittelwert und Standardabweichung der Variablen Mittelwert, Maximum und Minimum des Luftdrucks und Mittelwert, Maximum und Minimum des Geopotentials in jedem Cluster ab. Hierbei unterschieden sich die Werte einer Variablen über alle Cluster nur gering voneinander. Zum Beispiel beträgt die maximale Abweichung der Variable Mittelwert des Luftdrucks in allen Clustern nur $8.2 hPa$ und die maximale Abweichung der Variable Mittelwert des Geopotentials $287.7 gpm$.
+ 
+
+```{r descriptive_cluster2, echo=FALSE, fig.cap="\\label{tab:descriptive_cluster2}Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm. Each row represents a list element"}
+dt4 <- data.table(
+  Cluster = c(1),
+  Mittelwert_Mslp = c(1209)
+  ) 
+#dt4$Mittelwert_Mslp = linebreak(dt4$Mittelwert_Mslp)
+kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Tab", caption = "Tab", align = "c") %>%
+  kable_styling(latex_options = "striped", full_width = TRUE)
+  
+```
 
 ```{r descriptive_cluster, echo = FALSE, fig.cap="\\label{fig:descriptive_cluster}Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm ", fig.align="center", out.width="100%"}
 include_graphics("assets/table_descriptive_cluster.png")
