@@ -4,6 +4,7 @@ library(data.table)
 library(ggplot2)
 library(cluster)
 library(factoextra)
+library(ggmosaic)
 
 #function to attach gwl to a dataset with date column
 attachGwl <- function(data) {
@@ -20,13 +21,15 @@ attachGwl <- function(data) {
 #cluster input is used to identify the id column
 #title add input can be used to add smth to the plot title
 Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FALSE,
-                        cut = 90, multiplied = FALSE) {
+                        cut = 90, multiplied = FALSE, showOpt = FALSE) {
   assertDataTable(data)
   assertString(cluster)
   assertString(titleAdd)
   assertSubset(c("date"), names(data))
   assertLogical(seperated)
   assertLogical(multiplied)
+  
+  if(showOpt && !multiplied) stop("Optimal Distribution only works in multiplied mode.")
   
   #this is next level stupid,i cant figure out a different way to extract the
   #cluster column while leaving it a variable
@@ -95,26 +98,67 @@ Cl.timeline <- function(data, cluster = "cluster", titleAdd = "", seperated = FA
           else {
             mainAdd <- "GWL"
           }
-          
+          ylab <- "Anzahl"
           if(multiplied){
             data[, count := count * length]
+            ylab <- "Anzahl Tage"
           }
           ifelse(max(data$count) > 700, upperYlim <- 1000,
                  upperYlim <- 700)
           
-          ggplot(as.data.frame(data), 
-                 aes(x= as.numeric(length), y = count)) +
-            geom_col(col = "black", fill = "gray77") +
-            labs(x = "Länge", 
-                 title = paste("Timeline"),
-                 y = "Anzahl") +
-            ylim(0, upperYlim) +
-            
-            scale_x_continuous(breaks = c(seq(0, cut, by = 5)),
-                               limits = c(0, cut)) +
-
-            theme_bw()
-            
+          ifelse(showOpt,
+                 {
+                   ##timeline Verteilung
+                   dec_fun <- function(x) {
+                     if(x < 3 || x >= 40) {
+                       return(0)
+                     } else{
+                       if(x < 13){
+                         return(1)
+                       }
+                     }
+                     return((23 / x) - (44 / x^2) - 0.55)
+                   }
+                   count <-  seq(1, cut)
+                   TL.distr <- data.table(Anteil = vapply(count, dec_fun, FUN.VALUE = numeric(1)),
+                                          count)
+                   
+                   TL.distr <- data.frame(TL.distr[, Anteil := nrow(use) * (Anteil / sum(TL.distr$Anteil))])
+                   
+                   return(ggplot(as.data.frame(data), 
+                          aes(x= as.numeric(length), y = count)) +
+                     geom_col(col = "black", fill = "gray77") +
+                     geom_line(data = TL.distr, aes(x = count, y = Anteil), 
+                               color = "red") + 
+                     labs(x = "Länge", 
+                          title = paste("Timeline"),
+                          y = ylab) +
+                     ylim(0, upperYlim) +
+                       theme(legend.title = element_text(size=8)) +
+                     
+                     scale_x_continuous(breaks = c(1, seq(5, cut, by = 5)),
+                                        limits = c(0, cut)) +
+                     
+                     theme_bw()
+                   )
+                 },
+                 {
+                   return(ggplot(as.data.frame(data), 
+                          aes(x= as.numeric(length), y = count)) +
+                     geom_col(col = "black", fill = "gray77") +
+                     labs(x = "Länge", 
+                          title = paste("Timeline"),
+                          y = ylab) +
+                     ylim(0, upperYlim) +
+                     
+                     scale_x_continuous(breaks = c(1, seq(5, cut, by = 5)),
+                                        limits = c(0, cut)) +
+                     
+                     theme_bw()
+                   )
+                 }
+                 )
+          
          }
 }
 
@@ -213,14 +257,28 @@ mosaic <- function(data, cluster_vector, title = "PAM") {
   data.gwl <- gwl[data, on = .(date)]
   data.gwl.cluster <- data.gwl[, cluster := cluster_vector]
   
-  mosaicplot(table(data.gwl.cluster$cluster, data.gwl.cluster$gwl), color = TRUE,
-             xlab = "Cluster", ylab = "GWL", cex.axis = 0.6, las = 2,
-             main = paste0(title, " Cluster - GWL"))
-  mosaicplot(table(data.gwl.cluster$gwl, data.gwl.cluster$cluster), color = TRUE,
-             ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
-             main = paste0(title, " Cluster - GWL"))
+  print(HB.diff.index(data.gwl.cluster))
   
-  HB.diff.index(data.gwl.cluster)
+  # mosaicplot(table(data.gwl.cluster$cluster, data.gwl.cluster$gwl), color = TRUE,
+  #            xlab = "Cluster", ylab = "GWL", cex.axis = 0.6, las = 2,
+  #            main = paste0(title, " Cluster - GWL"))
+  # mosaicplot(table(data.gwl.cluster$gwl, data.gwl.cluster$cluster), color = TRUE,
+  #            ylab = "Cluster", xlab = "GWL", cex.axis = 0.6, las = 2,
+  #            main = paste0(title, " Cluster - GWL"))
+  
+  ggplot(data = data.gwl.cluster) +
+    geom_mosaic(aes(x = product(cluster, gwl), fill = cluster), offset = 0.005) +
+    theme_classic() +
+    ggtitle("Mosaikplot für Cluster ~ GWL") +
+    labs(x = "GWL") +
+    scale_fill_brewer(palette = "Set1") +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    guides(fill=guide_legend(title = "Cluster", reverse = TRUE)) +
+    theme(axis.ticks.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.title.y = element_blank(),
+          axis.line.y = element_blank())
+  
 }
 
 
