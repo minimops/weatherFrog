@@ -75,8 +75,8 @@ longrun = FALSE # set to TRUE to rerun all code
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Principle Component Analysis", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PCA", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PCA / PC", "$k$")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -92,12 +92,12 @@ data.table(
 
 Der Klimawandel und seine Auswirkungen sind in den letzten Jahrzenten spürbar geworden. Immer häufiger kommt zu extremen Wetterereignissen wie langanhaltende Hitzewellen, Überschwemmungen Dürre und (Wald-)Brände. Durch den Klimawandel ändert sich auch die Häufigkeit und Länge der auftretenden Großwetterlagen.
 Lang anhaltende GWL sind problematisch, da sie zu  Wetteranomalien führen und Variablen wie Temperatur, Regen, Wind und Wetter beeinflussen, welches sich wiederum auf das Klima auswirkt (@article_james).
-Magdalena Mittermeier vom Department für Geografie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert.
-Im Rahmen des Statistischen Praktikums wird dieses Projekt unterstützt, indem man beobachtete Wetterdaten auf täglicher Basis in Cluster einteilt.
+Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert.
+Im Rahmen des Statistischen Praktikums wird dieses Projekt unterstützt, indem explorativ versucht wird, Tage anhand von beobachteten Wetterdaten in Cluster aufzuteilen.
 
 ## Großwetterlagen
 
-Es gibt mehrere Arten die Großwetterlagen zu klassifizieren. Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, gibt es 29 Großwetterlagen. Diese sind über Europa und Teilen des Atlantik definiert. Lässt sich ein Tag nicht einer GWL zuordnen, wird diese der nachfolgenden oder vorherigen GWL zugeteilt. Lässt sich keine Struktur erkennen, wird die GWL als Unbestimmt (U) bezeichnet (siehe @pik119). Des Weiteren dauern GWL mindestens drei Tage oder länger an. Außerdem braucht es für die GWL das Geopotential und die Luftdruckverteilung über den Meeresspiegel. (Quelle) Zusätzlich teilt man die GWL nach ihrer Strömungsrichtung und Zirkulationsform ein.[Quelle] Die Strömungsrichtungen sind antizyklonal und zyklonal. Diese unterscheiden sich in ihrer Drehrichtung. Die antizyklonale Strömungsrichtung verläuft entgegengesetzt der Richtung der Rotation der Erde um ihre Achse, während die zyklonale Strömungsrichtung in Richtung der Rotation der Erde verläuft.[quelle] Noch zu beachten sind die Zirkulationsformen. Es gibt die gemischte, meridionale und zonale Zirkulation. Die gemischte Zirkulation besteht, wie der Name schon sagt, aus gleich großen Anteilen von meridionale und zonale Zirkulation. Die zonale Zirkulation beschreibt die Luftströmung, die von West nach Ost oder von Ost nach West, während die meridionale Zirkulation von Nord nach Süd oder von Süd nach Nord,entlang der Längengrade gerichtet ist. [Quelle] Die Zirkulationsströme steuern die LuftdruckverteilungStrömungsrichtung.[quelle] Zu guter Letzt braucht es für die Zuteilung der GWl den Hoch- oder Tiefdruck.[Quelle]. Die Großwetterlage "Westlage zyklonal" kommt am häufigsten vor. [quellen]. In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammen gefasst (@sklima).
+Nach dem Katalog von Hess und Brezowsky, welcher \textcolor{red}{1952} veröffentlicht wurde, wurden 29 Großwetterlagen definiert. Diese sind über Europa und Teilen des Atlantik definiert. Lässt sich ein Tag nicht einer GWL zuordnen, wird diese der nachfolgenden oder vorherigen GWL zugeteilt. Lässt sich keine Struktur erkennen, wird die GWL als Unbestimmt (U) bezeichnet (siehe @pik119). Des Weiteren dauern GWL mindestens drei Tage oder länger an. Außerdem braucht es für die GWL das Geopotential und die Luftdruckverteilung über den Meeresspiegel. (Quelle) Zusätzlich teilt man die GWL nach ihrer Strömungsrichtung und Zirkulationsform ein.[Quelle] Die Strömungsrichtungen sind antizyklonal und zyklonal. Diese unterscheiden sich in ihrer Drehrichtung. Die antizyklonale Strömungsrichtung verläuft entgegengesetzt der Richtung der Rotation der Erde um ihre Achse, während die zyklonale Strömungsrichtung in Richtung der Rotation der Erde verläuft.[quelle] Noch zu beachten sind die Zirkulationsformen. Es gibt die gemischte, meridionale und zonale Zirkulation. Die gemischte Zirkulation besteht, wie der Name schon sagt, aus gleich großen Anteilen von meridionale und zonale Zirkulation. Die zonale Zirkulation beschreibt die Luftströmung, die von West nach Ost oder von Ost nach West, während die meridionale Zirkulation von Nord nach Süd oder von Süd nach Nord,entlang der Längengrade gerichtet ist. [Quelle] Die Zirkulationsströme steuern die LuftdruckverteilungStrömungsrichtung.[quelle] Zu guter Letzt braucht es für die Zuteilung der GWl den Hoch- oder Tiefdruck.[Quelle]. Die Großwetterlage "Westlage zyklonal" kommt am häufigsten vor. [quellen]. In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammen gefasst (@sklima).
 
 ```{r gwl, echo=FALSE, fig.cap="\\label{tab:gwl}Großwetterlagen nach Hess und Brezowsky. Each row represents a list element"}
 gwl <- data.table(
@@ -109,34 +109,34 @@ kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", capt
 
 ```
 
-## Fragestellung
+## Forschungsfrage
 
 Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeresspiegel und Geopotential die  einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Informationen der GWL zu benutzen.
-
++ Vorgaben
 
 # Methodik
 
 ## Daten
 
-Seit 1900 wird viermal täglich an 160 Standorten das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ und der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) erhoben. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist. 
+Seit 1900 wird viermal täglich an 160 Standorten der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) und das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ erhoben. Im Folgenden wird für Visualisierungen der Luftdruck in hPa und das Geopotential für .... dargestellt. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist. 
 
-```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Verteilung der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
+```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Standorte der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
 include_graphics("assets/MapDots.png")
 ```
 
-Die Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügung steht. Zudem liegen die GWL für jeden Tag im Zeitraum von 1900 bis 2010 vor. Im Rahmen des Statistischen Praktikums wird nur mit dem Reanalyse-Datensatz geclustert. Die Abbildungen \ref{fig:mslp_ex} und \ref{fig:geopot_ex} visualisieren die Werte des Luftdrucks, bzw. Geopotentials am 01.01.1980 um 0 Uhr über alle 160 Standorte. 
+Die Variablen sind Teil des Reanalyse-Datensatzes ERA-20C, der für die Analysen zur Verfügung steht. Zudem liegen die GWL für jeden Tag im Zeitraum von 1900 bis 2010 vor. Für die folgenden Clusteranalysen wird nur mit dem Reanalyse-Datensatz geclustert. Die Abbildungen \ref{fig:mslp_ex} und \ref{fig:geopot_ex} visualisieren die Werte des Luftdrucks, bzw. Geopotentials am 01.01.1980 um 0 Uhr über alle 160 Standorte. Dieser Tag wird im weiteren Verlauf als Beispieltag benutzt. 
 
-```{r mslp_ex, echo = FALSE, fig.cap="\\label{fig:mslp_ex}Messwerte des Mslp an den 160 Messpunkten am 01.01.1980 um 0 Uhr über 160 Standorte", fig.align="center", out.width="80%"}
+```{r mslp_ex, echo = FALSE, fig.cap="\\label{fig:mslp_ex}Messwerte des Mslp an den 160 Messpunkten am 01.01.1980 um 0 Uhr", fig.align="center", out.width="80%"}
 include_graphics("assets/dayMslp.png")
 ```
 
-```{r geopot_ex, echo = FALSE, fig.cap="\\label{fig:geopot_ex}Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980 um 0 Uhr über 160 Standorte", fig.align="center", out.width="80%"}
+```{r geopot_ex, echo = FALSE, fig.cap="\\label{fig:geopot_ex}Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980 um 0 Uhr", fig.align="center", out.width="80%"}
 include_graphics("assets/dayGeopot.png")
 ```
 
 Vor allem aus rechentechnischen Begrenzungen wurde für dieses Projekt zum einen entschieden, die Werte an den vier Uhrzeiten für jeden Tag zu mitteln. Abbildung \ref{fig:avgDay} visualisiert dies für Werte des Luftdrucks und Geopotentials am 01. Januar 1980 über die 160 Standorte an einem Tag. Dadurch hat der resultierende Datensatz 320 Dimensionen, die aus 2 Parametern je für 160 Messpunkte entstehen. 
 
-```{r avgDay, echo = FALSE, fig.cap="\\label{fig:avgDay}Über den Tag gemittelte Messwerte des Geopotentials an den 160 Messpunkten am 01.01.1980. Hierbei wurde bei den Variablen Luftdruck und Geopotential das arithmetrische Mittel über die vier Tageszeitpunkte (0 Uhr, 6 Uhr, 12 Uhr, 18 Uhr) gebildet", fig.align="center", out.width="100%"}
+```{r avgDay, echo = FALSE, fig.cap="\\label{fig:avgDay}Über den Tag gemittelte Messwerte an den 160 Messpunkten am 01.01.1980. Hierbei wurde bei den Variablen Luftdruck und Geopotential das arithmetrische Mittel eines Standorts über die vier Tageszeitpunkte (0 Uhr, 6 Uhr, 12 Uhr, 18 Uhr) gebildet.", fig.align="center", out.width="100%"}
 include_graphics("assets/avgDay.png")
 ```
 
@@ -145,7 +145,7 @@ Zum anderen werden, auch auf Grund von rechentechnischen Kapazitäten, die zu be
 
 ## Clusterbewertungskriterien
 
-Um den Erfolg einer Clusterlösung bewerten zu können und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskriterien etabliert werden. Hierbei soll zum einen beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tagen jeweils im selben Cluster, das im Folgenden *Timeline* genannt wird.
+Um den Erfolg einer Clusterlösung bewerten und somit verschiedene Clusteransätze vergleichen zu können, mussten vorerst Bewertungskriterien etabliert werden. Hierbei soll beantwortet werden, ob grundsätzlich das Clustering erfolgreich ein Muster erkennt aber zugleich beachtet werden, ob dieses Muster gemäß der Daten auch sinnvoll ist. Repräsentierend für das erste Kriterium wurde der *Silhouettenkoeffizient* betrachtet, für letzteres die Verteilung der Anzahl von aufeinanderfolgenden Tagen jeweils im selben Cluster, das im Folgenden *Timeline* genannt wird.
 
 ### Silhouettenkoeffizient
 
@@ -161,7 +161,7 @@ S(o) =
 \end{cases}
 $$
 
-wobei $dist(A, o) :=$ durchschnittliche Distanz zu allen anderen Objekten desselben Clusters und $dist(B, o) :=$ durchschnittliche Distanz zu allen anderen Objekten des nächstgelegenen Clusters ist. Der Silhouettenkoeffizient $s$ ist dann definiert durch die durchschnittliche Silhouettenwerte von allen $n$ Beobachtungen $o$ in einem Datensatz $D$, also
+wobei $dist(A, o)$ die durchschnittliche Distanz zu allen anderen Objekten desselben Clusters und $dist(B, o)$ die durchschnittliche Distanz zu allen anderen Objekten des nächstgelegenen Clusters ist. Der Silhouettenkoeffizient $s$ ist dann definiert durch die durchschnittlichen Silhouettenwerte von allen $n$ Beobachtungen $o$ in einem Datensatz $D$, also
 
 $$
 s = \frac{1}{n} \sum_{o \in D}{S(o)} \text{,    mit } -1 \le S(o) \le 1
@@ -171,7 +171,7 @@ Sowohl die Silhouetten der Beobachtungen als auch der Silhouettenkoeffizient sel
 
 ### Timeline
 
-Da die zeitliche Struktur der Daten, nämlich das Aufeinanderfolgen der Tage in spezifischer Reihenfolge, bei der weiteren Analyse nicht mitbeachtet wird, lässt sich hiermit die Sinnhaftigkeit einer Clustereinteilung gut bewerten. Eine Aufteilung, bei der keine zeitliche Struktur erkennbar ist, beispielsweise ein konstanter Wechsel der Clusterzugehörigkeit in aufeinanderfolgenden Tagen, ist hier nicht als sinnvoll zu betrachten. Gleichermaßen unerwünscht ist jedoch eine Aufteilung die sehr lange Intervalle von Tagen gleicher Clusterzugehörigkeit aufweist. Die am längsten anhaltende GWL nach Hess und Brezowsky in der hier zu untersuchenden Zeitperiode beträgt 23 Tage. Allgemein zeigen Großwetterlagen jedoch kürzere Längen auf.
+Da die zeitliche Struktur der Daten, nämlich das Aufeinanderfolgen der Tage in spezifischer Reihenfolge, bei der weiteren Analyse nicht mitbeachtet wird, lässt sich hiermit die Sinnhaftigkeit einer Clustereinteilung gut bewerten. Eine Aufteilung, bei der keine zeitliche Struktur erkennbar ist, beispielsweise ein konstanter Wechsel der Clusterzugehörigkeit in aufeinanderfolgenden Tagen, ist hier nicht als sinnvoll zu bewerten. Gleichermaßen unerwünscht ist jedoch eine Aufteilung, die sehr lange Intervalle von Tagen gleicher Clusterzugehörigkeit aufweist. Die am längsten anhaltende GWL nach Hess und Brezowsky in der hier zu untersuchenden Zeitperiode beträgt 23 Tage. Allgemein zeigen Großwetterlagen jedoch kürzere Längen auf.
 
 ```{r timeline_GWL, echo = FALSE, fig.cap="\\label{fig:timeline_GWL}Timeline der GWL 1971-2000. Die Anzahl der GWL wurde mit deren Länge multipliziert, sodass jeder Tag eine Beobachtung darstellt", fig.align="center", out.width="80%"}
 include_graphics("assets/timeline_GWL_mult.png")
@@ -199,7 +199,7 @@ $$
 
 ### Vergleich zur GWL-Aufteilung
 
-Die Aufteilung der GWL nach Hess und Brezowsky über die Cluster wird im Folgenden nicht benutzt um Modelle zu bewerten bzw. zu vergleichen, da in der Analyse allgemein auf die Information der Herrschenden GWL verzichtet werden soll. Allerdings wird hier eine Möglichkeit präsentiert, diese Aufteilung zu messen, um dies später in der Ergebnisanalyse zu nutzen. Dafür wird für jede GWL der größte Anteil innerhalb eines Clusters aufsummiert und durch 29 geteilt, um die Maßzahl (im Folgenden: $HB_{diff}$) nach oben auf 1 zu beschränken. Die GWL-Kategorie *U* wird dabei ausgeschlossen. Somit liegt diese Maßzahl bei 1, falls alle GWL sich jeweils nur in einem Cluster befinden.
+Die Aufteilung der GWL nach Hess und Brezowsky über die Cluster wird im Folgenden nicht benutzt um eine Modellentscheidung zu treffen, da in der Analyse allgemein auf die Information der herrschenden GWL verzichtet werden soll. Allerdings wird hier eine Möglichkeit präsentiert, diese Aufteilung zu messen, um dies später in der Ergebnisanalyse zu nutzen. Dafür wird für jede GWL der größte Anteil innerhalb eines Clusters aufsummiert und durch 29 geteilt, um die Maßzahl (im Folgenden: $HB_{diff}$) nach oben auf 1 zu beschränken. Die GWL-Kategorie *U* wird dabei ausgeschlossen. Somit liegt diese Maßzahl bei 1, falls alle GWL sich jeweils nur in einem Cluster befinden.
 
 $$
   HB_{diff} = \frac{1}{29} * \sum_{i = 1}^{29}{\gamma}
@@ -213,9 +213,13 @@ $$
 
 ## Cluster Prinzip
 
-Die Grundidee des Clustern ist, Objekte so in Gruppen aufzuteilen, dass Beobachtungen innerhalb der Cluster möglichst homogen und die Gruppen untereinander möglichst heterogen sind. Um ein Clustering durchzuführen wird zum einen ein Distanzmaß benötigt, das die Distanzen zwischen Beobachtungen in einem Datensatz angibt. Zum anderen muss ein Clusteralgorithmus verwendet werden, der resultierende Cluster aus dem Datensatz ausgibt. Sowohl Distanzmaß als auch der Algorithmus können selber implementiert werden. Allerdings gibt es auch schon viele verschiedene Metriken und Algorithmen, die für eine Clusteranalyse geeignet sind.
+Die Grundidee einer Clusteranalyse ist, Beobachtungen so in Gruppen aufzuteilen, dass diese innerhalb der Gruppen möglichst homogen und die Gruppen untereinander möglichst heterogen sind. Um ein Clustering durchzuführen wird zum einen ein Distanzmaß benötigt, das die Distanzen zwischen Beobachtungen in einem Datensatz angibt. Zum anderen muss ein Clusteralgorithmus verwendet werden, der resultierende Cluster aus dem Datensatz ausgibt. 
 
-**Distanzmaß** Ein Distanzmaß gibt die Distanz von allen Beobachtungen eines Datensatzes untereinander an. Es ist somit metrisch und ein Distanzmaß für die Menge an Beobachtungen $\Omega = \{o_1, ... , o_n\}$ bildet auf die reellen Zahlen ab $d : \Omega \text{ } \mathsf{x} \text{ } \Omega \to \mathbb{R}, \text{ mit } d := \text{ Distanzmaß }$. Die Distanz zwischen zwei Beobachtungen $a_i$ und $a_l$ wird also geschrieben als $d(a_i, a_l)$. Für metrische Distanzmaße postuliert man nach Folien Annika Hoyer \textcolor{red}{wie zitiert man Folien?}
+ 
+
+**Distanzmaß** 
+
+Ein Distanzmaß gibt die Distanz von allen Beobachtungen eines Datensatzes untereinander an. Es ist somit metrisch und ein Distanzmaß für die Menge an Beobachtungen $\Omega = \{o_1, ... , o_n\}$ bildet auf die reellen Zahlen ab $d : \Omega \text{ } \mathsf{x} \text{ } \Omega \to \mathbb{R}, \text{ mit } d := \text{ Distanzmaß }$. Die Distanz zwischen zwei Beobachtungen $o_i$ und $o_l$ wird also geschrieben als $d(o_i, o_l)$. Für metrische Distanzmaße postuliert man nach Folien Annika Hoyer \textcolor{red}{wie zitiert man Folien?}
 
 $$
 \begin{aligned}
@@ -226,7 +230,11 @@ $$
 \end{aligned}
 $$
 
-**Clusteralgorithmus** Es gibt verschiedene Ansätze zu clustern. In diesem Projekt werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optimal Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimesionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der K-Means oder K-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren.
+ 
+
+**Clusteralgorithmus** 
+
+Es gibt verschiedene Ansätze zu clustern. Hier werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optimal Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimensionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der K-Means oder K-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren.
 
 Dichtebasiertes Clustern...
 
@@ -244,24 +252,24 @@ Demnach lässt sich vermuten, dass die GWL sich anhand der Position und Form, de
 
 ### Prinzip Filtern
 
-Diesen Grundgedanken verfolgend, sind die Tage optimalerweise in interessierende Gebiete zu unterteilen und anhand der Positionen und Formen dieser Gebiete miteinander zu vergleichen. "Interessierende Gebiete" wurden hierbei vorerst angenommen als die Gebiete um die täglich gemessenen Extrema. Folglich also einem Gebiet höherer Messwerte um den am Tag maximal gemessenen Wert und einem Gebiet tieferer Messwerte um den minimalen Messwert. Dabei ist zu beachten, dass diese Gebiete nicht zu groß werden aber auch nicht nur aus einzelnen wenigen Punkten bestehen. Außerdem sollte ihre Form nicht durch den Clusteralgorithmus bestimmt bzw. beeinflusst werden, da die Gebiete sonst alle ähnliche Formen aufweisen würden, und nicht treu repräsentiert werden würden. Beides führte später zu Problemen bei dem Vergleich zwischen den Tagen. Alle Standorte die nicht in den interessanten Gebieten liegen sollten beim Vergleich der Tage nicht mit einbezogen werden, demnach bei der Gebietseinteilung als Rauschen bezeichnet werden.
+Diesen Grundgedanken verfolgend, sind die Tage optimalerweise in interessierende Gebiete zu unterteilen und anhand der Positionen und Formen dieser Gebiete miteinander zu vergleichen. "Interessierende Gebiete" wurden hierbei vorerst angenommen als die Gebiete um die täglich gemessenen Extrema. Folglich also einem Gebiet höherer Messwerte um den am Tag maximal gemessenen Wert und einem Gebiet tieferer Messwerte um den minimalen Messwert. Dabei ist zu beachten, dass diese Gebiete nicht zu groß werden aber auch nicht nur aus einzelnen wenigen Punkten bestehen. Außerdem sollte ihre Form nicht durch den Clusteralgorithmus bestimmt bzw. beeinflusst werden, da die Gebiete sonst alle ähnliche Formen aufweisen würden, und nicht treu repräsentiert werden würden. Beides führte später zu Problemen bei dem Vergleich zwischen den Tagen. Alle Standorte die nicht in den interessanten Gebieten liegen sollten bei dem Vergleich der Tage nicht mit einbezogen werden und demnach bei der Gebietseinteilung als Rauschen bezeichnet werden.
 
-Um diese Gebietseinteilung eines Tages durchzuführen, soll also ein metrischer Messwert eines bestimmten Standortes mit einer Gebietszugehörigkeit ersetzt werden. Die Messinformationen des Tagen sollen also "gefiltert" werden. Da sonst bestimmte Hyperparameter oder Grenzwerte fest angegeben werden müssten, lässt sich dies durch ein seperates Clusterverfahren über die 160 Standorte pro Tag erreichen. Mit der Idee anhand beider Parameter-Messwerte (Mslp und Geopotential) "Gebiete-Muster" zu erkennen und, da durch Experimentieren herausgefunden wurde, dass die beiden Parameter vereinigt keine besonders sauberen Muster zu erkennen ließen, wird jeder Tag zwei mal auf diese Weise geclustered; jeweils pro Parameter ein Mal. Die Feature-Variablen dieses Clusterverfahrens sind demnach Longitude, Latitude und der Parametermesswert.
+Um diese Gebietseinteilung eines Tages durchzuführen, soll also ein metrischer Messwert eines bestimmten Standortes mit einer Gebietszugehörigkeit ersetzt werden. Die Messinformationen des Tagen sollen somit "gefiltert" werden. Da sonst bestimmte Hyperparameter oder Grenzwerte fest angegeben werden müssten, lässt sich dies durch ein seperates Clusterverfahren über die 160 Standorte pro Tag erreichen. Mit der Idee, anhand beider Parameter-Messwerte (Mslp und Geopotential) "Gebiete-Muster" zu erkennen wird jeder Tag zwei mal auf diese Weise geclustered; jeweils pro Parameter ein Mal. Die Feature-Variablen dieses Clusterverfahrens sind demnach Longitude, Latitude und der Parametermesswert.
 
 ### DBSCAN und Fuzzy
 
-Um der Anforderung der nicht uniformen Gebiete gerecht zu werden, erscheint ein dichtebasiertes Clusterverfahren von Vorteil. Ein implementiertes Verfahren, das auch die Möglichkeit des Rauschens beinhaltet, ist *DBSCAN* (Density-Based Spatial Clustering of Applications with Noise). Ein solches Verfahren nutzt einen sog. Nachbarschaftsparameter, um Beobachtungen zueinander als Nachbarn einzuteilen oder eben nicht. Demnach liegt hier nicht ein Mittelpunkt eines Clusters vor, zu dem der Abstand einer jeweiligen Beobachtung entscheidend dafür ist, ob sie sich jeweils in diesem Cluster befindet, sondern Beobachtungen innerhalb eines Clusters weisen jeweils geringe Distanzen zu ihren Nachbarpunkten im selben Cluster auf. Dadurch werden Cluster erstellt, die sehr unförmig sein können. @tds.dbscan
+Um der Anforderung der nicht uniformen Gebiete gerecht zu werden, erscheint ein dichtebasiertes Clusterverfahren von Vorteil. Ein implementiertes Verfahren, das auch die Möglichkeit des Rauschens beinhaltet, ist *DBSCAN* (Density-Based Spatial Clustering of Applications with Noise). Ein solches Verfahren nutzt einen sogenannte Nachbarschaftsparameter, um Beobachtungen zueinander als Nachbarn einzuteilen oder eben nicht. Demnach liegt hier nicht ein Mittelpunkt eines Clusters vor, zu dem der Abstand einer jeweiligen Beobachtung entscheidend dafür ist, ob sie sich jeweils in diesem Cluster befindet, sondern Beobachtungen innerhalb eines Clusters weisen jeweils geringe Distanzen zu ihren Nachbarpunkten im selben Cluster auf. Dadurch werden Cluster erstellt, die sehr unförmig sein können. (@tds.dbscan)
 
 *DBSCAN* benötigt keine Angabe der Clusteranzahl, sondern nur der Hyperparameter *minPoints* (minimale Anzahl an Punkte pro Cluster) und *eps* (Nachbarschaftsparameter). Hier lässt sich erhoffen, dass eventuell auch mehr als nur die zwei Gebiete um die Extrema erkannt werden. Allerdings musste schnell erkannt werden, dass sich der Algorithmus mit diesen Daten sehr sensitiv gegenüber den Hyperparametern präsentiert, selbst wenn der Nachbarschaftsparameter pro Tag anhand dem Wert der größten Wölbung eines $k$NN-plots ($k$ = minPoints) spezifisch berechnet wird (siehe Absatz [SCAPOI]). Dies führt dazu, dass sehr viele Tage nur zu Noise, einem einzigen Cluster oder zu riesigen Clustern gefiltert werden; was widerrum nicht erwünscht ist, da die Vergleichbarkeit der Tage im Nachhinein damit nahezu unmöglich wird.
 
-Ein Bestimmen der Startpunkte und somit ein Festsetzen der Cluster-Orte ist - zumindest in vorhandenen Implementationen dieses Algorythmus' - nicht möglich. Deswegen lässt sich beobachten, dass die Extrema oft nicht in einem der eingeteilten Clustern befinden, da sie sich oft stark von durchschnittlichen Messwerten abweichen. *DBSCAN* führt somit im besten Fall zu Gebieten, dessen Messpunkte sich eher im Mittelfeld der Skala des Tages befinden und innerhalb der Gebiete kaum Veränderungen aufweisen. Solche Gebiete sind aber hier as nicht von besonderem Interesse vermutet und deshalb wird *DBSCAN* hierfür ausgeschlossen.
+Ein Bestimmen der Startpunkte und somit ein Festsetzen der Cluster-Orte ist - zumindest in vorhandenen Implementationen dieses Algorithmus' - nicht möglich. Deswegen lässt sich beobachten, dass sich die Extrema oft nicht in einem der eingeteilten Clustern befinden, da sie oft stark von durchschnittlichen Messwerten abweichen. *DBSCAN* führt somit im besten Fall zu Gebieten, dessen Messpunkte sich eher im Mittelfeld der Skala des Tages befinden und innerhalb der Gebiete kaum Veränderungen aufweisen. Solche Gebiete sind aber hier als nicht von besonderem Interesse vermutet und deshalb wird *DBSCAN* hierfür ausgeschlossen.
 
 
  
 
 Ein weiterer vielversprechender Ansatz ist das *Fuzzy*-Clustering. *Fuzzy* entpricht vom Prinzip k-Means, es werden also pro Cluster Mittelpunkte festgelegt. Allerdings wird für jede Beobachtung eine Zugehörigkeitswahrscheinlichkeit für jedes Cluster berechnet, anstatt einer Cluster-Id. Hier können Startpunkte angegeben werden und anhand der Clusterzugehörigkeitswahrscheinlichkeit jeder Beobachtung, bestimmte Beobachtungen mithilfe eines Schwellenwertes im Nachhinein zu Rauschen verwandelt werden.
 
-Allerdings ist dieses Verfahren hier auch nicht optimal, da, neben dem, dass *Fuzzy* üblicherweise rechentechnisch sehr teuer implementiert ist, kommt hinzu, dass dieses Verfahren auf einen Mittelpunkt pro Cluster beruht und die Distanz dazu anhand eines gegebenen Distanzmaß' bestimmt wird. Nachdem die Koordinaten als Variablen aufgenommen werden, führt dies zu Clustern gleicher Form und verletzt somit die Anforderung die Form eines Gebietes möglichst getreu darzustellen.
+Allerdings ist dieses Verfahren hier auch nicht optimal. Neben dem, dass *Fuzzy* üblicherweise rechentechnisch sehr teuer implementiert ist, kommt hinzu, dass dieses Verfahren auf einen Mittelpunkt pro Cluster beruht und die Distanz dazu anhand eines gegebenen Distanzmaß' bestimmt wird. Nachdem die Koordinaten als Variablen aufgenommen werden, führt dies zu Clustern gleicher Form und verletzt somit die Anforderung, die Form eines Gebietes möglichst getreu darzustellen.
 
 
 ### SCAPOI
@@ -291,12 +299,12 @@ Im Folgenden wird der benutzte Algorithmus beschrieben, der eine abgeänderte Ve
    }
  }
  nicht zugeteilte Punkte bleiben Noise\;
- \caption{SCAPOI - Algorythmus}
+ \caption{SCAPOI - Algorithmus}
 \end{algorithm}
 ```
  
 
-Die Startpunkte werden hier jeweils als die Extrema der Messpunkte gewählt. Der Nachbarschaftsparameter *eps* muss groß genug gewählt (bzw. berechnet) werden, um zu berücksichtigen, dass die Extrema im Vergleich zu anderen Messwerten stark abweichen und somit zu verhinderen, dass die Cluster gar nicht oder zu gering wachsen. Allerdings führt aber zu großer eps dann zu einem zu starken Wachsen der Cluster, da der Abstand eines Messpunktes zu seinem Nachbar selten größer ist, als der Abstand der Extrema zu seinen Nachbarn. Deshalb wird dieser Nachbarschaftsparameter *eps* pro Iteration verkleinert.
+Die Startpunkte werden hier jeweils als die Extrema der Messpunkte gewählt. Der Nachbarschaftsparameter *eps* muss groß genug gewählt (bzw. berechnet) werden, um zu berücksichtigen, dass die Extrema im Vergleich zu anderen Messwerten stark abweichen und somit zu verhindern, dass die Cluster gar nicht oder zu gering wachsen. Allerdings führt aber ein zu groß gewählter *eps* dann zu einem zu starken Wachsen der Cluster, da der Abstand eines Messpunktes zu seinem Nachbar selten größer ist, als der Abstand der Extrema zu seinen Nachbarn. Deshalb wird dieser Nachbarschaftsparameter *eps* pro Iteration verkleinert.
 
 Der Nachbarschaftsparameter wird hier für jede Tag-Parameter Kombination berechnet, indem der Punkt der größten Wölbung eines kNN-Distanzplot berechnet wird. Dieser visualisiert die Distanzen von Beobachtungen zu seinen $k$ Nachbarn. $k$ wird hier als 10 festgesetzt, mit dem Ziel, am Ende Gebiete der Mindestgröße 10 zu erhalten.
 
@@ -314,7 +322,7 @@ $$ $$
   wobei: t = \text{Iterationsindex}
 $$
 
-Im Vergleich zu *DBSCAN*, mit dem Gruppierungen von Beobachtungen gesucht werden, die einer bestimmten mindest-Dichte, sowie einer mindest-Größe gerecht werden, wird mit *SCAPOI* versucht um bestimmte, definierte Beobachtungen Gruppen zu bilden, die eine gewisse Dichte aufweisen. Im Fall hier (2 Cluster um min und max respektive), erhält man nun einen Gebietszugehörigkeitsvektor mit den Klassen: Noise, High und Low.
+Im Vergleich zu *DBSCAN*, mit dem Gruppierungen von Beobachtungen gesucht werden, die einer bestimmten Mindestdichte, sowie einer Mindestgröße gerecht werden, wird mit *SCAPOI* versucht um bestimmte, definierte Beobachtungen Gruppen zu bilden, die eine gewisse Dichte aufweisen. Im Fall hier (2 Cluster um Minimum und Maximum respektive), erhält man nun einen Gebietszugehörigkeitsvektor mit den Klassen: Noise, High und Low.
 
 ```{r scapoi_res, echo = FALSE, fig.cap="\\label{fig:scapoi_res}Beispiel der Gebietszuteilung eines Tages durch SCAPOI", fig.align="center", out.width="100%"}
 include_graphics("assets/filterRes.png")
@@ -323,9 +331,9 @@ include_graphics("assets/filterRes.png")
 
 ### Distanzmetrik
 
-Um nun wieder auf Tagesebene clustern zu können, sprich mit den Tagen als Beobachtungseinheit Cluster zu bilden, benötigt man eine Metrik, mit der diese Gebietszugehörigkeitsvektoren zweier Tage mieinander verglichen werden können. Der *Rand-Index* präsentiert eine solche Möglichkeit. Dieser vergleicht jeweils, ob pro Clusterlösung Paare zweier Beobachtungen jeweils im selben Cluster liegen. Obwohl dies eher gedacht ist, um Lösungen verschiedener Clusterverfahren mit denselben Beobachtungen zu vergleichen, ist der *Rand-Index* hier möglich, da die Messpunkte konstant sind. Allerdings ist dabei irrelevant, in welchem Cluster sich das Paar jeweils befindet, was in diesem Fall nicht erwünscht ist: Zwei Tage mit identischen Gebietsformen und -orten aber gespiegelter Zugehörigkeit sollen nicht eine Distanz von 0 zueinander aufweisen. Zu dem sind natürlich Messpunkte, die als Noise definiert wurden, nicht von Interesse und sollten demnach auch nicht mit einbezogen werden.
+Um nun wieder auf Tagesebene clustern zu können, sprich mit den Tagen als Beobachtungseinheit Cluster zu bilden, benötigt man eine Metrik, mit der diese Gebietszugehörigkeitsvektoren zweier Tage miteinander verglichen werden können. Der *Rand-Index* präsentiert eine solche Möglichkeit. Dieser vergleicht jeweils, ob pro Clusterlösung Paare zweier Beobachtungen jeweils im selben Cluster liegen. Obwohl dies eher gedacht ist, um Lösungen verschiedener Clusterverfahren mit denselben Beobachtungen zu vergleichen, ist der *Rand-Index* hier möglich, da die Messpunkte konstant sind. Allerdings ist dabei irrelevant, in welchem Cluster sich das Paar jeweils befindet, was in diesem Fall nicht erwünscht ist: Zwei Tage mit identischen Gebietsformen und -orten aber gespiegelter Zugehörigkeit sollen nicht eine Distanz von 0 zueinander aufweisen. Zudem sind  Messpunkte, die als Noise definiert wurden, nicht von Interesse und sollten demnach auch nicht mit einbezogen werden.
 
-Deshalb wurde folgend eine Distanzmetrik definiert, die über zwei Tage alle Messpunkte, die jeweils als Noise definiert wurden, nicht betrachtet und mit den verbleibenden vergleicht, welche Gebietszugehörigkeit die Messpunkte jeweils aufweisen. Danach wird noch durch die größte Anzahl an Messpunkten nicht in Noise dieser zwei Tagen geteilt, um den Wertebereich auf [0,1] zu beschränken, sowie einer möglichen Ausprägung der Gebiete als Teilmengen voneinander ebenfalls nicht eine Distanz von 0 zuzuweisen.
+Deshalb wurde folgend eine Distanzmetrik definiert, die über zwei Tage alle Messpunkte, die jeweils als Noise definiert wurden, nicht betrachtet und bei den Verbleibenden vergleicht, welche Gebietszugehörigkeit die Messpunkte jeweils aufweisen. Danach wird noch durch die größte Anzahl an Messpunkten nicht in Noise dieser zwei Tagen geteilt, um den Wertebereich auf [0,1] zu beschränken sowie einer möglichen Ausprägung der Gebiete als Teilmengen voneinander ebenfalls nicht eine Distanz von 0 zuzuweisen.
 
 $$
   d(A, B) = 1 - \left( \frac{\sum_{i = 1}^{160}{\mathbf{I}(a_i = b_i \neq 0)}}{max_{x  \in {A, B} } \left( \sum_{i = 1}^{160}{\mathbf{I}(x_i \neq 0)}\right)} \right)
@@ -337,7 +345,7 @@ $$
 
 ### Kriterien
 
-  Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter aufaddiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] beschrieben (*PAM*).
+  Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] beschrieben (*PAM*) durchgeführt.
   
   Nach Parametern getrennte Analysen weisen je einen höheren *Silhouettenkoeffizient* auf, aber einen geringeren *TLS*. (Mslp: $sil = 0.1369$, $TLS = -0.2027$ ; Geopot: $sil = 0.1541$, $TLS = -0.3898$)
   
@@ -571,6 +579,7 @@ Ein Ansatz \textcolor{red}{reference} ist hier, mit der Anzahl an *PC* weiter zu
 Obwohl die Entscheidung auf PAM als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering mit Hilfe der Funktion kmeans() in R aus dem Package "stats" für den Zeitraum 1971-2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt 2.3 erklärt. 
 
 Der Silhouettenkoeffizient betrug dabei 0.1191, der Timeline-Score $TLS = 0.4455$ und $HB_{diff} = 0.3379$. Der Silhouettenkoeffizient ist hier niedriger als bei dem vorgestellten Clustering mit PAM, somit spricht das für die Wahl von PAM.
+
 
 
 ```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}

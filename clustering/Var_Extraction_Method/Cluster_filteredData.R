@@ -43,7 +43,7 @@ dissimilarityPAM <- function(data, weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1
   return(dissimilarity)
 }
 
-datscale <- scaleNweight(copy(data))
+datscale <- scaleNweight(copy(datafinal))
 diss.gower.pam <- dissimilarityPAM(copy(datscale), dist = FALSE)
 summary(dissimilarity)
 
@@ -162,63 +162,65 @@ Cl.timeline(copy(dat.mahal))
 km.list.euc <- list()
 wss.euc <- numeric()
 
-for (k in 1:15){
+for (k in 5:9){
   km.list.euc[[k]] <- kmeans(copy(datscale)[, 2:49], centers=k, iter.max = 5000, nstart = 5)
   wss.euc[k] <- sum(km.list.euc[[k]]$withinss)
 }
-plot(1:15, wss.euc, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+plot(5:9, wss.euc[5:9], type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
-kmeans.euc <- kmeans(copy(datscale)[, 2:49], iter.max = 10000, nstart = 5, centers = 9)
-mosaic(copy(data), kmeans.euc$cluster, "KMEANS WITH EUCLIDEAN")
+kmeans.euc <- kmeans(copy(datscale)[, 2:49], iter.max = 10000, nstart = 5, centers = 6)
+mosaic(copy(datafinal), kmeans.euc$cluster, "KMEANS WITH EUCLIDEAN")
 
 
 ## Measurement 
-# 1.
+# 1. Silhouettenkoeffizient
 sil(kmeans.euc, kmeans.euc$cluster, dist(copy(datscale)[, 2:49]), "kmeans")
-?manova
-dat.kmeans <- copy(dat)[, cluster := kmeans.euc$cluster]
-# 2.
-Cl.timeline(copy(dat.kmeans))
-# 3.
-model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
-summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
-summary.aov(model.kmeans.euc)
-# 4.
-mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
+### s = 0.1206552
 
+# 2. Timeline
+dat.kmeans <- copy(datafinal)[, cluster := kmeans.euc$cluster]
+Cl.timeline(copy(dat.kmeans))
+### TLS = 0.2913967
+
+# 4. Mosaic
+mosaic(copy(datafinal), kmeans.euc$cluster, title = "PAM WITH MANHAT")
+### HBdiff = 0.352828
 
 ####### KMEANS with Euclidean weighted ###############
 km.list.euc.weighted <- list()
 wss.euc.weighted <- numeric()
 
-for (k in 1:15){
-  km.list.euc.weighted[[k]] <- kmeans(scaleNweight(copy(data), weight = TRUE)[, 2:49]
+for (k in 5:9){
+  km.list.euc.weighted[[k]] <- kmeans(scaleNweight(copy(data), weight = TRUE, 
+                                                   weights = c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+                                                               rep(1 / 6, 12), rep(1/9, 18), rep(1/6, 2)))[, 2:49]
                                       , centers=k, iter.max = 5000, nstart = 5)
   wss.euc.weighted[k] <- sum(km.list.euc.weighted[[k]]$withinss)
 }
-plot(1:15, wss.euc.weighted, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+plot(5:9, wss.euc.weighted[5:9], type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
 
-kmeans.euc.weighted <- kmeans(scaleNweight(copy(data), weight = TRUE)[, 2:49], iter.max = 10000, 
-                              nstart = 5, centers = 9)
-mosaic(copy(data), kmeans.euc.weighted$cluster, "KMEANS WITH EUCLIDEAN")
+kmeans.euc.weighted <- kmeans(scaleNweight(copy(data), weight = TRUE,
+                                           weights = c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+                                                       rep(1 / 6, 12), rep(1/9, 18), rep(1/6, 2)))[, 2:49], iter.max = 5000, 
+                              nstart = 5, centers = 6)
 
-?daisy
 
 ## Measurement 
-# 1.
-sil(kmeans.euc.weighted, kmeans.euc.weighted$cluster, dist(scaleNweight(copy(data), weight = TRUE)[, 2:49]),
+# 1. Silhouette
+sil(kmeans.euc.weighted, kmeans.euc.weighted$cluster, dist(scaleNweight(copy(data), weight = TRUE,
+                                                                        weights = c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+                                                                                    rep(1 / 6, 12), rep(1/9, 18), rep(1/6, 2)))[, 2:49]),
                                                            "kmeans")
-?manova
-dat.kmeans.weighted <- copy(dat)[, cluster := kmeans.euc.weighted$cluster]
-# 2.
-Cl.timeline(copy(dat.kmeans.weighted))
-# 3.
-model.kmeans.euc <- manova(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster)
-summary(as.matrix(dat.kmeans[, 2:49]) ~ dat.kmeans$cluster, test = "Wilks")
-summary.aov(model.kmeans.euc)
-# 4.
-mosaic(copy(data), cluster.manhat, title = "PAM WITH MANHAT")
+### s = 0.1190865
 
+# 2.
+dat.kmeans.weighted <- copy(datafinal)[, cluster := kmeans.euc.weighted$cluster]
+Cl.timeline(copy(dat.kmeans.weighted))
+### TLS = 0.4454835
+
+# 3. Mosaik
+mosaic(copy(data), kmeans.euc.weighted$cluster, title = "PAM WITH MANHAT")
+### HBdiff = 0.3379194
 ####### KMEANS with Gower ###################
 
 # geht nicht!
