@@ -7,9 +7,9 @@ datafinalID <- copy(datafinal)[, cluster := pamfinal$clustering]
 
 
 # 1. Timeline ganz
-tl <- Cl.timeline(copy(datafinalID))
+tl <- Cl.timeline(copy(datafinalID), multiplied = TRUE)
 
-ggsave(plot = tl, "documentation/plots/PAMfinal/timeline.png", device = "png",
+ggsave(plot = tl, "documentation/plots/PAMfinal/timelineMultiplied.png", device = "png",
        width = 5, height = 3)
 
 #1.1 Timeline multiplied

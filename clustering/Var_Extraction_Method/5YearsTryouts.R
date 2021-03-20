@@ -224,8 +224,52 @@ ClusterAssessmentList(together_preweighted, dataList, "euclidean", "_preweighted
 ClusterAssessmentList(summer_preweighted, dataListSummer, "euclidean", "Summer_preweighted", weight = TRUE)
 ClusterAssessmentList(winter_preweighted, dataListWinter, "euclidean", "Winter_preweighted", weight = TRUE)
 
+### Bewertungskriterien
+# Summer
+HBdiffSum <- c()
+for (i in seq_len(4)) {
+  HBdiffSum[i] <- mosaic(dataListSummer[[i]], summer_preweighted[[i]]$clustering)
+}
+
+mean(HBdiffSum)
+
+for (i in seq_len(4)){
+  Cl.timeline(data.table(date = dataListSummer[[i]]$date, cluster = summer_preweighted[[i]]$clustering))
+}
+
+tlSum <- c(0.1071803, -0.1440625, 0.08827791, 0.02821392)
+mean(tlSum)
+
+# Winter
+HBdiffWin <- c()
+for (i in seq_len(4)) {
+  HBdiffWin[i] <- mosaic(dataListWinter[[i]], winter_preweighted[[i]]$clustering)
+}
+
+mean(HBdiffWin)
+
+for (i in seq_len(4)){
+  Cl.timeline(data.table(date = dataListWinter[[i]]$date, cluster = winter_preweighted[[i]]$clustering))
+}
+
+tlWin <- c(-0.03716875, 0.05666324, -0.133882, -0.02000162)
+mean(tlWin)
 
 
+# together
+HBdiff <- c()
+for (i in seq_len(4)) {
+  HBdiff[i] <- mosaic(dataList[[i]], together_preweighted[[i]]$clustering)
+}
+
+mean(HBdiff)
+
+for (i in seq_len(4)){
+  Cl.timeline(data.table(date = dataList[[i]]$date, cluster = together_preweighted[[i]]$clustering))
+}
+
+tl <- c(0.2672315, 0.1813983, 0.2745528, 0.2976635)
+mean(tl)
 
 ################## PCA ######################
 
