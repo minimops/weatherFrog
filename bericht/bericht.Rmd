@@ -566,7 +566,8 @@ dt3 <- data.table(
 kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden für 5 Jahre") %>%
   kable_styling(latex_options = "striped", full_width = FALSE)%>%
   pack_rows("Reanalyse-Datensatz", 1, 4) %>%
-  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)
+  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)%>%
+  kable_styling(latex_options = "hold_position")
   
   
 ```
@@ -821,11 +822,13 @@ Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotenti
 include_graphics("assets/geoVerID.png")
 ```
 
-## Gewichtungsvektor & Boosting
+## Gewichtungsvektor
 
 Grundsätzlich lässt sich feststellen, dass die Wahl des Gewichtungsvektors in der Clustermethode der extrahierten Daten (siehe Abschnitt [Clustern mit extrahierten Daten]) einflussreich gegenüber dem Clusterergebnis ist, bzw. das gezeigte Verfahren sensitiv gegenüber den Variablen-Gewichtungen ist. Dieser Vektor wurde, wie im Abschnitt [Gewichtung] beschrieben, in Absprache mit den Projektpartnern rein auf fachlich sinnvoller Ebene festgelegt.
 
 Es lässt sich allerdings anzweifeln, ob so eine starre und ausgeglichene Gewichtungswahl zu dem besten Clusterergebnis führt. Wie schon im Abschnitt [Räumliche Struktur] angeschnitten, könnte die räumliche Komponente des Geopotentials heruntergewichtet werden. Eventuell sind bestimmte Gebiete auch relevanter als andere (z.B. der Raum über dem Festland Europa relevanter, als der über dem Atlantik), was unter anderem durch ungleiche Gewichte der Quadrantenmittelwerte dargestellt werden könnte.
+
+### Cluster-Boosting
 
 Ein Ansatz die Gewichte der Variablen flexibler zu wählen ist, sie durch ein maschinelles Verfahren automatisch zu bestimmen. Zum Beispiel könnte eine Art komponentenweises Boosting durchgeführt werden, das iterativ das Gewicht einer Variable erhöht um einen bestimmten Wert zu optimieren.
 
