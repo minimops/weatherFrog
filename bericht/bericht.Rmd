@@ -90,19 +90,29 @@ data.table(
 
 # Einleitung
 
-Der Klimawandel und seine Auswirkungen sind in den letzten Jahrzenten spürbar geworden. Immer häufiger kommt zu extremen Wetterereignissen wie langanhaltende Hitzewellen, Überschwemmungen  Dürre und (Wald-)Brände. Grund für den Klimawandel ist neben dem natürlichen Treibhauseffekt das menschliche Verhalten. Durch die Viehzucht, Abholzung der Regenwälder, Nutzung und Verbrennung fossiler Ressourcen gelangt vermehrt Kohlenstoffdioxid in die Atmosphäre. Durch die genannten Gründe steigt die durchschnittliche globale Temperatur. Der Klimawandel hat schwerwiegende Folgen für die Menschheit. Dürren führen zu Hungersnot und Wasserknappheit, Hitzewellen sorgen für mehr Tote.
-Durch den Klimawandel ändert sich auch die Häufigkeit der auftretenden Großwetterlagen.
+Der Klimawandel und seine Auswirkungen sind in den letzten Jahrzenten spürbar geworden. Immer häufiger kommt zu extremen Wetterereignissen wie langanhaltende Hitzewellen, Überschwemmungen Dürre und (Wald-)Brände. Durch den Klimawandel ändert sich auch die Häufigkeit und Länge der auftretenden Großwetterlagen.
+Lang anhaltende GWL sind problematisch, da sie zu  Wetteranomalien führen und Variablen wie Temperatur, Regen, Wind und Wetter beeinflussen, welches sich wiederum auf das Klima auswirkt (@article_james).
 Magdalena Mittermeier vom Department für Geografie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (GWL) unter dem Einfluss des Klimawandels verändert.
 Im Rahmen des Statistischen Praktikums wird dieses Projekt unterstützt, indem man beobachtete Wetterdaten auf täglicher Basis in Cluster einteilt.
 
-
 ## Großwetterlagen
 
-Es gibt zwei Kategorien, um die Großwetterlagen zu unterteilen, einmal die objektiven und subjektiven Großwetterlagen. Die uns zur Verfügung gestellte Einteilung in Großwetterlagen beruht auf subjektiven Einteilung, nach dem Katalog nach Hess und Brezowsky, der im Jahr 1952 veröffentlicht wurde. Es wurden 29 Großwetterlagen über Europa und dem Atlantik definiert. Zudem gibt es die Kategorie Unbestimmt (U), die angegeben wurde, wenn sich ein Tag keiner GWL zuordnen ließ (siehe @pik119). Die jeweiligen Tage lassen sich anhand von mehreren Variablen einteilen. Die Einteilung erfolgt nach den Zirkulationsformen in Bodennäheund in mittleren tropesphärischen Niveau. Die Zirkulationsformen sind zyklonal und antizyklonal Die Lage "West zyklonal" kommt am häufigsten vor.
+Es gibt mehrere Arten die Großwetterlagen zu klassifizieren. Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, gibt es 29 Großwetterlagen. Diese sind über Europa und Teilen des Atlantik definiert. Lässt sich ein Tag nicht einer GWL zuordnen, wird diese der nachfolgenden oder vorherigen GWL zugeteilt. Lässt sich keine Struktur erkennen, wird die GWL als Unbestimmt (U) bezeichnet (siehe @pik119). Des Weiteren dauern GWL mindestens drei Tage oder länger an. Außerdem braucht es für die GWL das Geopotential und die Luftdruckverteilung über den Meeresspiegel. (Quelle) Zusätzlich teilt man die GWL nach ihrer Strömungsrichtung und Zirkulationsform ein.[Quelle] Die Strömungsrichtungen sind antizyklonal und zyklonal. Diese unterscheiden sich in ihrer Drehrichtung. Die antizyklonale Strömungsrichtung verläuft entgegengesetzt der Richtung der Rotation der Erde um ihre Achse, während die zyklonale Strömungsrichtung in Richtung der Rotation der Erde verläuft.[quelle] Noch zu beachten sind die Zirkulationsformen. Es gibt die gemischte, meridionale und zonale Zirkulation. Die gemischte Zirkulation besteht, wie der Name schon sagt, aus gleich großen Anteilen von meridionale und zonale Zirkulation. Die zonale Zirkulation beschreibt die Luftströmung, die von West nach Ost oder von Ost nach West, während die meridionale Zirkulation von Nord nach Süd oder von Süd nach Nord,entlang der Längengrade gerichtet ist. [Quelle] Die Zirkulationsströme steuern die LuftdruckverteilungStrömungsrichtung.[quelle] Zu guter Letzt braucht es für die Zuteilung der GWl den Hoch- oder Tiefdruck.[Quelle]. Die Großwetterlage "Westlage zyklonal" kommt am häufigsten vor. [quellen]. In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammen gefasst (@sklima).
+
+```{r gwl, echo=FALSE, fig.cap="\\label{tab:gwl}Großwetterlagen nach Hess und Brezowsky. Each row represents a list element"}
+gwl <- data.table(
+  Großwetterlage = c("Westlage, antizyklonal", "Westlage, zyklonal", "Südliche Westlage", "Winkelförmige Westlage", "Südwestlage, antizyklonal", "Südwestlage, zyklonal", "Nordwestlage, antizyklonal", "Nordwestlage, zyklonal", "Hoch Mitteleuropa", "Hochdruckbrücke (Rücken) Mitteleuropa", "Tief Mitteleuropa", "Nordlage, antizyklonal","Nordlage, zyklonal", "Hoch Nordmeer-Island, antizyklonal", "Hoch Nordmeer-Island, zyklonal", "Hoch Britische Inseln", "Trog Mitteleuropa", "Nordostlage, antizyklonal", "Nordostlage, zyklonal", "Hoch Fennoskandien, antizyklonal", "Hoch Fennoskandien, zyklonal", "Hoch Nordmeer-Fennoskandien, antizyklonal", "Hoch Nordmeer-Fennoskandien, zyklonal", "Südostlage, antizyklonal", "Südostlage, zyklonal", "Südlage, antizyklonal", "Südlage, zyklonal", "Tief Britische Inseln", "Trog Westeuropa", "Übergang/unbestimmt"),
+  Abkürzung = c("WA", "WZ", "WS", "WW", "SWA", "SWZ", "NWA", "NWZ", "HM", "BM", "TM", "NA", "NZ", "HNA", "HNZ", "HB", "TRM", "NEA", "NEZ", "HFA", "HFZ", "HNFA", "HNFZ", "SEA", "SEZ", "SA", "SZ", "TB", "TRW", "U")
+) 
+kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", caption = "Großwetterlagen nach Hess und Brezowsky") %>%
+  kable_styling(latex_options = c("striped"), full_width = TRUE)
+
+```
 
 ## Fragestellung
 
-.....
+Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeresspiegel und Geopotential die  einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Informationen der GWL zu benutzen.
+
 
 # Methodik
 
@@ -554,7 +564,13 @@ Ein Ansatz \textcolor{red}{reference} ist hier, mit der Anzahl an *PC* weiter zu
 \textcolor{red}{HBdiff von 0.4042}
 
 
-### PAM, K-Means und Fuzzy mit Extrahierten Daten
+### K-Means, PAM und Fuzzy mit Extrahierten Daten
+
+**K-Means**
+
+Obwohl die Entscheidung auf PAM als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering mit Hilfe der Funktion kmeans() in R aus dem Package "stats" für den Zeitraum 1971-2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt 2.3 erklärt. 
+
+Der Silhouettenkoeffizient betrug dabei 0.1191, der Timeline-Score $TLS = 0.4455$ und $HB_{diff} = 0.3379$. Der Silhouettenkoeffizient ist hier niedriger als bei dem vorgestellten Clustering mit PAM, somit spricht das für die Wahl von PAM.
 
 
 ```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
@@ -600,7 +616,7 @@ include_graphics("assets/f_sil.jpeg")
 
 Abbildung \ref{fig:tlMultiplied} zeigt den Timeline-Plot für dieses Clustergebnis. Es lässt sich erkennen, dass die meisten Tage in aufeinanderfolgenden Clustern der Länge 1 bis 13 sind. In Bezug auf die Timeline der GWL ist dies auch erwünscht, mit Ausnahme der Längen 1 und 2. Einzelne Tage kommen in den Jahren 1971 - 2000 ungefähr 600 Mal vor. Am häufigsten lassen sich aufeinanderfolgende Cluster der Länge 3 beobachten, mit ca. 800 Tagen. Längen, die größer als 40 sind, sind eher nicht erwünscht, da die längste GWL in diesen 30 Jahren 23 Tage andauerte. Auch hier sind jenseits der Länge 40 nur wenige Tage zu finden. Die CWL, die am längsten andauert, beträgt 89 Tage. Auffällig ist außerdem, die Länge 61 vier Mal auftritt. Insgesamt gehören also ungefähr 250 Tage zu einer CWL, die 61 Tage anhält.
 
-Der Timeline-Score beträgt $TLS = 0.3357$, ist also der höchste, der bisher in diesen Analysen erreicht wurde.
+Der Timeline-Score beträgt $TLS = 0.3357$.
 
 \textcolor{red}{dis true?}
 
