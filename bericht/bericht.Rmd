@@ -826,7 +826,8 @@ dt4 <- data.table(
 kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "R Libraries") %>%
   kable_styling(latex_options = "striped", full_width = FALSE)%>%
   pack_rows("cluster", 1, 3) %>%
-  pack_rows("dbscan", 4, 5)
+  pack_rows("dbscan", 4, 5) %>%
+  kable_styling(latex_options = "hold_position")
   
 ```
 
