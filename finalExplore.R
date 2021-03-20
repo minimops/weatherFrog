@@ -209,3 +209,53 @@ saveRDS(dataNoRange, "finalDATA/f_data.rds")
 saveRDS(dissimilarity, "finalDATA/f_dist.rds")
 
 
+#full set split up into seasons:
+library(parallelDist)
+library(parallel)
+
+source("clustering/ClusterAssesmentHelper.R")
+source("clustering/PAM_NumCL_finder.R")
+#final data, equals "dataNoRange" from above
+f_data <- readRDS("finalDATA/f_data.rds")
+
+weights <- c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 4)), 2),
+             rep(1/6, 12), rep(1/9, 18), rep(1/6, 2))
+
+#summer
+dat_Summer <- separateBySeason(f_data)
+
+useDat_summer <- as.data.table(scale(copy(dat_Summer)[, date := NULL]))[, Map("*", .SD, weights)]
+dissimilarity_summer <- parallelDist(as.matrix(useDat_summer), method = "manhattan",
+                              threads = detectCores() - 2)
+
+bestClustNumber(dissimilarity_summer, "manhattan", "justSummer", range = 5:9)
+
+pam_summer <- pam(dissimilarity_summer, diss = TRUE, k = 5)
+
+sil(pam_summer, pam_summer$clustering, dissimilarity_summer, "pam")
+#sil = 0.1126
+data_pam_summer <- data.table(date = dat_Summer$date, cluster = pam_summer$clustering)
+tl <- Cl.timeline(data_pam_summer, multiplied = T, showOpt = T)
+#TLS = 0.4767
+mos <- mosaic(data_pam_summer, data_pam_summer$cluster)
+#HBdiff = 0.3448
+
+#winter
+dat_Winter <- separateBySeason(f_data, Season = "Winter")
+
+useDat_winter <- as.data.table(scale(copy(dat_Winter)[, date := NULL]))[, Map("*", .SD, weights)]
+dissimilarity_winter <- parallelDist(as.matrix(useDat_winter), method = "manhattan",
+                                     threads = detectCores() - 2)
+
+bestClustNumber(dissimilarity_winter, "manhattan", "justWinter", range = 5:9)
+
+pam_winter <- pam(dissimilarity_winter, diss = TRUE, k = 5)
+
+sil(pam_winter, pam_winter$clustering, dissimilarity_winter, "pam")
+#sil = 0.0909
+data_pam_winter <- data.table(date = dat_Summer$date, cluster = pam_winter$clustering)
+tl <- Cl.timeline(data_pam_winter, multiplied = T, showOpt = T)
+#TLS = 0.2303
+mos <- mosaic(data_pam_winter, data_pam_winter$cluster)
+#HBdiff = 0.2970
+

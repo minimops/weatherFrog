@@ -75,8 +75,8 @@ longrun = FALSE # set to TRUE to rerun all code
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl", "Interquartilsabstand"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$", "IQR")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
@@ -333,9 +333,9 @@ $$
 
 ### Kriterien
 
-Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] beschrieben (*PAM*) durchgeführt.
+Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] (*PAM*) beschrieben durchgeführt. $HB_{diff}$ ergibt sich hier zu $0.4100$.
 
-Nach Parametern getrennte Analysen weisen je einen höheren *Silhouettenkoeffizient* auf, aber einen geringeren *TLS*. (Mslp: $s = 0.1369$, $TLS = -0.2027$ ; Geopot: $s = 0.1541$, $TLS = -0.3898$)
+Nach Parametern getrennte Analysen weisen je einen höheren *Silhouettenkoeffizient* auf, aber einen geringeren *TLS*. (Mslp: $s = 0.1369$, $TLS = -0.2027$, $HB_{diff} = 0.3980$ ; Geopot: $s = 0.1541$, $TLS = -0.3898$, $HB_{diff} = 0.3162$)
 
 Clusteranzahl ist dabei $5$ für die kombinierte Analyse, sowie Mslp alleine, Geopotential alleine ergibt $6$ Cluster.
 
@@ -752,11 +752,13 @@ Die Bewertungskriterien Silhouettenkoeffizient und $HB_{diff} weisen hier ähnli
 
 ## CWL-Mindestlänge 3 Tage
 
-\textcolor{red}{fringe change}
+Es lässt sich im Clusterergebnis beobachten, dass häufig der Wechsel zwischen *CWL* nicht sauber bzw. schlagartig stattfindet sondern, dass ein Wechsel häufig mit einem Hin- und Herschwanken zwischen den beiden *CWL* begleitet wird. Dieses Phänomen wirkt sich folglich negativ auf die Aufteilung der *GWL* in die Cluster aus, somit könnten, ähnlich wie dies bei der *GWL* Einteilung erfolgt, *CWL* mit einer Länge unter drei Tagen als *Übergang* bezeichnet werden und nicht mit in die Analse eingehen.
 
 Im Gegensatz zu dem Mosaikplot aus Abb. \ref{fig:mosaic_GWL} sind in Abb. \ref{fig:mosaic_GWL_greater_2days} nur Tage vertreten, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind. Während im Fall der ungefilterten Tage (weniger als drei aufeinanderfolgende Tage, die dem selben Cluster angehören und nicht entfernt wurden) die vier GWL HNFA,NA,NEZ und SEZ jeweils nur in fünf Clustern waren, waren bei den gefilterten Tagen (weniger als drei aufeinanderfolgende Tage, die demselben Cluster angehoren und enfernt wurden) fünf GWL, HNA,HNFA,HNFZ,NEZ und SEZ in nur fünf Cluster und die GWL NA in nur vier Cluster vertreten. Wie schon erwähnt, sind bei den ungefilterten Tagen WZ und HNFA zu je 40% in Cluster 2, bzw Cluster 5, SEZ zu 52% in Cluster 3 und WS zu 43% in Cluster 1. Bei den gefilterten Tagen ist nun WZ statt 40% zu 43% in Cluster 2 und HNFA statt 40% zu 41% in Cluster 5 vertreten. SEZ befindet sich nun zu 58% in Cluster 3 statt zu 52%. Und Cluster WS ist zu 45% statt zu 43% in Cluster 1. Bei den gefilterten Tagen ist NA zu 40% in Cluster 5, bei den gefilterten Tagen befanden sich hingegen nur 34% in diesem Cluster. Letztendlich scheint das Herausfiltern von Tagen, bei denen weniger als drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, zu einer leichten heterogeneren Aufteilung der GWL auf die Cluster zu führen. Eine Erklärung für diese nur leicht hererogenere Aufteilung ist, dass der relative Anteil der Tage, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, nur ca. 12% aller Tage im Zeitraum von 1971 bis 2000 ausmacht.
 
-\textcolor{red}{HB_diff mit einbringen}
+  \textcolor{red}{HBdiff mit einbringen}
+
+
 ```{r mosaic_GWL_greater_2days, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL_greater_2days}Mosaikplot, der darstellt, mit welchem Anteil die GWL auf die Cluster 1 bis 6 aufgeteilt sind. Hierbei sind nur Tage abgebildet, wo mindestens drei aufeinanderfolgende Tage dem selben Cluster zugeordnet sind", fig.align="center", out.width="100%"}
 include_graphics("assets/mosaic_gwl_greater2days.png")
 ```
