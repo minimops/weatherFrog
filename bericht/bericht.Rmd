@@ -33,7 +33,7 @@ header-includes:
 bibliography: references.bib
 
 abstract: |
-  to be written.
+  Dieser Bericht befasst sich mit einem Clustern anhand des historischen Reanalyse-Datensatzes, der Informationen zu dem Luftdruck auf Meeresspiegelhöhe und dem Geopotential auf 500 hPa beinhaltet. Anhand dieser Parameter soll untersucht werden, inwieweit die 29 Großwetterlagen nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können....
 ---
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
@@ -410,11 +410,11 @@ kbl(dt, caption = "Extrahierte Variablen", booktabs = TRUE, format =  "latex", e
 
 ### Clusterverfahren
 
-Hier ist die Wahl auf den Clusteralgorithmus PAM (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist (@multivariate). Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R aus dem Package "cluster" sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten.
+Hier ist die Wahl auf den Clusteralgorithmus *PAM* (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist (@multivariate). Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R aus dem Package "cluster" sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten.
 
 #### Partitioning Around Medoids
 
-Bei PAM wird angegeben, wie viele Cluster $k$ gebildet werden sollen. Der Algorithmus sucht dann anfänglich $k$ repräsentative Beobachtungen, die das Zentrum der entstandenen Cluster darstellen, um danach iterativ bessere Repräsentanten zu finden. Alle möglichen Kombinationen von repräsentativen und nicht-repräsentativen Beobachtungen werden analysiert und die Qualität der jeweiligen Clusterings wird anhand eines Gütekriteriums evaluiert. Dieses Gütekriterium ist hier die Summe $S$ der Distanzen von allen Datenpunkten zu deren jeweiligen Medoids. Anhand dieses Gütekriteriums werden die nicht-repräsentativen Datenpunkte dem Cluster zugefügt, das die Summe $S$ am stärksten minimiert. Dann wird zufällig ein weiterer Datenpunkt gewählt und es werden die Kosten $C$ berechnet, die entstehen, wenn man diesen mit den repräsentativen Punkten tauschen würde. Dabei sind die Kosten definiert als die Veränderung des Gütekriteriums $S$, wenn ein repräsentativer Punkt mit einem anderen Datenpunkt getauscht wird. Das bedeutet, die Kosten können sowohl negativ als auch positiv sein. Sind sie negativ, so wird die Summe $S$ der Distanzen von allen Datenpunkten zu deren Medoids kleiner und die Punkte werden vertauscht (@kmedoid2). \textcolor{red}{nochmal genauer abchecken + stopp kriterium}
+Bei *PAM* wird angegeben, wie viele Cluster $k$ gebildet werden sollen. Der Algorithmus sucht dann anfänglich $k$ repräsentative Beobachtungen, die das Zentrum der entstandenen Cluster darstellen, um danach iterativ bessere Repräsentanten zu finden. Alle möglichen Kombinationen von repräsentativen und nicht-repräsentativen Beobachtungen werden analysiert und die Qualität der jeweiligen Clusterings wird anhand eines Gütekriteriums evaluiert. Dieses Gütekriterium ist hier die Summe $S$ der Distanzen von allen Datenpunkten zu deren jeweiligen Medoids. Anhand dieses Gütekriteriums werden die nicht-repräsentativen Datenpunkte dem Cluster zugefügt, das die Summe $S$ am stärksten minimiert. Dann wird zufällig ein weiterer Datenpunkt gewählt und es werden die Kosten $C$ berechnet, die entstehen, wenn man diesen mit den repräsentativen Punkten tauschen würde. Dabei sind die Kosten definiert als die Veränderung des Gütekriteriums $S$, wenn ein repräsentativer Punkt mit einem anderen Datenpunkt getauscht wird. Das bedeutet, die Kosten können sowohl negativ als auch positiv sein. Sind sie negativ, so wird die Summe $S$ der Distanzen von allen Datenpunkten zu deren Medoids kleiner und die Punkte werden vertauscht (@kmedoid2). \textcolor{red}{nochmal genauer abchecken + stopp kriterium}
 
 Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
 
@@ -511,7 +511,7 @@ kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung
 
 #### Wahl der Clusteranzahl
 
-Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt \ref{silhouettenkoeffizient} beschrieben, unabhängig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. Somit wird das resultierende Clusterergebnis mit dem Algorithmus PAM, der Distanzmetrik Manhattan und 6 Clustern gebildet.
+Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt \ref{silhouettenkoeffizient} beschrieben, unabhängig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. Somit wird das resultierende Clusterergebnis mit dem Algorithmus *PAM*, der Distanzmetrik Manhattan und 6 Clustern gebildet.
 
 ```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Cluster. Die Clusteranzahl mit dem maximalen Silhouettenkoeffizient ist die optimale Clusteranzahl, hier $k = 6$.", fig.align="center", out.width="80%"}
 include_graphics("assets/numclust.png")
@@ -523,7 +523,7 @@ Dieses Clusterergebnis liefert einen Silhouettenkoeffizienten $s = 0.1411$ und e
 
 ## Weitere Versuche
 
-Das endgültig gewählte Methode wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus PAM anhand des extrahierten Datensatzes erzielt. Es wurden anfangs aber verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien beurteilt. Dabei wurden zuerst die Daten von fünf Jahren verwendet, da 30 Jahre rechentechnisch sehr teuer waren. Die Methoden, die am besten abschnitten, wurden dann anhand von 30 Jahren beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
+Das endgültig gewählte Methode wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus *PAM* anhand des extrahierten Datensatzes erzielt. Es wurden anfangs aber verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien beurteilt. Dabei wurden zuerst die Daten von fünf Jahren verwendet, da 30 Jahre rechentechnisch sehr teuer waren. Die Methoden, die am besten abschnitten, wurden dann anhand von 30 Jahren beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
 
 ### CLARA, K-Means und PAM mit Originaldaten
 
@@ -533,17 +533,17 @@ Bevor die Variablen extrahiert wurden, gab es auch Clusteranalysen mit dem Reana
 
 **CLARA**
 
-Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (CLARA) durchgeführt. Dieser basiert auf dem K-Medoids-Ansatz, ist aber speziell für Datensätze, die sehr viele Beobachtungen enthalten, z.B. mehrere tausend Objekte. Dieser Algorithmus wird von @clara eingeführt und erklärt.
+Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (*CLARA*) durchgeführt. Dieser basiert auf dem K-Medoids-Ansatz, ist aber speziell für Datensätze, die sehr viele Beobachtungen enthalten, z.B. mehrere tausend Objekte. Dieser Algorithmus wird von @clara eingeführt und erklärt.
 
-Dieser Algorithmus wurde mit der Manhattan-Distanz, als auch mit der Euklidischen Distanz ausprobiert. Für eine Clusteranzahl von $k = 5$ für CLARA mit Manhattan als Distanzmaß, beträgt der Silhouettenkoeffizient $s = 0.1302$, der Timeline-Score $TLS = 0.1670$ und der Wert für die Aufteilung der *GWL* in den Clustern $HB_{diff} = 0.4919$.
+Dieser Algorithmus wurde mit der Manhattan-Distanz, als auch mit der Euklidischen Distanz ausprobiert. Für eine Clusteranzahl von $k = 5$ für *CLARA* mit Manhattan als Distanzmaß, beträgt der Silhouettenkoeffizient $s = 0.1302$, der Timeline-Score $TLS = 0.1670$ und der Wert für die Aufteilung der *GWL* in den Clustern $HB_{diff} = 0.4919$.
 
-Führt man die Clusteranalyse mit CLARA, der Euklidischen Distanz und $k = 6$ Clustern durch, so erhält man für den Silhouettenkoeffizient einen Wert von $s = 0.1239$, der Timeline-Score beträgt $TLS = 0.1764$ und $HB_{diff} = 0.4882$.
+Führt man die Clusteranalyse mit *CLARA*, der Euklidischen Distanz und $k = 6$ Clustern durch, so erhält man für den Silhouettenkoeffizient einen Wert von $s = 0.1239$, der Timeline-Score beträgt $TLS = 0.1764$ und $HB_{diff} = 0.4882$.
 
  
 
 **K-means**
 
-K-means ist ein bekannter Algorithmus für Clusteranalyse, bei dem jedes Cluster dabei von einem Centroid repräsentiert wird, das im Gegensatz zu PAM nicht eine echte Beobachtung ist, sondern der Mittelwert von allen Objekten im gleichen Cluster. Der K-means Algorithmus wird von @kmeans genauer beschrieben.
+K-means ist ein bekannter Algorithmus für Clusteranalyse, bei dem jedes Cluster dabei von einem Centroid repräsentiert wird, das im Gegensatz zu *PAM* nicht eine echte Beobachtung ist, sondern der Mittelwert von allen Objekten im gleichen Cluster. Der K-means Algorithmus wird von @kmeans genauer beschrieben.
 
 Der Silhouettenkoeffizient beträgt dabei $s = 0.1286$, der Timeline-Wert ist $TLS = 0.2433$ und die Maßzahl für die Güte der Aufteilung der *GWL* in den Clustern $HB_{diff} = 0.5167$.
 
@@ -557,13 +557,13 @@ Für p-dimensionale Daten $x = (x_1, x_2, ... , x_p)^T$ mit einem Vektor mit Mit
 
 Ist $\sum$ die Einheitsmatrix, so entspricht die Mahalanobis-Distanz der Euklidischen Distanz (@mahalanobis).
 
-Mit der resultierenden Distanzmatrix wurde dann eine Clusteranalyse mit PAM durchgeführt für $k = 6$. Der Silhouettenkoeffizient liegt dabei bei $-0.0014$ und ist somit negativ. Auch der Timeline-Wert liegt unter 0 mit $TLS = -0.6657$. Der Wert für die Güte der Aufteilung der *GWL* in den Clustern beträgt $HB_{diff} = 0.4127$.
+Mit der resultierenden Distanzmatrix wurde dann eine Clusteranalyse mit *PAM* durchgeführt für $k = 6$. Der Silhouettenkoeffizient liegt dabei bei $-0.0014$ und ist somit negativ. Auch der Timeline-Wert liegt unter 0 mit $TLS = -0.6657$. Der Wert für die Güte der Aufteilung der *GWL* in den Clustern beträgt $HB_{diff} = 0.4127$.
 
  
 
 **PCA**
 
-Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust stattfindet (@pca, @pca_image).
+Mit Hilfe einer Principle Component Analysis (*PCA*) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten Principle Components (*PC*) erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust stattfindet (@pca, @pca_image).
 
 ```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Visualisierung der Clusterlösung mittels Principal Component Analysis.", fig.align="center", out.width="80%"}
 include_graphics("assets/pcaPlot.png")
@@ -577,9 +577,9 @@ Ein Ansatz ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens 8
 
 **K-Means**
 
-Obwohl die Entscheidung auf PAM als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering für den Zeitraum 1971-2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt \ref{clusterverfahren} erklärt.
+Obwohl die Entscheidung auf *PAM* als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering für den Zeitraum 1971-2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt \ref{clusterverfahren} erklärt.
 
-Der Silhouettenkoeffizient betrug dabei 0.1191, der Timeline-Score $TLS = 0.4455$ und $HB_{diff} = 0.3379$. Der Silhouettenkoeffizient ist hier niedriger als bei dem vorgestellten Clustering mit PAM, somit spricht das für die Wahl von PAM.
+Der Silhouettenkoeffizient betrug dabei 0.1191, der Timeline-Score $TLS = 0.4455$ und $HB_{diff} = 0.3379$. Der Silhouettenkoeffizient ist hier niedriger als bei dem vorgestellten Clustering mit *PAM*, somit spricht das für die Wahl von *PAM*.
 
 ```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
 dt3 <- data.table(
@@ -678,7 +678,7 @@ kbl(dtX, booktabs = TRUE, format =  "latex", escape = FALSE, label = "descriptiv
 ```
 
 
-Abb. \ref{fig:mean_mslp_boxplot} und Abb. \ref{fig:mean_geopot_boxplot} bilden die Verteilung der Variablen Mittelwert des Luftdrucks und Mittelwert des Geopotentials je Cluster ab. Verglichen mit der Variable Mittelwert des Geopotentials unterschiedet sich der Median und die Verteilung der Variable Mittelwert des Luftdrucks in jedem Cluster wenig. Hierbei beinhaltet Cluster 2 mit einem Median von $1009.5 hPa$ und einem Interquartilsabstand (IQR) von $3.8 hPa$ (1. Quartil $= 1007.4 hPa$, 3. Quartil $= 1011.2 hPa$) tendenziell die kleinsten Werte auf, während Cluster 5 mit einem Median von $1017 hPa$ und einem Interquartilsabstand von $3 hPa$ (1. Quartil = $1016 hPa$, 3. Quartil = $1019 hPa$) tendenziell die höchsten Werte aufweist. Bei der Variable Mittelwert des Geopotentials weisen die Werte der Cluster 4 bis 6 deutlich höhere Werte auf als die Werte in den Clustern 1 bis 3. Wie bei der Variable Mittelwert des Luftdrucks beinhaltet auch das Cluster 2 bei der Variable Mittelwert des Luftdrucks tendenziell die niedrigsten Werte mit einem Median von $5360 gpm$ und einem IQR von $58 gpm$ (1. Quartil $= 5334 gpm$, 3. Quartil $= 5392 gpm$). Cluster 6 weist tendenziell die höchsten Werte mit einem Median von 5654 gpm und einem IQR von $42 gpm$ (1. Quartil $= 5632 gpm$, 3. Quartil $= 5674 gpm$). Die Variable Mittelwert des Geopotentials weist weniger Ausreißer auf als die Variable Mittelwert des Luftdrucks.
+Abb. \ref{fig:mean_mslp_boxplot} und Abb. \ref{fig:mean_geopot_boxplot} bilden die Verteilung der Variablen Mittelwert des Luftdrucks und Mittelwert des Geopotentials je Cluster ab. Verglichen mit der Variable Mittelwert des Geopotentials unterschiedet sich der Median und die Verteilung der Variable Mittelwert des Luftdrucks in jedem Cluster wenig. Hierbei beinhaltet Cluster 2 mit einem Median von $1009.5 hPa$ und einem Interquartilsabstand (*IQR*) von $3.8 hPa$ (1. Quartil $= 1007.4 hPa$, 3. Quartil $= 1011.2 hPa$) tendenziell die kleinsten Werte auf, während Cluster 5 mit einem Median von $1017 hPa$ und einem Interquartilsabstand von $3 hPa$ (1. Quartil = $1016 hPa$, 3. Quartil = $1019 hPa$) tendenziell die höchsten Werte aufweist. Bei der Variable Mittelwert des Geopotentials weisen die Werte der Cluster 4 bis 6 deutlich höhere Werte auf als die Werte in den Clustern 1 bis 3. Wie bei der Variable Mittelwert des Luftdrucks beinhaltet auch das Cluster 2 bei der Variable Mittelwert des Luftdrucks tendenziell die niedrigsten Werte mit einem Median von $5360 gpm$ und einem *IQR* von $58 gpm$ (1. Quartil $= 5334 gpm$, 3. Quartil $= 5392 gpm$). Cluster 6 weist tendenziell die höchsten Werte mit einem Median von 5654 gpm und einem *IQR* von $42 gpm$ (1. Quartil $= 5632 gpm$, 3. Quartil $= 5674 gpm$). Die Variable Mittelwert des Geopotentials weist weniger Ausreißer auf als die Variable Mittelwert des Luftdrucks.
 
 ```{r mean_mslp_boxplot, echo = FALSE, fig.cap="\\label{fig:mean_mslp_boxplot}Verteilung der Variable Mittelwert des Luftdrucks in jedem Cluster", fig.align="center", out.width="80%"}
 include_graphics("assets/mean_mslp_boxplot.png")
@@ -784,7 +784,7 @@ include_graphics("assets/mosaic_gwl_greater2days.png")
 
 Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den Großwetterlagen von Hess und Brezowsky und der angewendeten Clusteranalyse ist die Anforderung einer *GWL* mindestens 3 Tage lang zu sein. Man könnte naiv vermuten, dass Tage einer bestimmten *GWL* zugeordnet werden, obwohl sie diese nicht deutlich verkörpern, um eine Länge von 3 Tagen zu erreichen, oder gar eine länger andauernde *GWL* nicht zu unterbrechen. Die geringe Anzahl der als *U* definierten Tage unterstützt diesen Gedankengang etwas. 
 
-Folglich wird hier untersucht, wie sich die Tage die sich in *GWL* befinden, die länger als 3 Tage andauern, über die Cluster verteilen lassen. Dafür werden vor dem Clustern alle Tage entfernt, an denen die herrschende *GWL* weniger als 4 Tage andauert. Danach eine Clusteranalyse mit *PAM* und der Manhattan-Metrik durchgeführt. Dies führt mit $k = 5$ zu einem Silhouettenkoeffizient von $s = 0.2557$ (im Vergleich dazu $s = 0.1411$ ohne das Entfernen bestimmter Tage). Der Timeline-Score beträgt $TLS = -0.1083$, da deutlich mehr *CWL* der Längen 1 und 2 gebildet werden. Die zu beobachtende $HB_{diff}$ ist $0.3499$ im Verrgleich zu $0.3309$, *GWL* werden hier also nicht sauberer in die Cluster unterteilt.
+Folglich wird hier untersucht, wie sich die Tage die sich in *GWL* befinden, die länger als 3 Tage andauern, über die Cluster verteilen lassen. Dafür werden vor dem Clustern alle Tage entfernt, an denen die herrschende *GWL* weniger als 4 Tage andauert. Danach eine Clusteranalyse mit *PAM* und der Manhattan-Metrik durchgeführt. Dies führt mit $k = 5$ zu einem Silhouettenkoeffizient von $s = 0.2557$ (im Vergleich dazu $s = 0.1411$ ohne das Entfernen bestimmter Tage). Der Timeline-Score beträgt $TLS = -0.1083$, da deutlich mehr *CWL* der Längen 1 und 2 gebildet werden. Die zu beobachtende $HB_{diff}$ ist $0.3499$ im Vergleich zu $0.3309$, *GWL* werden hier also nicht sauberer in die Cluster unterteilt.
 
 
 
@@ -888,9 +888,12 @@ Grundsätzlich lassen sich die Daten aber auch als Format eines Videos betrachte
 
 # Schluss
 
-Es wurden in diesem Bericht verschiedene Ansätze Wetterdaten des Reanalyse-Datensatzes zu clustern angesprochen. Die Idee des Extrahieren der Variablen sowie das Filtern der Tage wurde hier näher ausgeführt, es wurden Ergebisse gezeigt und der Output und die Methoden diskutiert.
+Es wurden in diesem Bericht verschiedene Ansätze, Wetterdaten des Reanalyse-Datensatzes zu clustern, angesprochen. Die Idee des Extrahieren der Variablen sowie das Filtern der Tage wurde hier näher ausgeführt, es wurden Ergebisse gezeigt und der Output und die Methoden diskutiert. 
 
-ausprobiert, wobei der Filter Ansatz und das Extrahieren der Variablen hier als beste Möglichkeiten erachtet werden. 
+In den Analysen zeigte sich in Bezug auf die Aufteilung der *GWL*, dass zwar viele in allen Clustern vorhanden waren, aber dass sich auch zum Teil Großwetterlagen heraushoben, die mit über 40% einem Cluster zuzuteilen waren.
+
+Zudem wurde in \ref{diskussion-&-ausblick} ein Ausblick gegeben, wie die Ansätze, Extrahieren der Variablen und das Filtern, verbessert werden könnten. Da sich das Clusterergebnis der Extrahierten Variablen stark nach Sommer-und Wintertagen aufteilt, wäre zum Beispiel ein weiterer Schritt eine Saisonbereinigung für diese zwei Zeiten zu beachten. Auch eine Aufnahme einer "3-Tage Regel" könnte sinnvoll sein, da dadurch eventuell die Bedingungen an Großwetterlagen, mindestens 3 Tage am Stück aufzutreten, berücksichtigt werden könnte.
+
 
 # Anmerkungen {.unlisted .unnumbered}
 
