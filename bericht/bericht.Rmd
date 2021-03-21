@@ -357,7 +357,7 @@ Die Intensität wird in "Intensität Hoch" und "Intensität Tief" aufgeteilt und
 
 Zum anderen kann die Größe und Intensität der Gebiete über alle Tage verglichen werden, da sie in Bezug auf die Quartile über alle Tage gebildet werden. So kann es zum Beispiel sein, dass an einem Tag die Intensität des Luftdrucks für ein Hochgebiet 0 ist, da an diesem Tag generell niedrige Mslp Werte beobachtet wurden.
 
-In Abschnitt 2.1 wurde bereits beschrieben, dass der Mittelwert über vier Messzeitpunkte pro Tag gebildet wurde. Da dies mit einem Informationsverlust einhergeht, wird die Variable "Veränderung über den Tag" eingeführt. Sie ist definiert als die summierten, absoluten Differenzen des maximalen und minimalen Messwertes für jeden Standort am Tag. Diese Variable wird folglich mit Hilfe des Originaldatensatzes, ohne Informationsverlust, für beide Parameter Mslp und Luftdruck extrahiert.
+In Abschnitt \ref{daten} wurde bereits beschrieben, dass der Mittelwert über vier Messzeitpunkte pro Tag gebildet wurde. Da dies mit einem Informationsverlust einhergeht, wird die Variable "Veränderung über den Tag" eingeführt. Sie ist definiert als die summierten, absoluten Differenzen des maximalen und minimalen Messwertes für jeden Standort am Tag. Diese Variable wird folglich mit Hilfe des Originaldatensatzes, ohne Informationsverlust, für beide Parameter Mslp und Luftdruck extrahiert.
 
  
 
@@ -470,7 +470,7 @@ ggplot(data_manhat, aes(x, y)) +
 
 ```
 
-Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. In Abschnitt 2.5 werden diese weiteren Versuche grob dargestellt.
+Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. \textcolor{red}{schauen ob wirklich mit reinbringen!!!} In Abschnitt \ref{weitere-versuche} werden diese weiteren Versuche grob dargestellt.
 
 #### Skalierung
 
@@ -508,7 +508,7 @@ kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung
 
 #### Wahl der Clusteranzahl
 
-Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt 2.2.1 beschrieben, unabhängig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. Somit wird das resultierende Clusterergebnis mit dem Algorithmus PAM, der Distanzmetrik Manhattan und 6 Clustern gebildet.
+Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt \ref{silhouettenkoeffizient} beschrieben, unabhängig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. Somit wird das resultierende Clusterergebnis mit dem Algorithmus PAM, der Distanzmetrik Manhattan und 6 Clustern gebildet.
 
 ```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Cluster. Die Clusteranzahl mit dem maximalen Silhouettenkoeffizient ist die optimale Clusteranzahl, hier $k = 6$.", fig.align="center", out.width="80%"}
 include_graphics("assets/numclust.png")
@@ -574,7 +574,7 @@ Ein Ansatz ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens 8
 
 **K-Means**
 
-Obwohl die Entscheidung auf PAM als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering für den Zeitraum 1971-2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt 2.3 erklärt.
+Obwohl die Entscheidung auf PAM als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering für den Zeitraum 1971-2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt \ref{clusterverfahren} erklärt.
 
 Der Silhouettenkoeffizient betrug dabei 0.1191, der Timeline-Score $TLS = 0.4455$ und $HB_{diff} = 0.3379$. Der Silhouettenkoeffizient ist hier niedriger als bei dem vorgestellten Clustering mit PAM, somit spricht das für die Wahl von PAM.
 
@@ -620,9 +620,9 @@ Der Timeline-Score beträgt $TLS = 0.3357$.
 include_graphics("assets/timelineMultiplied.png")
 ```
 
-Die folgenden Abschnitte präsentiert die Ergebnisse der deskriptiven Analyse der finalen Clusterlösung. Hierbei wird in Abschnitt 3.3.1 betrachtet, wie die Cluster 1 bis 6 über die Jahre 1971 bis 2010 verteilt sind. Zudem wird das Verhältnis von Sommer- und Wintertagen in den einzelnen Clustern betrachtet. Abschnitt 3.3.2 befasst sich mit den Ähnlichkeiten und Unterschieden der extrahierten 48 Variablen in den Clustern. Abschließend wird in Abschnitt 3.3.3 die Clusterlösung mit der GWL Einteilung nach Hess und Brezowsky verglichen, also in welchem Ausmaß die GWL über die Cluster verteilt sind.
+Die folgenden Abschnitte präsentieren die Ergebnisse der deskriptiven Analyse der finalen Clusterlösung. Hierbei wird in Abschnitt \ref{verteilung-der-cluster-ueber-die-zeit} betrachtet, wie die Cluster 1 bis 6 über die Jahre 1971 bis 2010 verteilt sind. Zudem wird das Verhältnis von Sommer- und Wintertagen in den einzelnen Clustern betrachtet. Abschnitt \ref{unterschiede-und-aehnlichkeiten-in-den-clustern} befasst sich mit den Ähnlichkeiten und Unterschieden der extrahierten 48 Variablen in den Clustern. Abschließend wird in Abschnitt \ref{vergleich-der-clusterloesung-mit-den-gwl} die Clusterlösung mit der GWL Einteilung nach Hess und Brezowsky verglichen, also in welchem Ausmaß die GWL über die Cluster verteilt sind.
 
-## Verteilung der Cluster über die Zeit
+## Verteilung der Cluster über die Zeit {#verteilung-der-cluster-ueber-die-zeit}
 
 Abb. \ref{fig:distribution_of_years_over_cluster} stellt dar, wie häufig jedes Cluster im Zeitraum 1971 bis 2000 vorkommt. Zu erkennen ist, dass sich ein Cluster nicht auf eine bestimmte Zeitperiode beschränkt, sondern sich über den gesamten Zeitraum erstreckt. Zudem ist kein Trend in der Aufteilung der Tage innerhalb eines Clusters auf die Jahre 1971 bis 2000 erkennbar. Die Cluster 4,5 und 6 sind hierbei gleichmäßiger über den Zeitraum von 1971 bis 2000 verteilt als die Cluster 1, 2 und 3. Beispielsweise beinhaltet das Jahr 1985 6% aller Tage, die Cluster 1 zugeordnet sind, das Jahr 1990 beinhaltet hingegen nur 2% aller Tage, die Cluster 1 zugeordnet sind. Damit verglichen sind Cluster 4 bis 6 sehr gleichmäßig über alle Jahre verteilt. In Cluster 4 sticht das Jahr 2000 hervor. In diesem sind 6,3% aller Tage, die Cluster 4 zugeordnet sind, vertreten, während in allen anderen Jahren durchschnittlich je 3% aller Tage, die Cluster 4 zugeordnet sind, vertreten sind. Somit beinhaltet das Jahr 2000 ca. doppelt so viele Cluster 4-Tage verglichen mit den anderen Jahren. Von allen Clustern ist Cluster 6 am gleichmäßigsten über alle Jahre verteilt.
 
@@ -630,7 +630,7 @@ Abb. \ref{fig:distribution_of_years_over_cluster} stellt dar, wie häufig jedes 
 include_graphics("assets/distribution_of_years_over_cluster.png")
 ```
 
-## Verhältnis von Sommer- und Wintertagen in den Clustern
+## Verhältnis von Sommer- und Wintertagen in den Clustern {#verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}
 
 Die Werte des Mittelwerts des Luftdrucks (Abb. \ref{fig:distribution_season_mslp}) und des Mittelwert des Geopotentials (Abb. \ref{fig:distribution_season_geopot}) sind in der Sommerzeit tendenziell höher als in der Winterzeit. Hierbei sind die saisionalen Unterschiede bei dem Mittelwert des Geopotentials deutlich stärker ausgeprägt als bei dem Mittelwert des Luftdrucks. Diese Aufteilung des Jahres in Sommer- und Winterzeit erfolgt nach Vorlage der Publikation von James P.M. 2006 (@article_james). Um diese saisonalen Unterschiede zu berücksichtigen und die Verteilung der Winter- und Sommertagen in den Clustern zu betrachten, wird das Kalenderjahr in eine Winter- und in eine Sommerzeit aufgeteilt. Alle Tage im Zeitraum 16. Oktober bis 15. April werden als Wintertage definiert, die restlichen Tage folglich als Sommertage (@article_james).
 
@@ -648,7 +648,7 @@ Die Graphik in Abb. \ref{fig:mosaic_seasons} visualisiert die relativen Häufigk
 include_graphics("assets/mosaic_seasons.png")
 ```
 
-### Unterschiede und Ähnlichkeiten in den Clustern
+## Unterschiede und Ähnlichkeiten in den Clustern {#unterschiede-und-aehnlichkeiten-in-den-clustern}
 
 Dieser Abschnitt befasst sich mit der Fragestellung, wie sich die Werte der 48 extrahierten Variablen, mit denen geclustert wurde, zwischen den Clustern unterscheiden. Dazu werden Mittelwerte, Standardabweichung und Verteilungen ausgewählter, repräsentativer Variablen und dessen räumliche Verteilung über die 160 Messorte betrachtet.
 
@@ -706,9 +706,10 @@ Bei der räumlichen Verteilung der Werte des Geopotentials aufgeteilt nach Clust
 
 Das Cluster 6 ist sowohl bei der Varaible Luftdruck als auch bei der Variable Geopotential von höheren Werten geprägt im Vergleich zu den restlichen Clustern. Eine mögliche Erklärung für dieses Phänomen ist, dass Cluster 6 als einziges Cluster ausschließlich Tage der Sommerzeit enthält.
 
-### Vergleich der Clusterlösung mit den GWL
+## Vergleich der Clusterlösung mit den GWL {#vergleich-der-clusterloesung-mit-den-gwl}
 
 Der Mosaikplot in Abb. \ref{fig:mosaic_GWL} stellt die Aufteilung der GWL auf die 6 Cluster dar. Zudem wird gezeigt, wie häufig eine bestimmte GWL in dem betrachteten Zeitraum von 1971 bis 2000 vorkommt. Im Allgemeinen ist die Anzahl der auftretenden Wetterlagen heterogen. Hierbei ist die Großwetterlage WZ (Westlage zyklonal) am häufigsten vertreten, dicht gefolgt von BM (Hochdruckbrücke Mitteleuropa). Selten vertreten sind die GWL NA (Nordlage antizyklonal), SZ (Südlage zyklonal) und undefinierte Tage, also Tage, denen keine GWL zugeordnet werden kann. Außer HNFA, NA und NEZ (nicht in Cluster 2), SEZ (nicht in Cluster 6) ist jede GWL in allen Clustern vertreten. Der Großteil der GWL verteilen sich hierbei gleichmäßig auf die Cluster. Dennoch gibt es auch GWL, die hauptsächlich in einem Cluster vorherrschen. WZ und HNFA sind zu je 40% in Cluster 2, bzw. in Cluster 5 vertreten. 52% der GWL SEZ befindet sich in Cluster 3 und 43% der GWL WS in Cluster 1.
+
 $HB_{diff}$ beträgt hier $0.3309$.
 
 ```{r mosaic_GWL, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL}Mosaikplot, der darstellt, mit welchem Anteil die GWL auf die Cluster 1 bis 6 aufgeteilt sind", fig.align="center", out.width="100%"}
@@ -735,7 +736,7 @@ include_graphics("assets/MslpRangeJahreszeiten.jpeg")
 include_graphics("assets/GeopotentailRangeJahreszeiten.jpeg")
 ```
 
-Wie in Abschnitt 3.3 beschrieben, kann auch eine Aufteilung nur in Sommer- und Wintertage durchgeführt werden. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt 3.3, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
+Wie in Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern} beschrieben, kann auch eine Aufteilung nur in Sommer- und Wintertage durchgeführt werden. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
 
 ### Clusterergebnis nach Saison
 
