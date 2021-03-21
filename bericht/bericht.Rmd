@@ -861,13 +861,13 @@ $$
 Um die benötigte Rechenleistung zu reduzieren sowie auch zu verhindern, dass das Verfahren sich festläuft, indem z.B. immer dasselbe Gewicht erhöht wird, könnte eine Sampling-Strategie durchgeführt werden, sodass pro Iteration immer nur ein Teildatensatz geclustered wird. Ansatzweise werden hier 3 5-Jahres Perioden pro Iteration zufällig gewählt, die den Datensatz einer Iteration darstellen: $D = {d_1, d_2, d_3}$, wobei $d_i\ mit\ i \in \{1, 2, 3\}$ ein 5 Jahres-Datensatz ist. Die zu optimierende Funktion könnte wie folgt zum Beispiel die Summe aus dem Durchschnitt des *Silhouettenwertes* der 3 Datensätze, dem Durchschnitt des *TLS* der 3 Datensätze und einem *Stabilitätswert* ($stab$) sein.
 
 $$
- f(D) = avgSil(D) + avgTLS(D) + stab(D)
+ f(D) = avgSil(D) + avgTLS(D) + \frac{1}{3}stab(D)
 $$ $$
   avgSil(D) = \frac{1}{3} \sum_{i = 1}^3{s(d_i)}
 $$ $$
   avgTLS(D) = \frac{1}{3} \sum_{i = 1}^3{TLS(d_i)}
 $$ $$
-  stab(D) = 1-\left( \frac{1}{2} max_{i, j =1,2,3} \left(|s(d_i) - s(d_j)|\right) + \frac{1}{2}max_{i,j = 1,2,3}\left(|TLS(d_i) - TLS(d_j)|\right) \right)
+  stab(D) = 1-\left( max_{i, j =1,2,3} \left(|s(d_i) - s(d_j)|\right) + max_{i,j = 1,2,3}\left(|TLS(d_i) - TLS(d_j)|\right) \right)
 $$ $$
  mit: s = \text{Silhouettenkoeffizient}
 $$
