@@ -780,9 +780,11 @@ include_graphics("assets/mosaic_gwl_greater2days.png")
 
 ## GWL-Mindestlänge 4 Tage
 
-Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den Großwetterlagen von Hess und Brezowsky und der angewendeten Clusteranalyse ist die Anforderung einer GWL mindestens 3 Tage lang zu sein. Man könnte naiv vermuten, dass Tage einer bestimmten GWL zugeordnet werden, obwohl sie diese nicht deutlich verkörpern, um eine Länge von 3 Tagen zu erreichen, oder gar eine länger andauernde GWL nicht zu unterbrechen. Die geringe Anzahl der als *U* definierten Tage unterstützt diesen Gedankengang etwas. Folglich wird hier untersucht, wie die GWL, die länger als 3 Tage andauern, über die Cluster verteilt werden.
+Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den Großwetterlagen von Hess und Brezowsky und der angewendeten Clusteranalyse ist die Anforderung einer GWL mindestens 3 Tage lang zu sein. Man könnte naiv vermuten, dass Tage einer bestimmten GWL zugeordnet werden, obwohl sie diese nicht deutlich verkörpern, um eine Länge von 3 Tagen zu erreichen, oder gar eine länger andauernde GWL nicht zu unterbrechen. Die geringe Anzahl der als *U* definierten Tage unterstützt diesen Gedankengang etwas. 
 
-\textcolor{red}{insert Analysis of this}
+Folglich wird hier untersucht, wie sich die Tage die sich in *GWL* befinden, die länger als 3 Tage andauern, über die Cluster verteilen lassen. Dafür werden vor dem Clustern alle Tage entfernt, an denen die herrschende *GWL* weniger als 4 Tage andauert. Danach eine Clusteranalyse mit *PAM* und der Manhattan-Metrik durchgeführt. Dies führt mit $k = 5$ zu einem *Silhouettenkoeffizient* von $s = 0.2557$ (im Vergleich dazu $s = 0.1411$ ohne das Entfernen bestimmter Tage). Der *Timeline-Score* beträgt $TLS = -0.1083$, da deutlich mehr *CWL* der Längen 1 und 2 gebildet werden. Die zu beobachtende $HB_{diff}$ ist $0.3499$ im Verrgleich zu $0.3309$, *GWL* werden hier also nicht sauberer in die Cluster unterteilt.
+
+
 
 ## Erweiterung Variablen
 
