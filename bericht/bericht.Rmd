@@ -70,15 +70,15 @@ longrun = FALSE # set to TRUE to rerun all code
 ```
 \newpage
 
-\section\*{Abkürzungen}
+\section*{Abkürzungen}
 
 ```{r Abkürzungen, echo=FALSE}
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
-           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl", "Interquartilsabstand"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$", "IQR")) %>%
+           "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl", "Interquartilsabstand", "geopotentieller Meter"),
+  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$", "IQR", "$gpm$")) %>%
   arrange(Ausdruck) %>%
-  kable(booktabs = TRUE, format =  "latex", escape = FALSE) %>%
+  kable(booktabs = TRUE, format =  "latex", escape = FALSE, linesep  = "") %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
 ```
 
@@ -101,7 +101,7 @@ gwl <- data.table(
   Großwetterlage = c("Westlage, antizyklonal", "Westlage, zyklonal", "Südliche Westlage", "Winkelförmige Westlage", "Südwestlage, antizyklonal", "Südwestlage, zyklonal", "Nordwestlage, antizyklonal", "Nordwestlage, zyklonal", "Hoch Mitteleuropa", "Hochdruckbrücke (Rücken) Mitteleuropa", "Tief Mitteleuropa", "Nordlage, antizyklonal","Nordlage, zyklonal", "Hoch Nordmeer-Island, antizyklonal", "Hoch Nordmeer-Island, zyklonal", "Hoch Britische Inseln", "Trog Mitteleuropa", "Nordostlage, antizyklonal", "Nordostlage, zyklonal", "Hoch Fennoskandien, antizyklonal", "Hoch Fennoskandien, zyklonal", "Hoch Nordmeer-Fennoskandien, antizyklonal", "Hoch Nordmeer-Fennoskandien, zyklonal", "Südostlage, antizyklonal", "Südostlage, zyklonal", "Südlage, antizyklonal", "Südlage, zyklonal", "Tief Britische Inseln", "Trog Westeuropa", "Übergang/unbestimmt"),
   Abkürzung = c("WA", "WZ", "WS", "WW", "SWA", "SWZ", "NWA", "NWZ", "HM", "BM", "TM", "NA", "NZ", "HNA", "HNZ", "HB", "TRM", "NEA", "NEZ", "HFA", "HFZ", "HNFA", "HNFZ", "SEA", "SEZ", "SA", "SZ", "TB", "TRW", "U")
 ) 
-kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", caption = "Großwetterlagen nach Hess und Brezowsky") %>%
+kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", caption = "Großwetterlagen nach Hess und Brezowsky", linesep  = "") %>%
   kable_styling(latex_options = c("striped"), full_width = TRUE)
 
 ```
@@ -114,7 +114,7 @@ Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeress
 
 ## Daten
 
-Seit 1900 wird viermal täglich an 160 Standorten der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) und das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ erhoben. Im Folgenden wird für Visualisierungen der Luftdruck in hPa und das Geopotential für .... dargestellt. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist.
+Seit 1900 wird viermal täglich an 160 Standorten der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) und das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ erhoben. Im Folgenden wird für Visualisierungen der Luftdruck in hPa ($1hPa = 100Pa$) und das Geopotential in gpm ($1gpm = 9.80665\frac{m^2}{s^2}$) dargestellt. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist.
 
 ```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Standorte der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
 include_graphics("assets/MapDots.png")
@@ -253,7 +253,7 @@ Um diese Gebietseinteilung eines Tages durchzuführen, soll also ein metrischer 
 
 Um der Anforderung der nicht uniformen Gebiete gerecht zu werden, erscheint ein dichtebasiertes Clusterverfahren von Vorteil. Ein implementiertes Verfahren, das auch die Möglichkeit des Rauschens beinhaltet, ist *DBSCAN* (Density-Based Spatial Clustering of Applications with Noise). Ein solches Verfahren nutzt einen sogenannte Nachbarschaftsparameter, um Beobachtungen zueinander als Nachbarn einzuteilen oder eben nicht. Demnach liegt hier nicht ein Mittelpunkt eines Clusters vor, zu dem der Abstand einer jeweiligen Beobachtung entscheidend dafür ist, ob sie sich jeweils in diesem Cluster befindet, sondern Beobachtungen innerhalb eines Clusters weisen jeweils geringe Distanzen zu ihren Nachbarpunkten im selben Cluster auf. Dadurch werden Cluster erstellt, die sehr unförmig sein können. (@tds.dbscan)
 
-*DBSCAN* benötigt keine Angabe der Clusteranzahl, sondern nur der Hyperparameter *minPoints* (minimale Anzahl an Punkte pro Cluster) und *eps* (Nachbarschaftsparameter). Hier lässt sich erhoffen, dass eventuell auch mehr als nur die zwei Gebiete um die Extrema erkannt werden. Allerdings musste schnell erkannt werden, dass sich der Algorithmus mit diesen Daten sehr sensitiv gegenüber den Hyperparametern präsentiert, selbst wenn der Nachbarschaftsparameter pro Tag anhand dem Wert der größten Wölbung eines $k$NN-plots ($k$ = minPoints) spezifisch berechnet wird (siehe Absatz [SCAPOI]). Dies führt dazu, dass sehr viele Tage nur zu Noise, einem einzigen Cluster oder zu riesigen Clustern gefiltert werden; was widerrum nicht erwünscht ist, da die Vergleichbarkeit der Tage im Nachhinein damit nahezu unmöglich wird.
+*DBSCAN* benötigt keine Angabe der Clusteranzahl, sondern nur der Hyperparameter *minPoints* (minimale Anzahl an Punkte pro Cluster) und *eps* (Nachbarschaftsparameter). Hier lässt sich erhoffen, dass eventuell auch mehr als nur die zwei Gebiete um die Extrema erkannt werden. Allerdings musste schnell erkannt werden, dass sich der Algorithmus mit diesen Daten sehr sensitiv gegenüber den Hyperparametern präsentiert, selbst wenn der Nachbarschaftsparameter pro Tag anhand dem Wert der größten Wölbung eines $k$NN-plots ($k$ = minPoints) spezifisch berechnet wird (siehe Absatz \ref{scapoi}). Dies führt dazu, dass sehr viele Tage nur zu Noise, einem einzigen Cluster oder zu riesigen Clustern gefiltert werden; was widerrum nicht erwünscht ist, da die Vergleichbarkeit der Tage im Nachhinein damit nahezu unmöglich wird.
 
 Ein Bestimmen der Startpunkte und somit ein Festsetzen der Cluster-Orte ist - zumindest in vorhandenen Implementationen dieses Algorithmus' - nicht möglich. Deswegen lässt sich beobachten, dass sich die Extrema oft nicht in einem der eingeteilten Clustern befinden, da sie oft stark von durchschnittlichen Messwerten abweichen. *DBSCAN* führt somit im besten Fall zu Gebieten, dessen Messpunkte sich eher im Mittelfeld der Skala des Tages befinden und innerhalb der Gebiete kaum Veränderungen aufweisen. Solche Gebiete sind aber hier als nicht von besonderem Interesse vermutet und deshalb wird *DBSCAN* hierfür ausgeschlossen.
 
@@ -331,10 +331,10 @@ $$ $$
   und: \forall_{x \in {A, B}} : x \in \{0 \text(Noise), 1 \text(Hoch), 2 \text(Tief)\}
 $$
 
-### Kriterien
+### Kriterien Filtern
 
 
-Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse wie in Abschnitt [Partitioning Around Medoids] (*PAM*) beschrieben durchgeführt. $HB_{diff}$ ergibt sich hier zu $0.4100$.
+Dieser Ansatz liefert für beide Parameter kombiniert einen *Silhouettenkoeffizient* von $0.0832$ und einen *TLS* von $-0.1527$. Dabei wurden die Distanzmatrizen des Filterns der beiden Parameter addiert und damit eine Clusteranalyse wie in Abschnitt \ref{partitioning-around-medoids} (*PAM*) beschrieben durchgeführt. $HB_{diff}$ ergibt sich hier zu $0.4100$.
 
 
 Nach Parametern getrennte Analysen weisen je einen höheren *Silhouettenkoeffizient* auf, aber einen geringeren *TLS*. (Mslp: $s = 0.1369$, $TLS = -0.2027$, $HB_{diff} = 0.3980$ ; Geopot: $s = 0.1541$, $TLS = -0.3898$, $HB_{diff} = 0.3162$)
@@ -398,8 +398,8 @@ dt <- data.table(
                  "Euklidische Distanz vom Minimum Geopotential zu Minimum Mslp",
                  "Euklidische Distanz vom Maximum Geopotential zu Maximum Mslp",
                  "Mittelwerte in jeweils 9 Quadranten"))
-kbl(dt, caption = "Extrahierte Variablen", booktabs = TRUE, format =  "latex", escape = FALSE, label = "variablen",)  %>%
-  kable_styling(latex_options = "striped", full_width = FALSE) %>%
+kbl(dt, caption = "Extrahierte Variablen", booktabs = TRUE, format =  "latex", escape = FALSE, label = "variablen", linesep  = "")  %>%
+  kable_styling(latex_options = c("hold_position","striped"), full_width = FALSE) %>%
   pack_rows("Verteilungsvariablen", 1, 8) %>%
   pack_rows("Räumliche Ebene", 9, 16) %>%
   column_spec(2, width = "25em")
@@ -488,11 +488,11 @@ In Tabelle \ref{tab:Gewichtung} sieht man die Kategorien mit ihren Variablen und
 dt2 <- data.frame(
   
   Variable = c("Minimum, Maximum, Mittelwert", "Minimum, Maximum, Mittelwert", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag","Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Mittelwerte in den 9 Quadranten", "Mittelwerte in den 9 Quadranten"),
-  Gewichte = c("$1/3$", "$1/3$", "$1/3$", "$1/6$", "$\\frac{1}{6}$", "1/6", "1/9", "1/9")  
+  Gewichte = c("$1/3$", "$1/3$", "$1/3$", "$1/6$", "$1/6$", "1/6", "1/9", "1/9")  
   ) 
 
-kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen", align = "l") %>%
-  kable_styling(latex_options = "striped", full_width = FALSE)%>%
+kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen", align = "l", linesep  = "") %>%
+  kable_styling(latex_options = c("hold_position","striped", "hover"), full_width = FALSE)%>%
   pack_rows("1  Verteilungsvariablen Mslp I", 1, 1) %>%
   pack_rows("2  Verteilungsvariablen Geopotential I", 2, 2) %>%
   pack_rows("3  Verteilungsvariablen Mslp II", 3, 3) %>%
@@ -586,11 +586,11 @@ dt3 <- data.table(
   Metrik = c("Euklidisch", "Manhattan", "Mahalanobis", "PCA", "Gower", "Euklidisch", "Manhattan", "Mahalanobis", "Euklidisch")
 )
 
-kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden für 5 Jahre") %>%
-  kable_styling(latex_options = "striped", full_width = FALSE)%>%
+kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden für 5 Jahre", linesep  = "") %>%
+  kable_styling(latex_options = c("hold_position","striped"), full_width = FALSE)%>%
   pack_rows("Reanalyse-Datensatz", 1, 4) %>%
   pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)%>%
-  kable_styling(latex_options = "hold_position")
+  kable_styling()
   
   
 ```
@@ -618,7 +618,7 @@ Abbildung \ref{fig:tlMultiplied} zeigt die Timeline für dieses Clustergebnis. E
 
 Der Timeline-Score beträgt $TLS = 0.3357$.
 
-```{r tlMultiplied, echo = FALSE, fig.cap = "\\label{fig:tlMultiplied}Timeline für Clusterergebnis mit extrahierten Variablen mit $k = 6$", fig.align="center", out.width = "80%"}
+```{r tlMultiplied, echo = FALSE, fig.cap = "\\label{fig:tlMultiplied}Timeline für Clusterergebnis mit extrahierten Variablen mit $k = 6$. Die rote Linie zeigt die optimale Timeline Verteilung.", fig.align="center", out.width = "80%"}
 include_graphics("assets/timelineMultiplied.png")
 ```
 
@@ -660,12 +660,23 @@ Abb. \ref{fig:observation_in_cluster} zeigt die Aufteilung der Tage im Zeitraum 
 include_graphics("assets/observation_in_cluster.png")
 ```
 
-Tabelle \ref{fig:descriptive_cluster} bildet Mittelwert und Standardabweichung der Variablen Mittelwert, Maximum und Minimum des Luftdrucks und Mittelwert, Maximum und Minimum des Geopotentials in jedem Cluster ab. Hierbei unterschieden sich die Werte einer Variablen über alle Cluster nur gering voneinander. Zum Beispiel beträgt die maximale Abweichung der Variable Mittelwert des Luftdrucks in allen Clustern nur $8.2 hPa$ und die maximale Abweichung der Variable Mittelwert des Geopotentials $287.7 gpm$.
+Tabelle \ref{tab:descriptive_cluster} bildet Mittelwert und Standardabweichung der Variablen Mittelwert, Maximum und Minimum des Luftdrucks und Mittelwert, Maximum und Minimum des Geopotentials in jedem Cluster ab. Hierbei unterschieden sich die Werte einer Variablen über alle Cluster nur gering voneinander. Zum Beispiel beträgt die maximale Abweichung der Variable Mittelwert des Luftdrucks in allen Clustern nur $8.2 hPa$ und die maximale Abweichung der Variable Mittelwert des Geopotentials $287.7 gpm$.
  
+ 
+ 
+```{r descriptive_cluster, echo=FALSE, fig.cap="\\label{tab:descriptive_cluster}Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm"}
+dtX <- readRDS("assets/dataset_cluster_avg_2.rds")
 
-```{r descriptive_cluster, echo = FALSE, fig.cap="\\label{fig:descriptive_cluster}Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm ", fig.align="center", out.width="100%"}
-include_graphics("assets/table_descriptive_cluster.png")
+
+kbl(dtX, booktabs = TRUE, format =  "latex", escape = FALSE, label = "descriptive_cluster", caption = "Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm", linesep  = "",  align = "c") %>%
+  row_spec(0, bold = TRUE) %>%
+  kable_styling(full_width = F, font_size = 10, latex_options = "hold_position") %>%
+  column_spec(1, bold = T) %>%
+  collapse_rows(columns = c(1), valign = "middle")
+
+
 ```
+
 
 Abb. \ref{fig:mean_mslp_boxplot} und Abb. \ref{fig:mean_geopot_boxplot} bilden die Verteilung der Variablen Mittelwert des Luftdrucks und Mittelwert des Geopotentials je Cluster ab. Verglichen mit der Variable Mittelwert des Geopotentials unterschiedet sich der Median und die Verteilung der Variable Mittelwert des Luftdrucks in jedem Cluster wenig. Hierbei beinhaltet Cluster 2 mit einem Median von $1009.5 hPa$ und einem Interquartilsabstand (IQR) von $3.8 hPa$ (1. Quartil $= 1007.4 hPa$, 3. Quartil $= 1011.2 hPa$) tendenziell die kleinsten Werte auf, während Cluster 5 mit einem Median von $1017 hPa$ und einem Interquartilsabstand von $3 hPa$ (1. Quartil = $1016 hPa$, 3. Quartil = $1019 hPa$) tendenziell die höchsten Werte aufweist. Bei der Variable Mittelwert des Geopotentials weisen die Werte der Cluster 4 bis 6 deutlich höhere Werte auf als die Werte in den Clustern 1 bis 3. Wie bei der Variable Mittelwert des Luftdrucks beinhaltet auch das Cluster 2 bei der Variable Mittelwert des Luftdrucks tendenziell die niedrigsten Werte mit einem Median von $5360 gpm$ und einem IQR von $58 gpm$ (1. Quartil $= 5334 gpm$, 3. Quartil $= 5392 gpm$). Cluster 6 weist tendenziell die höchsten Werte mit einem Median von 5654 gpm und einem IQR von $42 gpm$ (1. Quartil $= 5632 gpm$, 3. Quartil $= 5674 gpm$). Die Variable Mittelwert des Geopotentials weist weniger Ausreißer auf als die Variable Mittelwert des Luftdrucks.
 
@@ -710,7 +721,7 @@ include_graphics("assets/mosaicLegend.png")
 
 ## Bewertungkriterien
 
-Der in Abschnitt [Clusterbewertungskriterien] beschriebenen *Timeline-Score* ($TLS$) ist im Gegensatz zu dem *Silhouettenkoeffizient* nicht unabhängig von der Anzahl der Cluster und somit problematisch um Clusterlösungen mit verschiedener Clusteranzahl zu vergleichen. Die hier vorgestellten Clusterverfahren schwanken in der gewählten Clusteranzahl *nur* zwischen 5 und 6.
+Der in Abschnitt \ref{clusterbewertungskriterien} beschriebenen *Timeline-Score* ($TLS$) ist im Gegensatz zu dem *Silhouettenkoeffizient* nicht unabhängig von der Anzahl der Cluster und somit problematisch um Clusterlösungen mit verschiedener Clusteranzahl zu vergleichen. Die hier vorgestellten Clusterverfahren schwanken in der gewählten Clusteranzahl *nur* zwischen 5 und 6.
 
 Gleiches Problem existiert für $HB_{diff}$. Hier wird zudem die Häufigkeit der *GWL* nicht mit in Betracht gezogen. Das bedeutet, dass eine *GWL* wie NEA (Nordostlage, antizyklonal), die sehr selten vorkommt, dasselbe Gewicht auf die Maßzahl wie WZ (Westlage, zyklonal), die am häufigsten vorkommende *GWL*, hat.
 
@@ -784,7 +795,7 @@ Ein auffälliger Unterschied in der Art der Unterteilung der Tage zwischen den G
 
 ## PAM & Filter
 
-Die Methode, wie in Absatz [Filter Ansatz] beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. Intuitiv lässt sich vermuten, dass ein Zusammenführen mit dem im Absatz [Clustern mit extrahierten Daten] beschriebenen Verfahren zu einer insgesamten Verbesserung führen könnte. Folgendes kann durch Addieren der Distanzmetriken vor dem Clustern auf Tagesebene erreicht werden. Die darauf folgende Clusteranalyse wurde hier auch mit *PAM* durchgeführt.
+Die Methode, wie in Absatz \ref{filter-ansatz} beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. Intuitiv lässt sich vermuten, dass ein Zusammenführen mit dem im Absatz \ref{clustern-mit-extrahierten-daten} beschriebenen Verfahren zu einer insgesamten Verbesserung führen könnte. Folgendes kann durch Addieren der Distanzmetriken vor dem Clustern auf Tagesebene erreicht werden. Die darauf folgende Clusteranalyse wurde hier auch mit *PAM* durchgeführt.
 
  
 
@@ -792,7 +803,7 @@ Ein einfaches Addieren mit Filtern von beiden Parametern, Mslp und Geopotential,
 
 Es ist ein $HB_{diff}$ von $0.3878$ zu beobachten, welcher etwas höher als der $HB_{diff}$ der Clusterlösung der extrahierten Daten mit $HB_{diff} = 0.3309$ ist.
 
-Allerdings fällt hierbei die Clusteranzahl von $k = 6$ auf $k = 5$, was den Vergleich des $TLS$ sowie des $HB_{diff}$ wie in Absatz [Bewertungkriterien] beschrieben, problematisiert.
+Allerdings fällt hierbei die Clusteranzahl von $k = 6$ auf $k = 5$, was den Vergleich des $TLS$ sowie des $HB_{diff}$ wie in Absatz \ref{bewertungkriterien} beschrieben, problematisiert.
 
  
 
@@ -816,9 +827,9 @@ Grundsätzlich lässt sich aber auch anmerken, dass der Filter-Ansatz noch sehr 
 
 Allerdings bleibt zu untersuchen, ob ein Image-Clustering Convolutional Neural Network (*CNN*) wie in @CNN beschrieben, hierzu nicht allgemein geeigneter ist.
 
-## Räumliche Struktur
+## Räumliche Struktur {#raeumliche-struktur}
 
-Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotential (siehe [Filter Ergebnisse]) sowie den über die Cluster gemittelten Tagesbilder des Clusterns der extrahierten Daten mit PAM, bei dem sich die Bilder des Geopotentials räumlich sehr wenig unterscheiden (Abb. \ref{fig:geopot_measurepoints}), lässt sich die Vermutung aufstellen, dass die Ausprägungen des Geopotentials, zumindest so wie sie vorliegen, räumlich kaum Unterschiede aufweisen und somit sich zwischen Tagen keine verschiedenen Strukturen finden lassen (siehe Abb. \ref{fig:geopot_verID}). Auf der Basis ist es eventuell sinnvoller, nur die räumliche Komponente des Mslp beim Clusterverfahren zu betrachten oder zumindest diese höher zu gewichten. Etwas unterstützt wird dieser Gedanke davon, dass in den Beschreibungen der GWL nach Hess und Brezowsky häufig Bezug auf Ort und Form eines Druckgebietes am Boden genommen wird @sklima. Möglicherweise ließen sich auch deutlicher räumliche Strukturen in den Ausprägungen des Geopotentials finden, wenn diese im vorhinein räumlich bereinigt werden. Zum Beispiel unter der Annahme, dass im Norden immer geringere Messwerte erscheinen als im Süden.
+Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotential (siehe Absatz \ref{kriterien-filtern}) sowie den über die Cluster gemittelten Tagesbilder des Clusterns der extrahierten Daten mit PAM, bei dem sich die Bilder des Geopotentials räumlich sehr wenig unterscheiden (Abb. \ref{fig:geopot_measurepoints}), lässt sich die Vermutung aufstellen, dass die Ausprägungen des Geopotentials, zumindest so wie sie vorliegen, räumlich kaum Unterschiede aufweisen und somit sich zwischen Tagen keine verschiedenen Strukturen finden lassen (siehe Abb. \ref{fig:geopot_verID}). Auf der Basis ist es eventuell sinnvoller, nur die räumliche Komponente des Mslp beim Clusterverfahren zu betrachten oder zumindest diese höher zu gewichten. Etwas unterstützt wird dieser Gedanke davon, dass in den Beschreibungen der GWL nach Hess und Brezowsky häufig Bezug auf Ort und Form eines Druckgebietes am Boden genommen wird @sklima. Möglicherweise ließen sich auch deutlicher räumliche Strukturen in den Ausprägungen des Geopotentials finden, wenn diese im vorhinein räumlich bereinigt werden. Zum Beispiel unter der Annahme, dass im Norden immer geringere Messwerte erscheinen als im Süden.
 
 ```{r geopot_verID, echo = FALSE, fig.cap="\\label{fig:geopot_verID}Verteilung der vertikalen Position der Geopotential Extrema von 1971-2000", fig.align="center", out.width="80%"}
 include_graphics("assets/geoVerID.png")
@@ -826,9 +837,9 @@ include_graphics("assets/geoVerID.png")
 
 ## Gewichtungsvektor
 
-Grundsätzlich lässt sich feststellen, dass die Wahl des Gewichtungsvektors in der Clustermethode der extrahierten Daten (siehe Abschnitt [Clustern mit extrahierten Daten]) einflussreich gegenüber dem Clusterergebnis ist, bzw. das gezeigte Verfahren sensitiv gegenüber den Variablen-Gewichtungen ist. Dieser Vektor wurde, wie im Abschnitt [Gewichtung] beschrieben, in Absprache mit den Projektpartnern rein auf fachlich sinnvoller Ebene festgelegt.
+Grundsätzlich lässt sich feststellen, dass die Wahl des Gewichtungsvektors in der Clustermethode der extrahierten Daten (siehe Abschnitt \ref{clustern-mit-extrahierten-daten}) einflussreich gegenüber dem Clusterergebnis ist, bzw. das gezeigte Verfahren sensitiv gegenüber den Variablen-Gewichtungen ist. Dieser Vektor wurde, wie im Abschnitt \ref{gewichtung} beschrieben, in Absprache mit den Projektpartnern rein auf fachlich sinnvoller Ebene festgelegt.
 
-Es lässt sich allerdings anzweifeln, ob so eine starre und ausgeglichene Gewichtungswahl zu dem besten Clusterergebnis führt. Wie schon im Abschnitt [Räumliche Struktur] angeschnitten, könnte die räumliche Komponente des Geopotentials heruntergewichtet werden. Eventuell sind bestimmte Gebiete auch relevanter als andere (z.B. der Raum über dem Festland Europa relevanter, als der über dem Atlantik), was unter anderem durch ungleiche Gewichte der Quadrantenmittelwerte dargestellt werden könnte.
+Es lässt sich allerdings anzweifeln, ob so eine starre und ausgeglichene Gewichtungswahl zu dem besten Clusterergebnis führt. Wie schon im Abschnitt \ref{raeumliche-struktur} angeschnitten, könnte die räumliche Komponente des Geopotentials heruntergewichtet werden. Eventuell sind bestimmte Gebiete auch relevanter als andere (z.B. der Raum über dem Festland Europa relevanter, als der über dem Atlantik), was unter anderem durch ungleiche Gewichte der Quadrantenmittelwerte dargestellt werden könnte.
 
 ### Cluster-Boosting
 
@@ -858,7 +869,7 @@ $$ $$
  mit: s = \text{Silhouettenkoeffizient}
 $$
 
-Mit den in Abschnitt [Clustern mit extrahierten Daten] beschriebenen Variablen und dem beschriebenen Clusterverfahren erhält man durch oben genannter*Cluster-Boosting* Methode nach \textcolor{red}{XX} Iterationen folgenden Gewichtsvektor \textcolor{red}{insert table of vector} sowie einen *Silhouettenkoeffizienten* von \textcolor{red}{XX} und einen *TLS* von \textcolor{red}{XX}. Außerdem lässt sich ein $HB_{diff}$ von \textcolor{red}{XX} beobachten.
+Mit den in Abschnitt \ref{clustern-mit-extrahierten-daten} beschriebenen Variablen und dem beschriebenen Clusterverfahren erhält man durch oben genannter*Cluster-Boosting* Methode nach \textcolor{red}{XX} Iterationen folgenden Gewichtsvektor \textcolor{red}{insert table of vector} sowie einen *Silhouettenkoeffizienten* von \textcolor{red}{XX} und einen *TLS* von \textcolor{red}{XX}. Außerdem lässt sich ein $HB_{diff}$ von \textcolor{red}{XX} beobachten.
 
 ## Zeitliche Struktur
 
@@ -878,7 +889,7 @@ Es wurden verschiedene Ansätze ausprobiert, wobei der Filter Ansatz und das Ext
 
 # Anmerkungen {.unlisted .unnumbered}
 
-Reproduzierbarer Code und relevante Datein sind in einem Github Repository der Organisation \textcolor{red}{WeatherFrog} zu finden. Für Zugang, Kontakt zu den Autoren aufnehmen.
+Reproduzierbarer Code und relevante Datein sind in einem Github Repository der Organisation *weather-frog* zu finden. Für Zugang, Kontakt zu den Autoren aufnehmen.
 
  
 
@@ -889,7 +900,7 @@ dt4 <- data.table(
   Funktion = c("clara()", "pam()", "kmeans()", "dbscan()", "kNNdist()")
 )
 
-kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "R Libraries") %>%
+kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "R Libraries", linesep  = "") %>%
   kable_styling(latex_options = "striped", full_width = FALSE)%>%
   pack_rows("cluster", 1, 3) %>%
   pack_rows("dbscan", 4, 5) %>%
