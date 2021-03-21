@@ -30,9 +30,13 @@ header-includes:
 - \usepackage[german]{babel}
 bibliography: references.bib
 
-abstract: |
-  Dieser Bericht befasst sich mit einem Clustering anhand des historischen Reanalyse-Datensatzes, der Informationen zu dem Luftdruck auf Meeresspiegelhöhe und dem Geopotential auf 500 hPa am Tag beinhaltet. Anhand dieser Parameter soll untersucht werden, inwieweit die 29 Großwetterlagen nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dafür werden in Kapitel 1 zunächst das Konzept von Großwetterlagen und die Fragestellung dargestellt. Kapitel 2 beschäftigt sich mit der angewandten Methodik für die Clustereinteilung. Diese erfolgt dabei anhand der beobachteten Wetterdaten auf täglicher Basis mit Berücksichtigung der räumlichen Datenstruktur. In diesem Teil werden zwei Ansätze näher erklärt sowie eine grobe Übersicht über weitere Versuche gegeben. In Kapitel 3 werden die Ergebnisse von einem dieser Ansätze betrachtet. Dabei wird unter anderem darauf eingegangen, wie das Clusterergebnis bewertet werden kann. Außerdem wird hier eine deskriptive Analyse der resultierenden Cluster durchgeführt und dargelegt, wie Großwetterlagen in den resultierenden Clustern aufgeteilt sind. Zum Schluss werden in Kapitel 4 Teile der Methodik diskutiert und ein Ausblick auf weitere Analysen gegeben.
 ---
+\newpage
+
+# Zusammenfassung {.unlisted .unnumbered}
+
+  Dieser Bericht befasst sich mit einem Clustering anhand des historischen Reanalyse-Datensatzes, der Informationen zu dem Luftdruck auf Meeresspiegelhöhe und dem Geopotential auf 500 hPa am Tag beinhaltet. Anhand dieser Parameter soll untersucht werden, inwieweit die 29 Großwetterlagen nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dafür werden in Kapitel 1 zunächst das Konzept von Großwetterlagen und die Fragestellung dargestellt. Kapitel 2 beschäftigt sich mit der angewandten Methodik für die Clustereinteilung. Diese erfolgt dabei anhand der beobachteten Wetterdaten auf täglicher Basis mit Berücksichtigung der räumlichen Datenstruktur. In diesem Teil werden zwei Ansätze näher erklärt sowie eine grobe Übersicht über weitere Versuche gegeben. In Kapitel 3 werden die Ergebnisse von einem dieser Ansätze betrachtet. Dabei wird unter anderem darauf eingegangen, wie das Clusterergebnis bewertet werden kann. Außerdem wird hier eine deskriptive Analyse der resultierenden Cluster durchgeführt und dargelegt, wie Großwetterlagen in den resultierenden Clustern aufgeteilt sind. Zum Schluss werden in Kapitel 4 Teile der Methodik diskutiert und ein Ausblick auf weitere Analysen gegeben.
+
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.pos = "H", out.extra = "")
