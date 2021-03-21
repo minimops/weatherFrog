@@ -85,16 +85,3 @@ ggsave("bericht/assets/mosaicWinter.png", mosaicWinter,
 mosaic(copy(dataSummer), dataSummer$cluster)
 mosaic(copy(dataWinter), dataWinter$cluster)
 
-
-#```{r descriptive_cluster2, echo=FALSE, fig.cap="\\label{tab:descriptive_cluster2}Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm. Each row represents a list element"}
-dt4 <- data.table(
-  Cluster = c(1),
-  Mittelwert_Mslp = c(1012.8)
-) 
-#dt4$Mittelwert_Mslp = linebreak(dt4$Mittelwert_Mslp)
-kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Tab", caption = "Tab", align = "c") %>%
-  kable_styling(latex_options = "striped", full_width = TRUE)
-
-```
-### ansatz für linebreak: c("1012.8\n( $\\pm$ 2.7))
-
