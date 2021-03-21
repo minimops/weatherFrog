@@ -58,11 +58,14 @@ longrun = FALSE # set to TRUE to rerun all code
 \renewcommand{\contentsname}{Inhaltsverzeichnis}
 \tableofcontents
 ```
+
+\newpage
+
 ```{=tex}
 \renewcommand{\listtablename}{Tabellenverzeichnis}
 \listoftables
 ```
-\newpage
+
 
 ```{=tex}
 \renewcommand{\listfigurename}{Abbildungsverzeichnis}
@@ -587,8 +590,7 @@ dt3 <- data.table(
 kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden für 5 Jahre", linesep  = "") %>%
   kable_styling(latex_options = c("hold_position","striped"), full_width = FALSE)%>%
   pack_rows("Reanalyse-Datensatz", 1, 4) %>%
-  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)%>%
-  kable_styling()
+  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)
   
   
 ```
