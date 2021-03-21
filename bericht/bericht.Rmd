@@ -114,7 +114,7 @@ Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeress
 
 ## Daten
 
-Seit 1900 wird viermal täglich an 160 Standorten der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) und das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ erhoben. Im Folgenden wird für Visualisierungen der Luftdruck in hPa ($1hPa = 100Pa$) und das Geopotential in gpm ($1gpm = 9.80665\frac{m^2}{s^2}$) dargestellt. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist.
+Seit 1900 wird viermal täglich an 160 Standorten der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) und das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ erhoben. Im Folgenden wird für Visualisierungen der Luftdruck in hPa ($1hPa = 100Pa$) und das Geopotential in gpm ($1gpm = 9.80665\frac{m^2}{s^2}$) (@geopotRef) dargestellt. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist.
 
 ```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Standorte der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
 include_graphics("assets/MapDots.png")
@@ -259,7 +259,7 @@ Ein Bestimmen der Startpunkte und somit ein Festsetzen der Cluster-Orte ist - zu
 
  
 
-Ein weiterer vielversprechender Ansatz ist das *Fuzzy*-Clustering. *Fuzzy* entpricht vom Prinzip k-Means, es werden also pro Cluster Mittelpunkte festgelegt. Allerdings wird für jede Beobachtung eine Zugehörigkeitswahrscheinlichkeit für jedes Cluster berechnet, anstatt einer Cluster-Id. Hier können Startpunkte angegeben werden und anhand der Clusterzugehörigkeitswahrscheinlichkeit jeder Beobachtung, bestimmte Beobachtungen mithilfe eines Schwellenwertes im Nachhinein zu Rauschen verwandelt werden.
+Ein weiterer vielversprechender Ansatz ist das *Fuzzy*-Clustering (@fuzzy_cmeans). *Fuzzy* entpricht vom Prinzip k-Means, es werden also pro Cluster Mittelpunkte festgelegt. Allerdings wird für jede Beobachtung eine Zugehörigkeitswahrscheinlichkeit für jedes Cluster berechnet, anstatt einer Cluster-Id. Hier können Startpunkte angegeben werden und anhand der Clusterzugehörigkeitswahrscheinlichkeit jeder Beobachtung, bestimmte Beobachtungen mithilfe eines Schwellenwertes im Nachhinein zu Rauschen verwandelt werden.
 
 Allerdings ist dieses Verfahren hier auch nicht optimal. Neben dem, dass *Fuzzy* üblicherweise rechentechnisch sehr teuer implementiert ist, kommt hinzu, dass dieses Verfahren auf einen Mittelpunkt pro Cluster beruht und die Distanz dazu anhand eines gegebenen Distanzmaß' bestimmt wird. Nachdem die Koordinaten als Variablen aufgenommen werden, führt dies zu Clustern gleicher Form und verletzt somit die Anforderung, die Form eines Gebietes möglichst getreu darzustellen.
 
@@ -319,7 +319,7 @@ include_graphics("assets/filterRes.png")
 
 ### Distanzmetrik
 
-Um nun wieder auf Tagesebene clustern zu können, sprich mit den Tagen als Beobachtungseinheit Cluster zu bilden, benötigt man eine Metrik, mit der diese Gebietszugehörigkeitsvektoren zweier Tage miteinander verglichen werden können. Der *Rand-Index* präsentiert eine solche Möglichkeit. Dieser vergleicht jeweils, ob pro Clusterlösung Paare zweier Beobachtungen jeweils im selben Cluster liegen. Obwohl dies eher gedacht ist, um Lösungen verschiedener Clusterverfahren mit denselben Beobachtungen zu vergleichen, ist der *Rand-Index* hier möglich, da die Messpunkte konstant sind. Allerdings ist dabei irrelevant, in welchem Cluster sich das Paar jeweils befindet, was in diesem Fall nicht erwünscht ist: Zwei Tage mit identischen Gebietsformen und -orten aber gespiegelter Zugehörigkeit sollen nicht eine Distanz von 0 zueinander aufweisen. Zudem sind Messpunkte, die als Noise definiert wurden, nicht von Interesse und sollten demnach auch nicht mit einbezogen werden.
+Um nun wieder auf Tagesebene clustern zu können, sprich mit den Tagen als Beobachtungseinheit Cluster zu bilden, benötigt man eine Metrik, mit der diese Gebietszugehörigkeitsvektoren zweier Tage miteinander verglichen werden können. Der *Rand-Index* präsentiert eine solche Möglichkeit (@rand_index). Dieser vergleicht jeweils, ob pro Clusterlösung Paare zweier Beobachtungen jeweils im selben Cluster liegen. Obwohl dies eher gedacht ist, um Lösungen verschiedener Clusterverfahren mit denselben Beobachtungen zu vergleichen, ist der *Rand-Index* hier möglich, da die Messpunkte konstant sind. Allerdings ist dabei irrelevant, in welchem Cluster sich das Paar jeweils befindet, was in diesem Fall nicht erwünscht ist: Zwei Tage mit identischen Gebietsformen und -orten aber gespiegelter Zugehörigkeit sollen nicht eine Distanz von 0 zueinander aufweisen. Zudem sind Messpunkte, die als Noise definiert wurden, nicht von Interesse und sollten demnach auch nicht mit einbezogen werden.
 
 Deshalb wurde folgend eine Distanzmetrik definiert, die über zwei Tage alle Messpunkte, die jeweils als Noise definiert wurden, nicht betrachtet und bei den Verbleibenden vergleicht, welche Gebietszugehörigkeit die Messpunkte jeweils aufweisen. Danach wird noch durch die größte Anzahl an Messpunkten nicht in Noise dieser zwei Tagen geteilt, um den Wertebereich auf [0,1] zu beschränken sowie einer möglichen Ausprägung der Gebiete als Teilmengen voneinander ebenfalls nicht eine Distanz von 0 zuzuweisen.
 
@@ -560,7 +560,7 @@ Mit der resultierenden Distanzmatrix wurde dann eine Clusteranalyse mit PAM durc
 
 **PCA**
 
-Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust stattfindet. @pca
+Mit Hilfe einer *Principle Component Analysis* (PCA) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten *Principle Components* erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust stattfindet (@pca, @pca_image).
 
 ```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Visualisierung der Clusterlösung mittels Principal Component Analysis.", fig.align="center", out.width="80%"}
 include_graphics("assets/pcaPlot.png")
@@ -568,9 +568,7 @@ include_graphics("assets/pcaPlot.png")
 
 In Abbildung \ref{fig:pca} sind die ersten beiden *PC* dieses Datensatzes abgebildet und es ist zu beobachten, dass diese ca. 44% der Varianz erklären können. Eine auffällige Aufteilung der Beobachtungen in Gruppen ist hier allerdings nicht zu beobachten.
 
-Ein Ansatz \textcolor{red}{reference} ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens \textcolor{red}{85}% der Varianz der Daten erklären. Hier ergibt sich dies zu \textcolor{red}{12}. Eine Analyse mit $k$*-means* ($k$ = \textcolor{red}{6}) ergab einen Silouettenkoeffizient von \textcolor{red}{0.1566} und ein *TLS* von \textcolor{red}{0.1373}.
-
-\textcolor{red}{HBdiff von 0.4042}
+Ein Ansatz ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens 85% der Varianz der Daten erklären (@pca_kmeans). Hier ergibt sich dies zu 12 *PC*. Eine Analyse mit $k$*-means* ($k$ = 6) ergab einen Silouettenkoeffizient von $0.1566$ und ein *TLS* von $0.1373$. Außerdem lässt sich ein $HB_{diff}$ von $0.4042$ beobachten.
 
 ### K-Means, PAM und Fuzzy mit Extrahierten Daten
 
@@ -757,7 +755,7 @@ include_graphics("assets/mosaicWinter.png")
 
 Des Weiteren wurde auch überlegt, den extrahierten Datensatz in Sommer- und Winterdaten aufzuteilen und diese getrennt zu clustern (@article_james). Dafür wurde wiederum das Jahr am 15/16 April, sowie dem 15/16 Oktober getrennt und folgend eine Clusteranalyse mit dem *PAM*-Algorithmus und der Manhattan-Distanzmetrik durchgeführt.
 
-Im Gegensatz zu dem ungetrennten Clustern (\ref{ergebnisse-pam-mit-extrahierten-variablen}), bei dem $k = 6$ Cluster entstehen, resultiert das nach Saison getrennte Clustern für beide Jahreszeiten in nur $k = 5$ Cluster. Dabei ergibt sich für den Sommer ein *Silhouettenkoeffizient* von $s = 0.1126$, einen *Timeline-Score* von $TLS = 0.4767$ sowie ein $HB_{diff}$ von $0.3448$. Für den Winter $s = 0.0909$, $TLS = 0.2303$ und $HB_{diff} = 0.2970$.
+Im Gegensatz zu dem ungetrennten Clustern (Absatz \ref{ergebnisse-pam-mit-extrahierten-variablen}), bei dem $k = 6$ Cluster entstehen, resultiert das nach Saison getrennte Clustern für beide Jahreszeiten in nur $k = 5$ Cluster. Dabei ergibt sich für den Sommer ein *Silhouettenkoeffizient* von $s = 0.1126$, einen *Timeline-Score* von $TLS = 0.4767$ sowie ein $HB_{diff}$ von $0.3448$. Für den Winter $s = 0.0909$, $TLS = 0.2303$ und $HB_{diff} = 0.2970$.
 
 Auffällig ist dabei, dass der Sommer in allen Kriterien bessere Werte aufweist als der Winter. Dies könnte damit zusammenliegen, dass gewisse Variablen des Luftdrucks im Winter mehr zu streuen scheinen (vgl. Abb. \ref{fig:distribution_seasom_mslp} und Abb. \ref{fig:werteMslp}).
 
@@ -829,7 +827,7 @@ Allerdings bleibt zu untersuchen, ob ein Image-Clustering Convolutional Neural N
 
 ## Räumliche Struktur {#raeumliche-struktur}
 
-Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotential (siehe Absatz \ref{kriterien-filtern}) sowie den über die Cluster gemittelten Tagesbilder des Clusterns der extrahierten Daten mit PAM, bei dem sich die Bilder des Geopotentials räumlich sehr wenig unterscheiden (Abb. \ref{fig:geopot_measurepoints}), lässt sich die Vermutung aufstellen, dass die Ausprägungen des Geopotentials, zumindest so wie sie vorliegen, räumlich kaum Unterschiede aufweisen und somit sich zwischen Tagen keine verschiedenen Strukturen finden lassen (siehe Abb. \ref{fig:geopot_verID}). Auf der Basis ist es eventuell sinnvoller, nur die räumliche Komponente des Mslp beim Clusterverfahren zu betrachten oder zumindest diese höher zu gewichten. Etwas unterstützt wird dieser Gedanke davon, dass in den Beschreibungen der GWL nach Hess und Brezowsky häufig Bezug auf Ort und Form eines Druckgebietes am Boden genommen wird @sklima. Möglicherweise ließen sich auch deutlicher räumliche Strukturen in den Ausprägungen des Geopotentials finden, wenn diese im vorhinein räumlich bereinigt werden. Zum Beispiel unter der Annahme, dass im Norden immer geringere Messwerte erscheinen als im Süden.
+Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotential (siehe Absatz \ref{kriterien-filtern}) sowie den über die Cluster gemittelten Tagesbilder des Clusterns der extrahierten Daten mit PAM, bei dem sich die Bilder des Geopotentials räumlich sehr wenig unterscheiden (Abb. \ref{fig:geopot_measurepoints}), lässt sich die Vermutung aufstellen, dass die Ausprägungen des Geopotentials, zumindest so wie sie vorliegen, räumlich kaum Unterschiede aufweisen und somit sich zwischen Tagen keine verschiedenen Strukturen finden lassen (siehe Abb. \ref{fig:geopot_verID}). Auf der Basis ist es eventuell sinnvoller, nur die räumliche Komponente des Mslp beim Clusterverfahren zu betrachten oder zumindest diese höher zu gewichten. Etwas unterstützt wird dieser Gedanke davon, dass in den Beschreibungen der GWL nach Hess und Brezowsky häufig Bezug auf Ort und Form eines Druckgebietes am Boden genommen wird (@sklima). Möglicherweise ließen sich auch deutlicher räumliche Strukturen in den Ausprägungen des Geopotentials finden, wenn diese im vorhinein räumlich bereinigt werden. Zum Beispiel unter der Annahme, dass im Norden immer geringere Messwerte erscheinen als im Süden.
 
 ```{r geopot_verID, echo = FALSE, fig.cap="\\label{fig:geopot_verID}Verteilung der vertikalen Position der Geopotential Extrema von 1971-2000", fig.align="center", out.width="80%"}
 include_graphics("assets/geoVerID.png")
