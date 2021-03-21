@@ -10,7 +10,7 @@ subtitle: |
   | Betreuer: Prof. Dr. Helmut Küchenhoff
   | Projektpartner: M.Sc. Maximilian Weigert und M.Sc. Magdalena Mittermeier 
 author: "Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto"
-date: "01. März 2021"
+date: "22. März 2021"
 output:
   pdf_document:
     fig_caption: yes
@@ -31,7 +31,7 @@ header-includes:
 bibliography: references.bib
 
 abstract: |
-  Dieser Bericht befasst sich mit einem Clustering anhand des historischen Reanalyse-Datensatzes, der Informationen zu dem Luftdruck auf Meeresspiegelhöhe und dem Geopotential auf 500 hPa am Tag beinhaltet. Anhand dieser Parameter soll untersucht werden, inwieweit die 29 Großwetterlagen nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dafür werden in Kapitel 1 zunächst das Konzept von Großwetterlagen und die Fragestellung dargestellt. Kapitel 2 beschäftigt sich mit der angewandten Methodik für die Clustereinteilung. Diese erfolgt dabei anhand der beobachteten Wetterdaten auf täglicher Basis mit Berücksichtigung der räumlichen Datenstruktur. In diesem Teil werden zwei Ansätze näher erklärt sowie eine grobe Übersicht über weitere Versuche gegeben. In Kapitel 3 werden die Ergebnisse von einem dieser Ansätze betrachtet. Dabei wird unter anderem darauf eingegangen, wie das Clusterergebnis bewertet werden kann. Außerdem wird hier eine deskriptive Analyse der resultierenden Cluster durchgeführt und dargelegt, wie Großwetterlagen in den resultierenden Clustern aufgeteilt sind. Zum Schluss werden in Kapitel 4 Teile der Methodik diskutiert und ein Ausblick auf weitere Analysen gegeben.
+ Dieser Bericht befasst sich mit einem Clustering anhand des historischen Reanalyse-Datensatzes, der Informationen zu dem Luftdruck auf Meeresspiegelhöhe und dem Geopotential auf 500 hPa am Tag beinhaltet. Anhand dieser Parameter soll untersucht werden, inwieweit die 29 Großwetterlagen nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dafür werden in Kapitel 1 zunächst das Konzept von Großwetterlagen und die Fragestellung dargestellt. Kapitel 2 beschäftigt sich mit der angewandten Methodik für die Clustereinteilung. Diese erfolgt dabei anhand der beobachteten Wetterdaten auf täglicher Basis mit Berücksichtigung der räumlichen Datenstruktur. In diesem Teil werden zwei Ansätze näher erklärt sowie eine grobe Übersicht über weitere Versuche gegeben. In Kapitel 3 werden die Ergebnisse von einem dieser Ansätze betrachtet. Dabei wird unter anderem darauf eingegangen, wie das Clusterergebnis bewertet werden kann. Außerdem wird hier eine deskriptive Analyse der resultierenden Cluster durchgeführt und dargelegt, wie Großwetterlagen in den resultierenden Clustern aufgeteilt sind. Zum Schluss werden in Kapitel 4 Teile der Methodik diskutiert und ein Ausblick auf weitere Analysen gegeben.
 ---
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
@@ -80,7 +80,8 @@ data.table(
   Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$", "IQR", "$gpm$")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE, linesep  = "") %>%
-  kable_styling(latex_options = c("repeat_header", "striped"), full_width = TRUE)
+  kable_styling(latex_options = c("repeat_header", "striped"), full_width = FALSE) %>%
+  column_spec(2, "28em")
 ```
 
 \newpage
@@ -111,8 +112,10 @@ gwl <- data.table(
   Großwetterlage = c("Westlage, antizyklonal", "Westlage, zyklonal", "Südliche Westlage", "Winkelförmige Westlage", "Südwestlage, antizyklonal", "Südwestlage, zyklonal", "Nordwestlage, antizyklonal", "Nordwestlage, zyklonal", "Hoch Mitteleuropa", "Hochdruckbrücke (Rücken) Mitteleuropa", "Tief Mitteleuropa", "Nordlage, antizyklonal","Nordlage, zyklonal", "Hoch Nordmeer-Island, antizyklonal", "Hoch Nordmeer-Island, zyklonal", "Hoch Britische Inseln", "Trog Mitteleuropa", "Nordostlage, antizyklonal", "Nordostlage, zyklonal", "Hoch Fennoskandien, antizyklonal", "Hoch Fennoskandien, zyklonal", "Hoch Nordmeer-Fennoskandien, antizyklonal", "Hoch Nordmeer-Fennoskandien, zyklonal", "Südostlage, antizyklonal", "Südostlage, zyklonal", "Südlage, antizyklonal", "Südlage, zyklonal", "Tief Britische Inseln", "Trog Westeuropa", "Übergang/unbestimmt"),
   Abkürzung = c("WA", "WZ", "WS", "WW", "SWA", "SWZ", "NWA", "NWZ", "HM", "BM", "TM", "NA", "NZ", "HNA", "HNZ", "HB", "TRM", "NEA", "NEZ", "HFA", "HFZ", "HNFA", "HNFZ", "SEA", "SEZ", "SA", "SZ", "TB", "TRW", "U")
 ) 
-kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", caption = "Großwetterlagen nach Hess und Brezowsky", linesep  = "") %>%
-  kable_styling(latex_options = c("striped"), full_width = TRUE)
+kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", caption = "Großwetterlagen nach Hess und Brezowsky", linesep  = "", align = c("l", "c")) %>%
+  kable_styling(latex_options = c("striped"), full_width = FALSE) %>%
+  column_spec(1, "27em") %>%
+  column_spec(2, "3cm")
 
 ```
 
@@ -612,10 +615,12 @@ dt3 <- data.table(
   Metrik = c("Euklidisch", "Manhattan", "Mahalanobis", "PCA", "Gower", "Euklidisch", "Manhattan", "Mahalanobis", "Euklidisch")
 )
 
-kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden", linesep  = "") %>%
-  kable_styling(latex_options = c("hold_position","striped"), full_width = TRUE)%>%
+kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Clusterverfahren", linesep  = "") %>%
+  kable_styling(latex_options = c("hold_position","striped"), full_width = FALSE)%>%
   pack_rows("Reanalyse-Datensatz", 1, 4) %>%
-  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)
+  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9) %>%
+  column_spec(2, "5cm") %>%
+  column_spec(1, "8cm")
   
   
 ```
@@ -925,11 +930,14 @@ dt4 <- data.table(
   Funktion = c("clara()", "pam()", "kmeans()", "dbscan()", "kNNdist()")
 )
 
-kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "R Libraries", linesep  = "") %>%
+kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "R Libraries", caption = "R Libraries", linesep  = "") %>%
   kable_styling(latex_options = "striped", full_width = FALSE)%>%
-  pack_rows("cluster", 1, 3) %>%
+  pack_rows("cluster", 1, 2) %>%
   pack_rows("dbscan", 4, 5) %>%
-  kable_styling(latex_options = "hold_position")
+  pack_rows("stats", 3, 3) %>%
+  kable_styling(latex_options = "hold_position") %>%
+  column_spec(1, "4cm") %>%
+  column_spec(2, "4cm")
   
 ```
 
