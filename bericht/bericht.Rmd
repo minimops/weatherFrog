@@ -842,7 +842,7 @@ Es lässt sich allerdings anzweifeln, ob so eine starre und ausgeglichene Gewich
 
 ### Cluster-Boosting
 
-Ein Ansatz die Gewichte der Variablen flexibler zu wählen ist, sie durch ein maschinelles Verfahren automatisch zu bestimmen. Zum Beispiel könnte eine Art komponentenweises Boosting durchgeführt werden, das iterativ das Gewicht einer Variable erhöht um einen bestimmten Wert zu optimieren.
+Ein Ansatz die Gewichte der Variablen flexibler zu wählen ist, sie durch ein maschinelles Verfahren automatisch zu bestimmen. Zum Beispiel könnte eine Art komponentenweises Boosting durchgeführt werden (ähnlich wie komponentenweises Boosting in Regression vgl. @regression), das iterativ das Gewicht einer Variable erhöht um einen bestimmten Wert zu optimieren.
 
 $$
   W^{(t)} = argmax_{W_j, j = 1,...,k} \left( f\left(cluster(W_j^{(t-1)}X)\right)  \right)
