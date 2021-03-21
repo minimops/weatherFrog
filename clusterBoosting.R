@@ -5,12 +5,16 @@ library(checkmate)
 library(parallel)
 library(cluster)
 
-clusterBoosting <- function(stepW, mstop, data, sampling = c(2, 3)) {
+clusterBoosting <- function(stepW, mstop, data, sampling = c(2, 3), 
+                            start.weights = rep(0, ncol(data) -1 )) {
   assertNumber(stepW, lower = 10^-20, upper = 1)
   assertNumber(mstop, lower = 1, finite = TRUE)
   assertDataTable(data)
   assertSubset("date", names(data))
   assertNumeric(sampling, len = 2)
+  
+  if(length(start.weights) != ncol(data) -1) stop("start.weights must have same 
+                                                  length as data has columns that aren't date")
   
   #year period
   timeframe <- as.numeric(unique(copy(data)[,
@@ -18,9 +22,10 @@ clusterBoosting <- function(stepW, mstop, data, sampling = c(2, 3)) {
   #save for output
   iterations <- mstop
   #set up weight vector
-  weights <- rep(0.01, ncol(data) - 1)
+  weights <- start.weights
   #scores over time
-  scoreIT <- data.table(iteration = 0, score = 0, weights = list(weights))
+  scoreIT <- data.table(iteration = 0, score = 0, avgSil = 0, avgTLS = 0, stab = 0,
+                        weights = list(weights))
   #run through iterations
   while(mstop > 0){
     years <- selectYears(timeframe, number = sampling[1], length = sampling[2])
@@ -36,8 +41,20 @@ clusterBoosting <- function(stepW, mstop, data, sampling = c(2, 3)) {
     #clusterMap(cl, "+", t.y = c(1,1,1), w.i = c(3,4,5))
     stopCluster(cl)
     
+    
+    #attatch stability metric
+    scores$V4 <- as.data.table(scores)[, V4 := (1/3) * (1 - (abs(range(V2)[1] - range(V2)[2]) +
+                                                        abs(range(V3)[1] - range(V3)[2]))), by 
+                                         = V1]$V4
+    
+    #calculate averages
+    scores <- as.data.table(scores)[, .(V2 = mean(V2), V3 = mean(V3), V4 = mean(V4)), by = V1]
+    
+    
     #sum up scoreParams
     #names(scores) <- c("param", "avgSil")
+    indexBest <- which(rowSums(scores[, 2:ncol(scores)]) == 
+                         max(rowSums(scores[, 2:ncol(scores)])))
     scores$fscore <- rowSums(scores[, 2:ncol(scores)])
     #best scoring increment
     para2Weight <- as.numeric(scores[fscore == max(fscore), ][, 1])
@@ -46,12 +63,15 @@ clusterBoosting <- function(stepW, mstop, data, sampling = c(2, 3)) {
     weights[para2Weight] <- weights[para2Weight] + stepW
     
     #record in timeline
-    scoreIT <- rbind(scoreIT, data.table(iteration = iterations - mstop + 1,
-                                         score = scores[fscore == max(fscore),
+    scoreIT <- rbind(scoreIT, data.table(iterations - mstop + 1,
+                                         scores[fscore == max(fscore),
                                                           fscore],
-                                         weights = list(weights)))
+                                         scores[indexBest, 2],
+                                         scores[indexBest, 3],
+                                         scores[indexBest, 4],
+                                         list(weights)), use.names = F)
     
-    print(paste("iteration", iterations - mstop + 1, "with score:", 
+    print(paste("Iteration", iterations - mstop + 1, "with score:", 
                 scores[fscore == max(fscore), fscore]))
     
     mstop <- mstop - 1
@@ -62,6 +82,7 @@ clusterBoosting <- function(stepW, mstop, data, sampling = c(2, 3)) {
 
 clusterScorer <- function(x, dat, w, stepW) {
   library(cluster)
+  source("clustering/ClusterAssesmentHelper.R")
   #increment one column weight my c
   w[x] <- w[x] + stepW
   #weight matrix
@@ -69,7 +90,15 @@ clusterScorer <- function(x, dat, w, stepW) {
   dist <- daisy(dat, metric = "manhattan")
   cluster <- pam(dist, 5, diss = TRUE)
   avgSil <- mean(silhouette(x = cluster$clustering, dist = dist)[, 3])
-  list(x, avgSil)
+  
+  runLengths <- rle(cluster$clustering)
+  data <- data.table(table(runLengths$lengths))
+  colnames(data) <- c("length", "count")
+  data[, ":=" (length = as.numeric(length))]
+  avgTLS <- TLS(data[, count := length * count])
+  
+  
+  list(x, avgSil, avgTLS)
 }
 
 #timeperiod selection
