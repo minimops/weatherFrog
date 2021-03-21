@@ -7,7 +7,6 @@ subtitle: |
   |
   |
   |
-  |
   | Betreuer: Prof. Dr. Helmut Küchenhoff
   | Projektpartner: M.Sc. Maximilian Weigert und M.Sc. Magdalena Mittermeier 
 author: "Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto"
@@ -29,11 +28,10 @@ header-includes:
 - \usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
 - \usepackage{graphics}
 - \usepackage[german]{babel}
-- \usepackage{xfrac}
 bibliography: references.bib
 
 abstract: |
-  Dieser Bericht befasst sich mit einem Clustern anhand des historischen Reanalyse-Datensatzes, der Informationen zu dem Luftdruck auf Meeresspiegelhöhe und dem Geopotential auf 500 hPa beinhaltet. Anhand dieser Parameter soll untersucht werden, inwieweit die 29 Großwetterlagen nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können....
+  Dieser Bericht befasst sich mit einem Clustering anhand des historischen Reanalyse-Datensatzes, der Informationen zu dem Luftdruck auf Meeresspiegelhöhe und dem Geopotential auf 500 hPa am Tag beinhaltet. Anhand dieser Parameter soll untersucht werden, inwieweit die 29 Großwetterlagen nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dafür werden in Kapitel 1 zunächst das Konzept von Großwetterlagen und die Fragestellung dargestellt. Kapitel 2 beschäftigt sich mit der angewandten Methodik für die Clustereinteilung. Diese erfolgt dabei anhand der beobachteten Wetterdaten auf täglicher Basis mit Berücksichtigung der räumlichen Datenstruktur. In diesem Teil werden zwei Ansätze näher erklärt sowie eine grobe Übersicht über weitere Versuche gegeben. In Kapitel 3 werden die Ergebnisse von einem dieser Ansätze betrachtet. Dabei wird unter anderem darauf eingegangen, wie das Clusterergebnis bewertet werden kann. Außerdem wird hier eine deskriptive Analyse der resultierenden Cluster durchgeführt und dargelegt, wie Großwetterlagen in den resultierenden Clustern aufgeteilt sind. Zum Schluss werden in Kapitel 4 Teile der Methodik diskutiert und ein Ausblick auf weitere Analysen gegeben.
 ---
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
@@ -573,13 +571,32 @@ In Abbildung \ref{fig:pca} sind die ersten beiden *PC* dieses Datensatzes abgebi
 
 Ein Ansatz ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens 85% der Varianz der Daten erklären (@pca_kmeans). Hier ergibt sich dies zu 12 *PC*. Eine Analyse mit $k$*-means* ($k$ = 6) ergab einen Silouettenkoeffizient von $0.1566$ und ein *TLS* von $0.1373$. Außerdem lässt sich ein $HB_{diff}$ von $0.4042$ beobachten.
 
-### K-Means, PAM und Fuzzy mit Extrahierten Daten
+### K-Means und PAM mit Extrahierten Daten
 
 **K-Means**
 
-Obwohl die Entscheidung auf *PAM* als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering für den Zeitraum 1971-2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt \ref{clusterverfahren} erklärt.
+Obwohl die Entscheidung auf *PAM* als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering für den Zeitraum 1971 -- 2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt \ref{clusterverfahren} erklärt.
 
 Der Silhouettenkoeffizient betrug dabei 0.1191, der Timeline-Score $TLS = 0.4455$ und $HB_{diff} = 0.3379$. Der Silhouettenkoeffizient ist hier niedriger als bei dem vorgestellten Clustering mit *PAM*, somit spricht das für die Wahl von *PAM*.
+
+ 
+
+**PAM**
+
+Auch bei *PAM* wurden verschiedene Clusterings anhand des extrahierten Datensatzes für die Jahre 1971 -- 2000 durchgeführt. Hier wurden unterschiedliche Distanzmetriken angewandt. Neben der Manhattan-Distanz wurde zum einen auch die Euklidische Distanz verwendet. Der Silhouettenkoeffizient beträgt dabei für eine Clusteranzahl $k = 5$ 0.1072, der Timeline-Score 0.3168 und $HB_{diff} = 0.3683$. Somit sind die Kriterien $s$ und $TLS$ kleiner als die beim Clustering mit der Manhattan-Distanz und *PAM* ($s = 0.1411$, $TLS = 0.3357$).
+
+ 
+
+Zum anderen wurde die Gowerdistanz in Erwägung gezogen. Diese ergibt, ebenfalls mit $k = 5$, für den Silhouettenkoeffizienten $s = 0.1309$, den Timeline-Score 0.4067 und für $HB_{diff} = 0.3616$. Der Silhouettenkoeffizient ist demnach hier ebenfalls niedriger verglichen mit dem Clusterergebnis mit der Manhattan-Distanz. Der Timeline-Score ist dagegen höher. Betrachtet man allerdings die abgebildete Timeline in Abbildung \ref{fig:tlGower}, dass fast 1000 Tage auftreten, die einzeln vorkommen. Dies ist eher nicht erwünscht, wie in Abschnitt \ref{timeline} beschrieben. Aus diesem Grund und da der Silhouettenkoeffizient niedriger ist, als mit der Manhattan-Distanz wurde die Gowerdistanz für die weiteren Analysen verworfen.
+
+Die Timeline für das Clustern mit *PAM* und der Manhattan-Distanz wird in Abbildung \ref{fig:tlMultiplied} gezeigt. 
+
+
+```{r tlGower, echo = FALSE, fig.cap="\\label{fig:tlGower}Timeline für Clusterergebnis der extrahierten Variablen mit PAM und Gowerdistanz für k = 5.", fig.align="center", out.width="80%"}
+include_graphics("assets/tlGower.png")
+```
+
+
 
 ```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
 dt3 <- data.table(
@@ -588,7 +605,7 @@ dt3 <- data.table(
 )
 
 kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden für 5 Jahre", linesep  = "") %>%
-  kable_styling(latex_options = c("hold_position","striped"), full_width = FALSE)%>%
+  kable_styling(latex_options = c("hold_position","striped"), full_width = TRUE)%>%
   pack_rows("Reanalyse-Datensatz", 1, 4) %>%
   pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)
   
@@ -796,7 +813,7 @@ Folglich wird hier untersucht, wie sich die Tage die sich in *GWL* befinden, die
 
 **Strömungen** - In *GWL*-Beschreibungen tauchen häufig Ausprägungen von Strömungsrichtungen auf. Ein naiver Ansatz, dies zum Teil zu replizieren, ist, aus den gegebenen Daten eines Tages zum Mslp und Geopotential eine Art "Bewegung" zu bestimmen, indem zum Beispiel anhand der Veränderung des Standortes von dem maximal gemessenen Luftdruck über die 4 Messzeiten am Tag ein Vektor berechnet wird, mit dem Aussagen zur Bewegungsrichtung und -stärke des Hochdruckgebietes getroffen werden können.
 
-## PAM & Filter
+## PAM und Filter
 
 Die Methode, wie in Absatz \ref{filter-ansatz} beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. Intuitiv lässt sich vermuten, dass ein Zusammenführen mit dem im Absatz \ref{clustern-mit-extrahierten-daten} beschriebenen Verfahren zu einer insgesamten Verbesserung führen könnte. Folgendes kann durch Addieren der Distanzmetriken vor dem Clustern auf Tagesebene erreicht werden. Die darauf folgende Clusteranalyse wurde hier auch mit *PAM* durchgeführt.
 
@@ -890,9 +907,9 @@ Grundsätzlich lassen sich die Daten aber auch als Format eines Videos betrachte
 
 Es wurden in diesem Bericht verschiedene Ansätze, Wetterdaten des Reanalyse-Datensatzes zu clustern, angesprochen. Die Idee des Extrahieren der Variablen sowie das Filtern der Tage wurde hier näher ausgeführt, es wurden Ergebisse gezeigt und der Output und die Methoden diskutiert. 
 
-In den Analysen zeigte sich in Bezug auf die Aufteilung der *GWL*, dass zwar viele in allen Clustern vorhanden waren, aber dass sich auch zum Teil Großwetterlagen heraushoben, die mit über 40% einem Cluster zuzuteilen waren.
+In den Analysen zeigte sich in Bezug auf die Aufteilung der *GWL*, dass zwar viele in allen Clustern vorhanden waren, aber dass sich auch zum Teil Großwetterlagen heraushoben, die mit über 40% einem Cluster zuzuteilen waren. Allerdings lassen sich die 29 Großwetterlagen nach Hess und Brezowksy auf der Grundlage dieser Ergebnisse nicht zu allgemeineren Typen von Wetterlagen zusammenfassen. 
 
-Zudem wurde in \ref{diskussion-&-ausblick} ein Ausblick gegeben, wie die Ansätze, Extrahieren der Variablen und das Filtern, verbessert werden könnten. Da sich das Clusterergebnis der Extrahierten Variablen stark nach Sommer-und Wintertagen aufteilt, wäre zum Beispiel ein weiterer Schritt eine Saisonbereinigung für diese zwei Zeiten zu beachten. Auch eine Aufnahme einer "3-Tage Regel" könnte sinnvoll sein, da dadurch eventuell die Bedingungen an Großwetterlagen, mindestens 3 Tage am Stück aufzutreten, berücksichtigt werden könnte.
+In Kapitel \ref{diskussion-und-ausblick} wurde ein Ausblick gegeben, wie die Ansätze, Extrahieren der Variablen und das Filtern, verbessert werden könnten. Da sich das Clusterergebnis der Extrahierten Variablen stark nach Sommer-und Wintertagen aufteilt, wäre zum Beispiel ein weiterer Schritt eine Saisonbereinigung für diese zwei Zeiten zu beachten. Auch eine Aufnahme einer "3-Tage Regel" könnte sinnvoll sein, da dadurch eventuell die Bedingungen an Großwetterlagen, mindestens 3 Tage am Stück aufzutreten, berücksichtigt werden könnte.
 
 
 # Anmerkungen {.unlisted .unnumbered}
