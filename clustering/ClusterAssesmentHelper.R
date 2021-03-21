@@ -380,6 +380,25 @@ separateBySeason <- function(data, Season = "Summer") {
          return(dataSeason[season == "Winter"][, season := NULL]))
 }
 
+separateBy4Season <- function(data) {
+  assertDataTable(data)
+  assertSubset("date", names(data))
+  
+  WS <- as.Date("2012-12-01", format = "%Y-%m-%d")
+  SpS <- as.Date("2012-03-01", format = "%Y-%m-%d")
+  SS <- as.Date("2012-06-01", format = "%Y-%m-%d")
+  AS <- as.Date("2012-09-01", format = "%Y-%m-%d")
+  
+  d <- as.Date(strftime(data$date, format = "2012-%m-%d"))
+  d <- ifelse(d >= SS & d < AS, "Sommer", 
+              ifelse(d >= AS & d < WS, "Herbst", 
+                     ifelse(d >= SpS & d < SS, "Frühling", "Winter")))
+  
+  dataSeason <- copy(data)[, season := d]
+  
+  return(dataSeason)
+}
+
 
 Tl.weight.fun <- function(timeline){
   assertDataTable(timeline)

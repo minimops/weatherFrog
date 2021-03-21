@@ -91,11 +91,20 @@ data.table(
 
 # Einleitung
 
-Der Klimawandel und seine Auswirkungen sind in den letzten Jahrzenten spürbar geworden. Immer häufiger kommt zu extremen Wetterereignissen wie langanhaltende Hitzewellen, Überschwemmungen Dürre und (Wald-)Brände. Durch den Klimawandel ändert sich auch die Häufigkeit und Länge der auftretenden Großwetterlagen (*GWL*). Lang anhaltende *GWL* sind problematisch, da sie zu Wetteranomalien führen und Variablen wie Temperatur, Regen, Wind und Wetter beeinflussen, welches sich wiederum auf das Klima auswirkt (@article_james). Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (*GWL*) unter dem Einfluss des Klimawandels verändert. Im Rahmen des Statistischen Praktikums wird dieses Projekt unterstützt, indem explorativ versucht wird, Tage anhand von beobachteten Wetterdaten in Cluster aufzuteilen.
+Der Klimawandel und seine Auswirkungen sind in den letzten Jahrzenten spürbar geworden. Immer häufiger kommt zu extremen Wetterereignissen wie langanhaltende Hitzewellen, Überschwemmungen Dürre und (Wald-)Brände. Durch den Klimawandel ändert sich auch die Häufigkeit und Länge der auftretenden Großwetterlagen (*GWL*). Lang anhaltende *GWL* sind problematisch, da sie zu Wetteranomalien führen und Variablen wie Temperatur, Regen, Wind und Wetter beeinflussen, welches sich wiederum auf das Klima auswirkt (@article_james). 
+
+Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (*GWL*) unter dem Einfluss des Klimawandels verändert. Im Rahmen des Statistischen Praktikums wird dieses Projekt unterstützt, indem explorativ versucht wird, Tage anhand von beobachteten Wetterdaten in Cluster aufzuteilen.
+
 
 ## Großwetterlagen
 
-Nach dem Katalog von Hess und Brezowsky, welcher \textcolor{red}{1952} veröffentlicht wurde, wurden 29 Großwetterlagen definiert. Diese sind über Europa und Teilen des Atlantik definiert. Lässt sich ein Tag nicht einer *GWL* zuordnen, wird diese der nachfolgenden oder vorherigen *GWL* zugeteilt. Lässt sich keine Struktur erkennen, wird die *GWL* als Unbestimmt (U) bezeichnet (siehe @pik119). Des Weiteren dauern *GWL* mindestens drei Tage oder länger an. Außerdem braucht es für die *GWL* das Geopotential und die Luftdruckverteilung über den Meeresspiegel. (Quelle) Zusätzlich teilt man die *GWL* nach ihrer Strömungsrichtung und Zirkulationsform ein.[Quelle] Die Strömungsrichtungen sind antizyklonal und zyklonal. Diese unterscheiden sich in ihrer Drehrichtung. Die antizyklonale Strömungsrichtung verläuft entgegengesetzt der Richtung der Rotation der Erde um ihre Achse, während die zyklonale Strömungsrichtung in Richtung der Rotation der Erde verläuft.[quelle] Noch zu beachten sind die Zirkulationsformen. Es gibt die gemischte, meridionale und zonale Zirkulation. Die gemischte Zirkulation besteht, wie der Name schon sagt, aus gleich großen Anteilen von meridionale und zonale Zirkulation. Die zonale Zirkulation beschreibt die Luftströmung, die von West nach Ost oder von Ost nach West, während die meridionale Zirkulation von Nord nach Süd oder von Süd nach Nord,entlang der Längengrade gerichtet ist. [Quelle] Die Zirkulationsströme steuern die LuftdruckverteilungStrömungsrichtung.[quelle] Zu guter Letzt braucht es für die Zuteilung der *GWL* den Hoch- oder Tiefdruck.[Quelle]. Die Großwetterlage "Westlage zyklonal" kommt am häufigsten vor. [quellen]. In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammen gefasst (@sklima).
+Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, wurden 29 Großwetterlagen definiert (@pik119). Diese sind über Europa und Teilen des Atlantik definiert. Lässt sich ein Tag nicht einer *GWL* zuordnen, wird diese der nachfolgenden oder vorherigen *GWL* zugeteilt. Lässt sich keine Struktur erkennen, wird die *GWL* als Unbestimmt (U) bezeichnet (siehe @pik119).  Außerdem braucht es für die *GWL* das Geopotential und die Luftdruckverteilung über den Meeresspiegel. (Quelle) Zusätzlich teilt man die *GWL* nach ihrer Strömungsrichtung und Zirkulationsform ein.[Quelle] Die Strömungsrichtungen sind antizyklonal und zyklonal. Diese unterscheiden sich in ihrer Drehrichtung. Die antizyklonale Strömungsrichtung verläuft entgegengesetzt der Richtung der Rotation der Erde um ihre Achse, während die zyklonale Strömungsrichtung in Richtung der Rotation der Erde verläuft.[quelle] Noch zu beachten sind die Zirkulationsformen. Es gibt die gemischte, meridionale und zonale Zirkulation. Die gemischte Zirkulation besteht, wie der Name schon sagt, aus gleich großen Anteilen von meridionale und zonale Zirkulation. Die zonale Zirkulation beschreibt die Luftströmung, die von West nach Ost oder von Ost nach West, während die meridionale Zirkulation von Nord nach Süd oder von Süd nach Nord,entlang der Längengrade gerichtet ist. [Quelle] Die Zirkulationsströme steuern die LuftdruckverteilungStrömungsrichtung.[quelle] Zu guter Letzt braucht es für die Zuteilung der *GWL* den Hoch- oder Tiefdruck.[Quelle]. Die Großwetterlage "Westlage zyklonal" kommt am häufigsten vor. [quellen]. In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammen gefasst (@sklima).
+
+
+## Forschungsfrage
+
+Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeresspiegel und Geopotential die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Informationen der *GWL* zu benutzen. + Vorgaben
+
 
 ```{r gwl, echo=FALSE, fig.cap="\\label{tab:gwl}Großwetterlagen nach Hess und Brezowsky. Each row represents a list element"}
 gwl <- data.table(
@@ -107,15 +116,13 @@ kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", capt
 
 ```
 
-## Forschungsfrage
 
-Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeresspiegel und Geopotential die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Informationen der *GWL* zu benutzen. + Vorgaben
 
 # Methodik
 
 ## Daten
 
-Seit 1900 wird viermal täglich an 160 Standorten der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) und das Geopotential auf 500 hPa in $\frac{m^2}{s^2}$ erhoben. Im Folgenden wird für Visualisierungen der Luftdruck in hPa ($1hPa = 100Pa$) und das Geopotential in gpm ($1gpm = 9.80665\frac{m^2}{s^2}$) (@geopotRef) dargestellt. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist.
+Seit 1900 wird viermal täglich an 160 Standorten der Luftdruck in Pascal auf Meeresspiegelhöhe (Mslp) und das Geopotential auf $500 hPa$ in $\frac{m^2}{s^2}$ erhoben. Im Folgenden wird für Visualisierungen der Luftdruck in hPa ($1hPa = 100Pa$) und das Geopotential in gpm ($1gpm = 9.80665\frac{m^2}{s^2}$) (@geopotRef) dargestellt. Die Standorte befinden sich in einem 8x20 Grid über Europa und Teilen des Atlantik, wie in Abb. \ref{fig:locations} dargestellt ist.
 
 ```{r locations, echo = FALSE, fig.cap="\\label{fig:locations}Standorte der 160 Messpunkte der Variablen Luftdruck und Geopotential auf der Weltkarte", fig.align="center", out.width="80%"}
 include_graphics("assets/MapDots.png")
@@ -230,7 +237,7 @@ $$
 
 **Clusteralgorithmus**
 
-Es gibt verschiedene Ansätze zu clustern. Hier werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optimal Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimensionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der K-Means oder K-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren.
+Es gibt verschiedene Ansätze zu clustern. Hier werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optimal Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimensionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der k-Means oder k-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren.
 
 Dichtebasiertes Clustern...
 
@@ -408,11 +415,11 @@ kbl(dt, caption = "Extrahierte Variablen", booktabs = TRUE, format =  "latex", e
 
 ### Clusterverfahren
 
-Hier ist die Wahl auf den Clusteralgorithmus *PAM* (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist (@multivariate). Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R aus dem Package "cluster" sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten.
+Hier ist die Wahl auf den Clusteralgorithmus *PAM* (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-Medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-Means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist (@multivariate). Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R aus dem Package "cluster" sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten.
 
 #### Partitioning Around Medoids
 
-Bei *PAM* wird angegeben, wie viele Cluster $k$ gebildet werden sollen. Der Algorithmus sucht dann anfänglich $k$ repräsentative Beobachtungen, die das Zentrum der entstandenen Cluster darstellen, um danach iterativ bessere Repräsentanten zu finden. Alle möglichen Kombinationen von repräsentativen und nicht-repräsentativen Beobachtungen werden analysiert und die Qualität der jeweiligen Clusterings wird anhand eines Gütekriteriums evaluiert. Dieses Gütekriterium ist hier die Summe $S$ der Distanzen von allen Datenpunkten zu deren jeweiligen Medoids. Anhand dieses Gütekriteriums werden die nicht-repräsentativen Datenpunkte dem Cluster zugefügt, das die Summe $S$ am stärksten minimiert. Dann wird zufällig ein weiterer Datenpunkt gewählt und es werden die Kosten $C$ berechnet, die entstehen, wenn man diesen mit den repräsentativen Punkten tauschen würde. Dabei sind die Kosten definiert als die Veränderung des Gütekriteriums $S$, wenn ein repräsentativer Punkt mit einem anderen Datenpunkt getauscht wird. Das bedeutet, die Kosten können sowohl negativ als auch positiv sein. Sind sie negativ, so wird die Summe $S$ der Distanzen von allen Datenpunkten zu deren Medoids kleiner und die Punkte werden vertauscht (@kmedoid2). \textcolor{red}{nochmal genauer abchecken + stopp kriterium}
+Bei *PAM* wird angegeben, wie viele Cluster $k$ gebildet werden sollen. Der Algorithmus sucht dann anfänglich $k$ repräsentative Beobachtungen, die das Zentrum der entstandenen Cluster darstellen, um danach iterativ bessere Repräsentanten zu finden. Alle möglichen Kombinationen von repräsentativen und nicht-repräsentativen Beobachtungen werden analysiert und die Qualität der jeweiligen Clusterings wird anhand eines Gütekriteriums evaluiert. Dieses Gütekriterium ist hier die Summe $S$ der Distanzen von allen Datenpunkten zu deren jeweiligen Medoids. Anhand dieses Gütekriteriums werden die nicht-repräsentativen Datenpunkte dem Cluster zugefügt, das die Summe $S$ am stärksten minimiert. Dann wird zufällig ein weiterer Datenpunkt gewählt und es werden die Kosten $C$ berechnet, die entstehen, wenn man diesen mit den repräsentativen Punkten tauschen würde. Dabei sind die Kosten definiert als die Veränderung des Gütekriteriums $S$, wenn ein repräsentativer Punkt mit einem anderen Datenpunkt getauscht wird. Das bedeutet, die Kosten können sowohl negativ als auch positiv sein. Sind sie negativ, so wird die Summe $S$ der Distanzen von allen Datenpunkten zu deren Medoids kleiner und die Punkte werden vertauscht (@kmedoid2). 
 
 Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
 
@@ -489,10 +496,10 @@ In Tabelle \ref{tab:Gewichtung} sieht man die Kategorien mit ihren Variablen und
 dt2 <- data.frame(
   
   Variable = c("Minimum, Maximum, Mittelwert", "Minimum, Maximum, Mittelwert", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag", "Median, Quartile, Intensität Hoch, Intensität Tief, Veränderung über den Tag","Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Spalte und Zeile für Minimum/Maximum, Distanz zwischen Extrema, Distanz der beiden Minima/Maxima", "Mittelwerte in den 9 Quadranten", "Mittelwerte in den 9 Quadranten"),
-  Gewichte = c("$1/3$", "$1/3$", "$1/3$", "$1/6$", "$1/6$", "1/6", "1/9", "1/9")  
+  Gewichte = c("$\\frac{1}{3}$", "$\\frac{1}{3}$", "$\\frac{1}{6}$", "$\\frac{1}{6}$", "$\\frac{1}{6}$", "$\\frac{1}{6}$", "$\\frac{1}{9}$", "$\\frac{1}{9}$")  
   ) 
 
-kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen", align = "l", linesep  = "") %>%
+kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Gewichte für Variablen", linesep  = "", align = c("l", "c")) %>%
   kable_styling(latex_options = c("hold_position","striped", "hover"), full_width = FALSE)%>%
   pack_rows("1  Verteilungsvariablen Mslp I", 1, 1) %>%
   pack_rows("2  Verteilungsvariablen Geopotential I", 2, 2) %>%
@@ -504,7 +511,8 @@ kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung
   pack_rows("8  Mittelwerte in den Quadranten für Geopotential", 8, 8) %>%
   column_spec(1, width = "29em") %>%
   column_spec(2, width = "2cm") %>%
-  add_indent(positions = c(2, 3, 4, 6, 8), level_of_indent = 0.3, all_cols = TRUE)
+  add_indent(positions = c(2, 4, 6, 8), level_of_indent = 0.35, all_cols = TRUE)
+  
 ```
 
 #### Wahl der Clusteranzahl
@@ -521,7 +529,7 @@ Dieses Clusterergebnis liefert einen Silhouettenkoeffizienten $s = 0.1411$ und e
 
 ## Weitere Versuche
 
-Das endgültig gewählte Methode wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus *PAM* anhand des extrahierten Datensatzes erzielt. Es wurden anfangs aber verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien beurteilt. Dabei wurden zuerst die Daten von fünf Jahren verwendet, da 30 Jahre rechentechnisch sehr teuer waren. Die Methoden, die am besten abschnitten, wurden dann anhand von 30 Jahren beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
+Das endgültig gewählte Methode wurde mit der Distanzmetrik Manhattan und dem Clusteralgorithmus *PAM* anhand des extrahierten Datensatzes erzielt. Es wurden anfangs aber verschiedene Methodiken ausprobiert und anhand der definierten Bewertungskriterien beurteilt. Im Folgenden werden weitere Versuche kurz dargestellt und zusammengefasst.
 
 ### CLARA, K-Means und PAM mit Originaldaten
 
@@ -531,7 +539,7 @@ Bevor die Variablen extrahiert wurden, gab es auch Clusteranalysen mit dem Reana
 
 **CLARA**
 
-Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (*CLARA*) durchgeführt. Dieser basiert auf dem K-Medoids-Ansatz, ist aber speziell für Datensätze, die sehr viele Beobachtungen enthalten, z.B. mehrere tausend Objekte. Dieser Algorithmus wird von @clara eingeführt und erklärt.
+Zum einen wurde ein Clustering mit dem Algorithmus Clustering Large Applications (*CLARA*) durchgeführt. Dieser basiert auf dem k-Medoid-Ansatz, ist aber speziell für Datensätze, die sehr viele Beobachtungen enthalten, z.B. mehrere tausend Objekte. Dieser Algorithmus wird von @clara eingeführt und erklärt.
 
 Dieser Algorithmus wurde mit der Manhattan-Distanz, als auch mit der Euklidischen Distanz ausprobiert. Für eine Clusteranzahl von $k = 5$ für *CLARA* mit Manhattan als Distanzmaß, beträgt der Silhouettenkoeffizient $s = 0.1302$, der Timeline-Score $TLS = 0.1670$ und der Wert für die Aufteilung der *GWL* in den Clustern $HB_{diff} = 0.4919$.
 
@@ -539,9 +547,9 @@ Führt man die Clusteranalyse mit *CLARA*, der Euklidischen Distanz und $k = 6$ 
 
  
 
-**K-means**
+**K-Means**
 
-K-means ist ein bekannter Algorithmus für Clusteranalyse, bei dem jedes Cluster dabei von einem Centroid repräsentiert wird, das im Gegensatz zu *PAM* nicht eine echte Beobachtung ist, sondern der Mittelwert von allen Objekten im gleichen Cluster. Der K-means Algorithmus wird von @kmeans genauer beschrieben.
+K-Means ist ein bekannter Algorithmus für Clusteranalyse, bei dem jedes Cluster dabei von einem Centroid repräsentiert wird, das im Gegensatz zu *PAM* nicht eine echte Beobachtung ist, sondern der Mittelwert von allen Objekten im gleichen Cluster. Der k-Means Algorithmus wird von @kmeans genauer beschrieben.
 
 Der Silhouettenkoeffizient beträgt dabei $s = 0.1286$, der Timeline-Wert ist $TLS = 0.2433$ und die Maßzahl für die Güte der Aufteilung der *GWL* in den Clustern $HB_{diff} = 0.5167$.
 
@@ -575,7 +583,7 @@ Ein Ansatz ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens 8
 
 **K-Means**
 
-Obwohl die Entscheidung auf *PAM* als Clusteralgorithmus gefallen ist, wurde auch ein K-Means Clustering für den Zeitraum 1971 -- 2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt \ref{clusterverfahren} erklärt.
+Obwohl die Entscheidung auf *PAM* als Clusteralgorithmus gefallen ist, wurde auch ein k-Means Clustering für den Zeitraum 1971 -- 2000 durchgeführt. Diese benutzt die Euklidische Distanz und für die Berechnung der Distanzmatrix wurden diesselben Variablen und Gewichte herangezogen, wie in Abschnitt \ref{clusterverfahren} erklärt.
 
 Der Silhouettenkoeffizient betrug dabei 0.1191, der Timeline-Score $TLS = 0.4455$ und $HB_{diff} = 0.3379$. Der Silhouettenkoeffizient ist hier niedriger als bei dem vorgestellten Clustering mit *PAM*, somit spricht das für die Wahl von *PAM*.
 
@@ -600,11 +608,11 @@ include_graphics("assets/tlGower.png")
 
 ```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
 dt3 <- data.table(
-  Algorithmus = c("CLARA", "CLARA", "PAM", "K-Means", "PAM", "PAM", "PAM", "PAM", "K-Means"),
+  Algorithmus = c("CLARA", "CLARA", "PAM", "k-Means", "PAM", "PAM", "PAM", "PAM", "k-Means"),
   Metrik = c("Euklidisch", "Manhattan", "Mahalanobis", "PCA", "Gower", "Euklidisch", "Manhattan", "Mahalanobis", "Euklidisch")
 )
 
-kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden für 5 Jahre", linesep  = "") %>%
+kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Methoden", linesep  = "") %>%
   kable_styling(latex_options = c("hold_position","striped"), full_width = TRUE)%>%
   pack_rows("Reanalyse-Datensatz", 1, 4) %>%
   pack_rows("Datensatz mit Extrahierten Variablen", 5, 9)
@@ -612,14 +620,6 @@ kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung
   
 ```
 
-```{r Clusterentscheidung, echo=FALSE, fig.cap="\\label{tab:Entscheidung}Clusterentscheidung. Each row represents a list element"}
-dt3 <- data.table(
-  Metrik = c("Manhattan"),
-  Variablen = c("48 + 3 PCA Komponenten")
-)
-  
-  
-```
 
 # Ergebnisse PAM mit extrahierten Variablen
 
@@ -747,12 +747,12 @@ Gleiches Problem existiert für $HB_{diff}$. Hier wird zudem die Häufigkeit der
 
 Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Jahreszeiten, Winter, Frühling, Sommer und Herbst durchzuführen. Nachdem aber Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} betrachtet wurden, ist die Entscheidung gegen eine Saisonbereinigung getroffen worden. \textcolor{red}{das überhaupt rein?}
 
-```{r werteMslp, echo = FALSE, fig.cap="\\label{fig:werteMslp}Werte des Luftdrucks aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
-include_graphics("assets/MslpRangeJahreszeiten.jpeg")
+```{r werteMslp, echo = FALSE, fig.cap="\\label{fig:werteMslp}Werte des Luftdrucks der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
+include_graphics("assets/seasonsMslp.png")
 ```
 
-```{r werteGeopot, echo = FALSE, fig.cap="\\label{fig:werteGeopot}Werte des Geopotential aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
-include_graphics("assets/GeopotentailRangeJahreszeiten.jpeg")
+```{r werteGeopot, echo = FALSE, fig.cap="\\label{fig:werteGeopot}Werte des Geopotentials der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
+include_graphics("assets/seasonsGeopot.png")
 ```
 
 Wie in Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern} beschrieben, kann auch eine Aufteilung nur in Sommer- und Wintertage durchgeführt werden. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
@@ -921,7 +921,7 @@ Reproduzierbarer Code und relevante Datein sind in einem Github Repository der O
 ```{r Funktionen und Pakete, echo=FALSE, fig.cap="\\label{tab:libraries}Benutzte Pakete in R der im Bericht beschriebenen Verfahren", }
 
 dt4 <- data.table(
-  Verfahren = c("CLARA", "PAM", "K-Means", "DBSCAN", "kNN-Distanz"),
+  Verfahren = c("CLARA", "PAM", "k-Means", "DBSCAN", "kNN-Distanz"),
   Funktion = c("clara()", "pam()", "kmeans()", "dbscan()", "kNNdist()")
 )
 
