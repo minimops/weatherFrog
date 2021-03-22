@@ -1,6 +1,6 @@
 #Boosting Test
 
-source("clusterBoosting.R")
+source("clustering/cluster_extr_var/Boosting/clusterBoosting.R")
 f_data <- readRDS("finalDATA/f_data.rds")
 
 sampling <- c(3, 5)

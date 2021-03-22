@@ -1,4 +1,4 @@
-##### Distanzmatrizen ############
+##### PAM Tryouts
 
 library(cluster)
 library(data.table)
@@ -226,7 +226,7 @@ useDat <- scaleNweight(copy(data))[, date := NULL]
 dissimilarity <- parallelDist(as.matrix(useDat), method = "euclidean",
                               threads = detectCores() - 2)
 
-###8  EUCLIDEAN with the different weights
+###8.  EUCLIDEAN with the different weights
 
 saveRDS(PAMhelper(scaleNweight(copy(data), 
                                weight = TRUE,

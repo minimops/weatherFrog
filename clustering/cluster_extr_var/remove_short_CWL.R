@@ -1,3 +1,11 @@
+# cluster analysis of CWL >= 3 days and CWL >= 4 days
+
+
+f_data <- readRDS("Data/f_data.rds")
+PAMres <- readRDS("Data/PAMres.rds")
+
+source("clustering/ClusterAssesmentHelper.R")
+
 dat <- attachGwl(data.table(date = f_data$date, cluster = PAMres$clustering))
 
 mosaic(dat, dat$cluster)

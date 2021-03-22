@@ -1,8 +1,8 @@
 #mosaikplot
 library(ggmosaic)
 
-clustID <- readRDS("finalDATA/PAMres.rds")$clustering
-date <- readRDS("finalDATA/f_data.rds")$date
+clustID <- readRDS("Data/PAMres.rds")$clustering
+date <- readRDS("Data/f_data.rds")$date
 
 source("clustering/ClusterAssesmentHelper.R")
 

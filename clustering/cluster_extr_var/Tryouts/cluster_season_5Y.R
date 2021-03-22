@@ -1,4 +1,11 @@
+# this file clusters 4x 5 years with PAM. 
+#1. separation in summer, winter and together
+#2. tryouts with differet variables
 
+
+
+source("clustering/PAM_NumCL_finder.R")
+source("dataset_mutate_funs.R")
 source("clustering/cluster_extr_var/f_extr_funs.R")
 
 
@@ -327,7 +334,6 @@ pams <- c("together_unweighted", "together_preweighted", "summer_unweighted", "s
 
 
 
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
 #load change over day
 change_day <- readRDS("Data/change_day.rds")
 
@@ -338,9 +344,6 @@ dataChange <- copy(extr)[copy(change_day), ]
 
 
 yearspans <- list(seq(1971, 1975), seq(1984, 1988), seq(1996, 2000), seq(2006, 2010))
-
-source("clustering/PAM_NumCL_finder.R")
-source("dataset_mutate_funs.R")
 
 #plus diffday
 for (span in yearspans) {

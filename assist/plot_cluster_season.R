@@ -1,7 +1,9 @@
 library(ggplot2)
 library(data.table)
 
-#read f_data and PAMres
+f_data <- readRDS("Data/f_data.rds")
+PAMres <- readRDS("Data/PAMres.rds")
+
 
 #function to get winter/summer
 getWinSum <- function(DATES) {
@@ -25,6 +27,7 @@ ggplot(data1, aes(cluster)) +
   scale_fill_manual(values = c("#E41A1C", "#FBB4AE", "#377EB8", "#B3CDE3",
                                "#4DAF4A", "#CCEBC5", "#984EA3", "#DECBE4",
                                "#FF7F00", "#FED9A6", "#FFFF33", "#FFFFCC")) +
-  labs(x = "Cluster", y = "Anteil", title = "Veteilung der Cluster über Saison") +
+  labs(x = "Cluster", y = "Anteil", title = "Verteilung der Cluster über Saison") +
   theme_bw() +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  scale_x_continuous(breaks = c(1:6))

@@ -5,6 +5,7 @@ datafinal <- readRDS("Data/f_data.rds")
 
 datafinalID <- copy(datafinal)[, cluster := pamfinal$clustering]
 
+source("clustering/ClusterAssesmentHelper.R")
 
 # 1. Timeline ganz
 tl <- Cl.timeline(copy(datafinalID), multiplied = TRUE)

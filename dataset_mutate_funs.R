@@ -6,18 +6,24 @@ require(stringr)
 
 
 #subsets certain yearspan
+#TODO this is such a mess
 subsetYears <- function(data, years) {
-  assertDataTable(data)
+  assertDataTable(as.data.table(data))
   assert_vector(years)
   tryCatch(assertSubset(years, seq(1900, 2010)),
            error = function(cond) {
              assertSubset(years, as.character(seq(1900, 2010)))
            })
-  
-  tryCatch(data[format(as.Date(date),"%Y") %in% years, ],
-           error = function(cond) {
-             data[year %in% years, ]
-           })
+  tryCatch({
+    assertSubset("time", names(data))
+    data[format(as.Date(substring(data$time, 1, 10)),"%Y") %in% years, ]
+  },
+  error = function(cond) {
+    tryCatch(data[format(as.Date(date),"%Y") %in% years, ],
+             error = function(cond) {
+               data[year %in% years, ]
+             })
+  })
 }
 
 #sets all measuretimes to winter time
@@ -49,10 +55,10 @@ toGeoIndex <- function(data) {
 longToWide <- function(data, id = "date", col = "geoIndex", vars = c("avg_mslp", "avg_geopot")) {
   assertDataTable(data)
   assertCharacter(id)
-  assertCharacter(col)
+  assertCharacter(col, len = 1)
   assertCharacter(vars)
   
   dcast(data, 
-        paste(paste(id, collapse = "+"), "~", paste(col, collapse = "+")), 
+        paste(paste(id, collapse = "+"), "~", col), 
         value.var = vars)
 }

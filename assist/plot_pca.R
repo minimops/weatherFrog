@@ -1,5 +1,7 @@
 #pca plot pres
 
+source("clustering/ClusterAssesmentHelper.R")
+
 library(ggfortify)
 
 dat_wide <- readRDS("Data/cli_data_30_avgDay_wide.rds")
@@ -30,7 +32,7 @@ fviz_nbclust(pca30_cluster, kmeans, method = "silhouette") +
 
 k2 <- kmeans(pca30_cluster, centers = 6, nstart = 25, iter.max = 30)
 
-source("clustering/ClusterAssesmentHelper.R")
+
 
 sil(k2, k2$cluster, dist(pca30_cluster), "kmeans")
 Cl.timeline(cbind(dat_wide, cluster = k2$cluster), multiplied = TRUE)

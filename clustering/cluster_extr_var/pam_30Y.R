@@ -1,6 +1,7 @@
 ####################################################################################
 ################## Clustering with 30 Years ########################################
-####################################################################################
+# 1. Cluster tryouts wit PAM and different dissimilarities
+# 2. Cluster with kmeans and euclidean
 
 dist.all <- readRDS("Data/diss.pam.manhat.30.all.rds")
 dist.allpca <- readRDS("Data/diss.pam.manhat.30.rds")

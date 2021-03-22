@@ -1,3 +1,8 @@
+# mahalanobis with PAM TRYOUT
+
+source("clustering/cluster_extr_var/f_extr_funs.R")
+
+data <- extrapolate(yearspan = seq(2006, 2010))
 
 data.selected <- copy(data)[, date := NULL]
 data.selected <- data.selected[, c(1:6, 8:15, 17:38, 40:47)]
@@ -41,15 +46,12 @@ cluster.mahal <- pam.mahalanobis$clustering
 ## Measurement 
 # 1.
 sil(pam.mahalanobis, cluster.mahal, as.dist(dist.mahal), "pam")
-?manova
+
 dat.mahal <- copy(data)[, cluster := cluster.mahal]
 # 2.
 Cl.timeline(copy(dat.mahal))
+
 # 3.
-model.pam.mahal <- manova(as.matrix(dat.mahal[, 2:49]) ~ dat.mahal$cluster)
-summary(as.matrix(dat.mahal[, 2:49]) ~ dat.mahal$cluster, test = "Wilks")
-summary.aov(model.pam.mahal)
-# 4.
 mosaic(copy(data), cluster.mahal, title = "PAM WITH MAHALANOBIS")
 
 

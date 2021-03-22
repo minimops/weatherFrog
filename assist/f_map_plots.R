@@ -1,20 +1,22 @@
-#days drawn
+#plots which show pictures of day for presentation
 
 #Map with dots
 # world map
 world_map <- readRDS("Data/world_map.rds")
 
+#one day
+oneDay <- readRDS("Data/cli_data_30.rds")[as.Date(date) %in% as.Date("1980-01-01"), ]
+
 #world map with measure points
 Map_dots <- world_map +
-  geom_point(data = one_day, aes(x = longitude, y = latitude), size = .4,
+  geom_point(data = oneDay, aes(x = longitude, y = latitude), size = .4,
              color = "blue") +
   ggtitle("Messpunkte auf einer Weltkarte")
 
 ggsave("documentation/plots/fplots/MapDots.png", Map_dots, device = "png",
        width = 5, height = 3)
 
-#one day
-oneDay <- readRDS("Data/cli_data_30.rds")[as.Date(date) %in% as.Date("1980-01-01"), ]
+
 
 #one day mslp
 oD_time0 <- copy(oneDay)[time == 0, ][, ":=" (mslp = mslp / 100,

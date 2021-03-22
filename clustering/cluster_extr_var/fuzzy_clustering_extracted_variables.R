@@ -1,5 +1,6 @@
 # Attention: don´t run this file unless you do not need your computer one day
 
+#clustering extrapolated dataset with FUZZY
 
 source("clustering/cluster_extr_var/f_extr_funs.R")
 source("clustering/cluster_extr_var/function_for_fuzzy_clustering.R")
