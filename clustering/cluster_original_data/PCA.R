@@ -4,6 +4,8 @@ library(ggfortify)
 library(cluster)
 library(data.table)
 
+source("clustering/ClusterAssesmentHelper.R")
+
 #import Datasets
 wide_05 <- readRDS("Data/cli_data_05_avgDay_wide.rds") 
 gwl <- readRDS("Data/gwl.rds")
