@@ -3,7 +3,7 @@ library(data.table)
 library(ggplot2)
 
 #import our data
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 source("clustering/ClusterAssesmentHelper.R")
 
 extr_30 <- extrapolate(seq(1971, 2000))

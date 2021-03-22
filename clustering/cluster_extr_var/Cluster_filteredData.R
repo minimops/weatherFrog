@@ -1,5 +1,7 @@
 #### CLUSTERING EXTRAHIERTE VARIABLEN ###############################################################
 
+source("clustering/cluster_extr_var/f_extr_funs.R")
+
 library(dplyr)
 library(cluster)
 library(Rtsne)

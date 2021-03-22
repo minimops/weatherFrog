@@ -189,7 +189,7 @@ ggplot(data = data.frame(x =seq(1, nrow(sc_oneDay)),
 
 #geopot id plot
 
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 
 dat <- extrapolate(seq(1971, 2000))
 

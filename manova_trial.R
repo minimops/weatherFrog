@@ -2,7 +2,7 @@
 library(data.table)
 library(cluster)
 
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 source("clustering/manova_function.R")
 source("clustering/ClusterAssesmentHelper.R")
 
@@ -17,5 +17,4 @@ sil(pam1, pam1$clustering, dissimilarity, "pam")
 
 man1 <- manova.fun(data, pam1$clustering)
 
-dist_filter <- 
 

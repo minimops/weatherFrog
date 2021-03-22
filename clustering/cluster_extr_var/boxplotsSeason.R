@@ -1,7 +1,7 @@
 #### differences in values of extrapolate() for summer and winter season
 library(data.table)
 
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 source("clustering/ClusterAssesmentHelper.R")
 
 data <- extrapolate(seq(1971, 2000))

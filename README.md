@@ -22,4 +22,4 @@ Diese sind hier nicht enthalten, da sie sehr groß sind. Informationen über die
 ### Dependencies
 
 data.table, tidyverse, rgeos, gstat, rnaturalearth, cluster, ggfortify, tsne, checkmate, parallel, ggmosaic, plyr, factoextra, gridExtra, parallelDist,
-mlr3, ppclust, fclust, Rtsne, dbscan, KneeArrower, clusterR, grid, e1071, akmedoids 
+mlr3, ppclust, fclust, Rtsne, dbscan, KneeArrower, clusterR, grid, e1071, akmedoids, fossil, usedist

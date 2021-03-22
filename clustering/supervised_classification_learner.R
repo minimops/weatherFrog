@@ -26,7 +26,7 @@ origdat <- origdat[gwl != "U"]
 #     seq(1, 160), function(z) paste0(x, y, z))))), "gwl")))
 
 
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 
 newdat <- attachGwl(scaleNweight(extrapolate(seq(2006, 2010)), weight = T))
 #newdat <- attachGwl(extrapolate(seq(2006, 2010)))

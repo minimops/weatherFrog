@@ -1,3 +1,7 @@
+
+source("clustering/cluster_extr_var/f_extr_funs.R")
+
+
 # start with data 3 x 5 years
 
 bestClustNumber <- function(distMat, metric, fname, range) {
