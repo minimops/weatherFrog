@@ -20,3 +20,16 @@ saveRDS(run2, "Data/boosting/run2.rds")
 
 run3 <- clusterBoosting(0.05, 100, f_data, sampling, start.weights = rep(0.1, 48))
 saveRDS(run3, "Data/boosting/run3.rds")
+
+
+run4 <- clusterBoosting(0.1, 100, f_data, sampling, start.weights = rep(0.1, 48))
+saveRDS(run4, "Data/boosting/run4.rds")
+
+
+run5 <- clusterBoosting(0.1, 100, f_data, sampling, start.weights = rep(0.05, 48))
+saveRDS(run5, "Data/boosting/run5.rds")
+
+
+run6 <- clusterBoosting(0.05, 100, f_data, sampling, start.weights = rep(0.1, 48))
+saveRDS(run6, "Data/boosting/run6.rds")
+
