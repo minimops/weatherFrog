@@ -6,7 +6,7 @@ library(data.table)
 fillFunkyPerDay <- function(day, data) {
   library(data.table)
   data <- data[date %in% day, ]
-  source("clustering/Var_Extraction_Method/filter_funs.R")
+  source("clustering/cluster_filter/filter_funs.R")
   
   return(cbind(t(filterDay(data[, date := NULL], "avg_mslp")$cluster), day))
   #lapply(days, function(x) t(filterDay(data[date %in% x, ][, date := NULL], "avg_mslp")$cluster))
@@ -16,7 +16,7 @@ fillFunkyPerYear1 <- function(year) {
   library(data.table)
   data <- readRDS("Data/cli_data_30_avgDay.rds")[format(date, "%Y") %in% year, ]
   days <- unique(data[, date])
-  source("clustering/Var_Extraction_Method/filter_funs.R")
+  source("clustering/cluster_filter/filter_funs.R")
   
   return(rbind(vapply(days, function(x) 
     c(filterDay(data[date %in% x, ][, date := NULL], "avg_mslp")$cluster, x), 
@@ -27,7 +27,7 @@ fillFunkyPerYear2 <- function(year) {
   library(data.table)
   data <- readRDS("Data/cli_data_30_avgDay.rds")[format(date, "%Y") %in% year, ]
   days <- unique(data[, date])
-  source("clustering/Var_Extraction_Method/filter_funs.R")
+  source("clustering/cluster_filter/filter_funs.R")
   
   return(rbind(vapply(days, function(x) 
     c(filterDay(data[date %in% x, ][, date := NULL], "avg_geopot")$cluster, x), 
@@ -190,7 +190,7 @@ distMat_both_rand <- distMat_geopot_rand + distMat_mslp_rand
 
 
 #adding to extrapolate dataset
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 library(parallelDist)
 library(parallel)
 

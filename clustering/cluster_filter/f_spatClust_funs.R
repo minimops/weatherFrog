@@ -12,7 +12,7 @@ library(dbscan)
 library(e1071)
 
 source("clustering/dayDrawer.R")
-source("clustering/cluster_extr_var/filter_funs.R")
+source("clustering/cluster_filter/filter_funs.R")
 
 #this function spatial clusters a day with the a given algorythm
 #inputs: a date (string or date class)
