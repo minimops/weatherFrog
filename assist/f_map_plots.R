@@ -1,4 +1,7 @@
 #plots which show pictures of day for presentation
+library(data.table)
+
+source("clustering/dayDrawer.R")
 
 #Map with dots
 # world map
