@@ -1,6 +1,6 @@
 #filter testing
 
-source("clustering/cluster_extr_var/f_spatClust_funs.R")
+source("clustering/cluster_filter/f_spatClust_funs.R")
 source("clustering/dateExtractionHelper.R")
 
 datestoCheck <- getDates(count = 10, timeframe = seq(2000, 2010), 
@@ -99,7 +99,7 @@ days <- unique(data[, date])
 fillFunkyPerDay <- function(day) {
   library(data.table)
   data <- readRDS("Data/cli_data_05_avgDay.rds")[date %in% day, ]
-  source("clustering/Var_Extraction_Method/filter_funs.R")
+  source("clustering/cluster_filter/filter_funs.R")
   
   return(cbind(t(filterDay(data[, date := NULL], "avg_mslp")$cluster), day))
     #lapply(days, function(x) t(filterDay(data[date %in% x, ][, date := NULL], "avg_mslp")$cluster))
@@ -109,7 +109,7 @@ fillFunkyPerYear1 <- function(year) {
   library(data.table)
   data <- readRDS("Data/cli_data_05_avgDay.rds")[format(date, "%Y") %in% year, ]
   days <- unique(data[, date])
-  source("clustering/Var_Extraction_Method/filter_funs.R")
+  source("clustering/cluster_filter/filter_funs.R")
   
   return(rbind(vapply(days, function(x) 
     c(filterDay(data[date %in% x, ][, date := NULL], "avg_mslp")$cluster, x), 
@@ -120,7 +120,7 @@ fillFunkyPerYear2 <- function(year) {
   library(data.table)
   data <- readRDS("Data/cli_data_05_avgDay.rds")[format(date, "%Y") %in% year, ]
   days <- unique(data[, date])
-  source("clustering/Var_Extraction_Method/filter_funs.R")
+  source("clustering/cluster_filter/filter_funs.R")
   
   return(rbind(vapply(days, function(x) 
     c(filterDay(data[date %in% x, ][, date := NULL], "avg_geopot")$cluster, x), 

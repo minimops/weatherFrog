@@ -12,17 +12,15 @@ extrapolate <- function(yearspan, vars = "all") {
   assertNumeric(yearspan, lower = 1900, upper = 2010)
   #TODO insert all possible var creations
   #TODO handling
-  assertSubset(vars, c("all", "all.4qm", "all.pca", "all.fullID", "season", "min", "max", 
-                       "intensity", "location",
-                       "range", "distance"))
+  assertSubset(vars, c("all", "all.diffDay", "all.diffDay2", "all.4qm", 
+                       "all.pca", "all.fullID", "final"))
   
   #available datasets:
   #sort these smaller to larger
   avail.sets <- list("05" = seq(2006, 2010), "2k" = seq(2000, 2010), 
-                     "30" = seq(1971, 2000), "full" = seq(1900, 2010),
-                     "71" = seq(1971, 1975), "84" = seq(1984, 1988),
-                     "96" = seq(1996, 2000))
+                     "30" = seq(1971, 2000), "full" = seq(1900, 2010))
   
+  #find smallest Dataset, where yearspan is included
   for (setNum in seq_len(length(avail.sets))) {
     if(all(yearspan %in% avail.sets[[setNum]])){
       SETtoUSE <- (names(avail.sets[setNum]))
@@ -83,6 +81,14 @@ extrapolate <- function(yearspan, vars = "all") {
     pca <- getPCA(copy(data_wide_avgDay), 3)
     Qmeans <- Reduce(merge, list(Qmeans, pca))
   }
+  
+  if(vars == "all.diffDay" || vars == "all.diffDay2"){
+    ifelse(vars == "all.diffDay",
+           diff <- diffDay(yearspan, variant = "range"),
+           diff <- diffDay(yearspan, variant = "continuous")
+    )
+    Qmeans <- Reduce(merge, list(Qmeans, diff))
+  }
 
   #return new dataset
   out <- Reduce(merge, list(distMeasures, 
@@ -104,7 +110,8 @@ extrapolate <- function(yearspan, vars = "all") {
                      "minGeopot.verID", "minGeopot.horID", "euclidean.geopot",
                      "euclidean.minDiff", grep("meanMslp", names(out), value = TRUE),
                      grep("meanGeopot", names(out), value = TRUE), 
-                     grep("PC", names(out), value = TRUE)
+                     grep("PC", names(out), value = TRUE),
+                     grep("diff", names(out), value = TRUE)
   ))
   
   out
@@ -410,7 +417,8 @@ getPCA <- function(data, number = 3) {
         prcomp(as.data.frame(copy(data)[, date := NULL]))[["x"]][, seq(1, number)])
 }
 
-
+##create quadrant ids of 8x20
+##finer min/max value location
 diff_quadrandID <- function(data){
   assertDataTable(data)
   assertSubset(c("longitude", "latitude"), names(data))
@@ -424,4 +432,83 @@ diff_quadrandID <- function(data){
               horID = vapply(longitude, function(x) which(longs == x), c(1)))]
   
   out
+}
+
+
+##this function calculates the absolute difference over a day
+## "range" :=
+##for each measure location, it computes the absolute of the min measured at that 
+##point on that day - the max value
+
+## "coninuous" :=
+## sums up change for every timeinstance to its next per location
+## So the total change over a day
+
+##sums up difference over all 160 locations per day
+
+diffDay <- function(yearspan, variant = "range") {
+  assertNumeric(yearspan, lower = 1900, upper = 2010)
+  assertSubset(variant, c("range", "continuous"))
+    
+  source("dataset_mutate_funs.R")
+  
+  #load original dataset
+  cli_data <- readRDS("Data/cli_data.rds")
+  
+  cli_data_30 <- cli_data[format(date, "%Y") %in% yearspan, ]
+  
+  #a bit dirty and repetetiv but ya know
+  ifelse(variant == "range",
+         {
+  #mslp
+  cli_30_mslp <- copy(cli_data_30)[, geopotential := NULL]
+  wideTime_30_mslp <- longToWide(cli_30_mslp, id = c("date", "time"),
+                                 col = c("longitude", "latitude"),
+                                 vars = c("mslp"))
+  cols <- names(wideTime_30_mslp)[-c(1,2)]
+  maxChange_tile_day_mslp <- copy(wideTime_30_mslp)[, (cols) := lapply(.SD, function(x) max(x) - min(x)),
+                                                    by = date, .SDcols = cols][, .SD[1], by = date][, time := NULL] 
+  Change_day_mslp <- copy(maxChange_tile_day_mslp)[, .(diff = sum(.SD)), by = date, .SDcols = cols]
+  names(Change_day_mslp) <- c("date", "diff_mslp")
+  
+  #geopot
+  cli_30_geopot <- copy(cli_data_30)[, mslp := NULL]
+  wideTime_30_geopot <- longToWide(cli_30_geopot, id = c("date", "time"),
+                                   col = c("longitude", "latitude"),
+                                   vars = c("geopotential"))
+  cols <- names(wideTime_30_geopot)[-c(1,2)]
+  maxChange_tile_day_geopotential <- copy(wideTime_30_geopot)[, (cols) := lapply(.SD, function(x) max(x) - min(x)),
+                                                              by = date, .SDcols = cols][, .SD[1], by = date][, time := NULL] 
+  Change_day_geopot <- copy(maxChange_tile_day_geopotential)[, .(diff = sum(.SD)), by = date, .SDcols = cols]
+  names(Change_day_geopot) <- c("date", "diff_geopot")
+         },
+  {
+    #mslp 2
+    cli_30_mslp <- copy(cli_data_30)[, geopotential := NULL]
+    wideTime_30_mslp <- longToWide(cli_30_mslp, id = c("date", "time"),
+                                   col = c("longitude", "latitude"),
+                                   vars = c("mslp"))
+    cols <- names(wideTime_30_mslp)[-c(1,2)]
+    maxChange_tile_day_mslp_var <- copy(wideTime_30_mslp)[, (cols) := lapply(.SD, function(x) sum(abs(x[1]- x[2]),
+                                                                                                   abs(x[2]- x[3]),
+                                                                                                   abs(x[3]- x[4]))),
+                                                           by = date, .SDcols = cols][, .SD[1], by = date][, time := NULL] 
+    Change_day_mslp <- copy(maxChange_tile_day_mslp_var)[, .(diff = sum(.SD)), by = date, .SDcols = cols]
+    names(Change_day_mslp) <- c("date", "diff_mslp")
+    
+    #geopot
+    cli_30_geopot <- copy(cli_data_30)[, mslp := NULL]
+    wideTime_30_geopot <- longToWide(cli_30_geopot, id = c("date", "time"),
+                                     col = c("longitude", "latitude"),
+                                     vars = c("geopotential"))
+    cols <- names(wideTime_30_geopot)[-c(1,2)]
+    maxChange_tile_day_geopotential_var <- copy(wideTime_30_geopot)[, (cols) := lapply(.SD, function(x) sum(abs(x[1]- x[2]),
+                                                                                                             abs(x[2]- x[3]),
+                                                                                                             abs(x[3]- x[4]))),
+                                                                     by = date, .SDcols = cols][, .SD[1], by = date][, time := NULL] 
+    Change_day_geopot <- copy(maxChange_tile_day_geopotential_var)[, .(diff = sum(.SD)), by = date, .SDcols = cols]
+    names(Change_day_geopot) <- c("date", "diff_geopot")
+  })
+  
+  cbind(Change_day_mslp, diff_geopot = Change_day_geopot$diff_geopot)
 }

@@ -1,6 +1,6 @@
 ##dbscan testing
 
-source("clustering/cluster_extr_var/f_spatClust_funs.R")
+source("clustering/cluster_filter/f_spatClust_funs.R")
 source("clustering/dateExtractionHelper.R")
 
 

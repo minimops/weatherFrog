@@ -100,7 +100,7 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
   assertCharacter(fname)
   assertString(metric)
   
-  path <- "documentation/plots/PAMfinal/"
+  path <- "documentation/plots/"
   
   jpeg(file= paste0(path
                     , paste("mosaic", metric, fname, sep = "_"), ".jpeg"))
@@ -123,13 +123,12 @@ clusterAssesment <- function(data, clusterRes, metric, distance, fname) {
                  file = paste0(path, paste("output", metric, fname, sep = "_")),
                  append = TRUE)
   dev.off()
+  
+  jpeg(file= paste0(path
+                    , paste("mosaic", metric, fname, sep = "_"), ".jpeg"))
+  capture.output(sil(clusterRes, clusterRes$clustering, distance, "pam"),
+                 file = paste0(path, paste("output", metric, fname, sep = "_")),
+                 append = TRUE)
+  dev.off()
 }
-
-
-weightDistMat <- function(weights, dist) {
-  dist / sum(weights)
-}
-
-
-
 

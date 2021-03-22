@@ -55,10 +55,10 @@ toGeoIndex <- function(data) {
 longToWide <- function(data, id = "date", col = "geoIndex", vars = c("avg_mslp", "avg_geopot")) {
   assertDataTable(data)
   assertCharacter(id)
-  assertCharacter(col, len = 1)
+  assertCharacter(col)
   assertCharacter(vars)
   
   dcast(data, 
-        paste(paste(id, collapse = "+"), "~", col), 
+        paste(paste(id, collapse = "+"), "~", paste(col, collapse = "+")), 
         value.var = vars)
 }
