@@ -19,6 +19,9 @@ Um Codes in de Dateien auszuführen, ist es wichtig, dass zuerst *dataset_mutate
 Dafür muss zuerst ein Order "Data" in dem Projekt erstellt werden, dem rie rohen Datensätze hinzugefügt werden: *"GWL_1900-2010.csv", "data_reanalysis_20201109.rds"*.
 Diese sind hier nicht enthalten, da sie sehr groß sind. Informationen über die erstellten Datensätze beinhaltet die Datei *dataset_doc.Rmd* im Ordner *documentation*.
  
+![](documentation/structure.png) 
+ 
+
 ### Dependencies
 
 data.table, checkmate, tidyverse, rgeos, gstat, rnaturalearth, rnaturalearthdata, cluster, ggfortify, tsne, checkmate, parallel, ggmosaic, plyr, factoextra, gridExtra, parallel, parallelDist, mlr3, ppclust, fclust, Rtsne, dbscan, KneeArrower, clusterR, grid, e1071, akmedoids, fossil, usedist
