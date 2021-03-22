@@ -1,6 +1,9 @@
-#### DF zusammenfassung
+#### data frame to compare results of clustering by seasons in file "cluster_pam_season_5y.R"
 
+# either source 
+source("clustering/cluster_extr_var/PAM_Trials/cluster_pam_season_5y.R")
 
+# or run lines 1 - 336 in that file.
 
 df <- matrix(NA, nrow = 32, ncol = 6)
 
@@ -95,8 +98,12 @@ dt2 <- unique(dt[, ":=" (avg.sil = mean(silhouette),
 dt2 <- dt2[, names := c("together unweighted euc", "together preweighted euc", "summer unweighted euc", "summer preweighted euc",
                         "winter unweighted euc", "winter preweighted euc", "togetherPCA unweighted euc", "togetherPCA preweighted euc")]
 dt2
+
+# these are the resulting data frames
 saveRDS(dt2, "Data/euclideanSummaryAvg.rds")
 saveRDS(df, "Data/euclideanSummary.rds")
+
+
 
 eucSumAvg <- readRDS("Data/euclideanSummaryAvg.rds")
 eucSum <- readRDS("Data/euclideanSummary.rds")

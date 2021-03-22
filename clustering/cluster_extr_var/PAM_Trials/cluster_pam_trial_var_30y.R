@@ -1,4 +1,5 @@
-##### PAM Tryouts
+##### PAM tryouts for years 1971-2000 trying different dissimilarities with PAM, different weights and
+# different variables
 
 library(cluster)
 library(data.table)
@@ -7,6 +8,7 @@ library(data.table)
 ### please source f_extr_funs.R for this
 source("clustering/cluster_extr_var/f_extr_funs.R")
 source("clustering/ClusterAssesmentHelper.R")
+
 
 # function that gives output as in extrapolate() but it has categorial values for the 
 # quadrants of min/max MSlp/geopot
@@ -40,19 +42,6 @@ getCategorical <- function(dataLong, data) {
 }
 
 
-getEvaluation <- function(clustering, distance, data, title = "PAM") {
-  assertDataTable(data)
-  assertString(title)
-  
-  clusterVector <- clustering$clustering
-  dataTimeline <- copy(data)[, cluster := clusterVector]
-  
-  sil(clustering, clusterVector, distance, "pam")
-  Cl.timeline(copy(dataTimeline))
-  mosaic(copy(data), clusterVector, title)
-}
-
-
 ### 1. Gower with categorial quadrants without PCA
 data <- extrapolate(seq(1971, 2000))
 #data <- extrapolate(seq(2000, 2010))
@@ -81,12 +70,12 @@ saveRDS(PAMhelper(copy(dataCategorial),
 diss.pam.gower.cat <- readRDS("Data/diss_pam_gower_cat.rds")
 pam.gower.cat <- pam(diss.pam.gower.cat, diss = TRUE, k = 7)
 # saveRDS(pam.gower.cat, "Data/pam.gower.cat.rds")
-getEvaluation(pam.gower.cat, diss.pam.gower.cat, dataCategorial, "GOWER with CATEGORIAL QUADRANTS")
+
 
 
 ## WEIGHTS: die Gruppen mit Verteilung, mean in Quadranten so gelassen, euclidean und quadranten zusammengefasst
 
-?daisy
+
 
 ### 2. GOWER with categorial quadrants and PCA
 dataPCA <- extrapolate(seq(1971, 2000), "all.pca")
