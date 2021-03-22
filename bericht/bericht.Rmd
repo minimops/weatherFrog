@@ -95,30 +95,13 @@ data.table(
 
 # Einleitung
 
-Der Klimawandel und seine Auswirkungen sind in den letzten Jahrzenten spürbar geworden. Immer häufiger kommt zu extremen Wetterereignissen wie langanhaltende Hitzewellen, Überschwemmungen Dürre und (Wald-)Brände. Durch den Klimawandel ändert sich auch die Häufigkeit und Länge der auftretenden Großwetterlagen (*GWL*). Lang anhaltende *GWL* sind problematisch, da sie zu Wetteranomalien führen und Variablen wie Temperatur, Regen, Wind und Wetter beeinflussen, welches sich wiederum auf das Klima auswirkt (@article_james). 
-
-Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen (*GWL*) unter dem Einfluss des Klimawandels verändert. Im Rahmen des Statistischen Praktikums wird dieses Projekt unterstützt, indem explorativ versucht wird, Tage anhand von beobachteten Wetterdaten in Cluster aufzuteilen.
-
-
-## Großwetterlagen
-
-Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, wurden 29 Großwetterlagen definiert (@pik119). Diese sind über Europa und Teilen des Atlantik definiert. Lässt sich ein Tag nicht einer *GWL* zuordnen, wird diese der nachfolgenden oder vorherigen *GWL* zugeteilt. Lässt sich keine Struktur erkennen, wird die *GWL* als Unbestimmt (U) bezeichnet (siehe @pik119).  Außerdem braucht es für die *GWL* das Geopotential und die Luftdruckverteilung über den Meeresspiegel. (Quelle) Zusätzlich teilt man die *GWL* nach ihrer Strömungsrichtung und Zirkulationsform ein.[Quelle] Die Strömungsrichtungen sind antizyklonal und zyklonal. Diese unterscheiden sich in ihrer Drehrichtung. Die antizyklonale Strömungsrichtung verläuft entgegengesetzt der Richtung der Rotation der Erde um ihre Achse, während die zyklonale Strömungsrichtung in Richtung der Rotation der Erde verläuft.[quelle] Noch zu beachten sind die Zirkulationsformen. Es gibt die gemischte, meridionale und zonale Zirkulation. Die gemischte Zirkulation besteht, wie der Name schon sagt, aus gleich großen Anteilen von meridionale und zonale Zirkulation. Die zonale Zirkulation beschreibt die Luftströmung, die von West nach Ost oder von Ost nach West, während die meridionale Zirkulation von Nord nach Süd oder von Süd nach Nord,entlang der Längengrade gerichtet ist. [Quelle] Die Zirkulationsströme steuern die LuftdruckverteilungStrömungsrichtung.[quelle] Zu guter Letzt braucht es für die Zuteilung der *GWL* den Hoch- oder Tiefdruck.[Quelle]. Die Großwetterlage "Westlage zyklonal" kommt am häufigsten vor. [quellen]. In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammen gefasst (@sklima).
-
-
-## Forschungsfrage
-
-Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeresspiegel und Geopotential die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Informationen der *GWL* zu benutzen. + Vorgaben
-
-
-## ALTERNATIV
-
 Auf den Klimawandel und seine Auswirkungen wird seit den letzten Jahren immer mehr Fokus gelegt. Durch diesen können sich die Häufigkeit und Länge der auftretenden Großwetterlagen (*GWL*) ändern. Lang anhaltende *GWL* können problematisch sein, da sie zu Wetteranomalien führen und Variablen wie zum Beispiel Temperatur, Regen und Wind beeinflussen können (@article_james).
 
 Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen unter dem Einfluss des Klimawandels verändern kann. Dafür soll ein Modell zur automatisierten Klassifikation der *GWL* nach Hess und Brezowsky anhand von bestimmten Klimaparametern entwickelt werden. Zudem sollen Großwetterlagen charakterisiert und eine Analyse von Trends in deren Entwicklung über die Zeit durchgeführt werden. 
 
 In diesem Bericht wird untersucht, inwieweit die 29 *GWL* nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dabei werden Tage anhand von beobachteten Wetterdaten in Cluster aufgeteilt. Die Klimaparameter für das Clustering sind der Luftdruck auf Meeresspiegelhöhe sowie das Geopotential auf $500 hPa$. Es soll untersucht werden, ob sich die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Information der herrschenden *GWL* zu benutzen.
 
-### GWL
+### Großwetterlagen
 
 Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, sind 29 Großwetterlagen definiert (@pik119). Diese werden nach @sklima als "ein bestimmter atmosphärischer Zustand, der in seiner charakteristischen Strömungsanordnung mehrere Tage im Wesentlichen gleich bleibt (Definition nach BAUR)" beschrieben. Im Allgemeinen gilt, dass eine *GWL* mindestens drei Tage oder länger andauert. Falls es vorkommt, dass der Übergang von einer in die andere Großwetterlage nicht sehr eindeutig ist, werden diese Tage zum Teil der nachfolgenden oder vorherigen *GWL* zugeteilt, wenn diese schon längere Zeit andauerte. Sonst werden diese als "unbestimmt" (U) definiert (@pik119). 
 
@@ -139,7 +122,7 @@ kbl(gwl, booktabs = TRUE, format =  "latex", escape = FALSE, label = "gwl", capt
 
 ```
 
-
+\newpage
 
 # Methodik
 
@@ -592,14 +575,8 @@ Auch bei *PAM* wurden verschiedene Clusterings anhand des extrahierten Datensatz
 
  
 
-Zum anderen wurde die Gowerdistanz in Erwägung gezogen. Diese ergibt, ebenfalls mit $k = 5$, für den Silhouettenkoeffizienten $s = 0.1309$, den Timeline-Score 0.4067 und für $HB_{diff} = 0.3616$. Der Silhouettenkoeffizient ist demnach hier ebenfalls niedriger verglichen mit dem Clusterergebnis mit der Manhattan-Distanz. Der Timeline-Score ist dagegen höher. Betrachtet man allerdings die abgebildete Timeline in Abbildung \ref{fig:tlGower}, dass fast 1000 Tage auftreten, die einzeln vorkommen. Dies ist eher nicht erwünscht, wie in Abschnitt \ref{timeline} beschrieben. Aus diesem Grund und da der Silhouettenkoeffizient niedriger ist, als mit der Manhattan-Distanz wurde die Gowerdistanz für die weiteren Analysen verworfen.
+Zum anderen wurde die Gowerdistanz in Erwägung gezogen. Diese ergibt, ebenfalls mit $k = 5$, für den Silhouettenkoeffizienten $s = 0.1309$, den Timeline-Score 0.4067 und für $HB_{diff} = 0.3616$. Der Silhouettenkoeffizient ist demnach hier ebenfalls niedriger verglichen mit dem Clusterergebnis mit der Manhattan-Distanz. Der Timeline-Score ist dagegen höher. Allerdings existieren hierbei fast 1000 Tage, die einzeln vorkommen. Dies ist eher nicht erwünscht, wie in Abschnitt \ref{timeline} beschrieben. 
 
-Die Timeline für das Clustern mit *PAM* und der Manhattan-Distanz wird in Abbildung \ref{fig:tlMultiplied} gezeigt. 
-
-
-```{r tlGower, echo = FALSE, fig.cap="\\label{fig:tlGower}Timeline für Clusterergebnis der extrahierten Variablen mit PAM und Gowerdistanz für k = 5.", fig.align="center", out.width="80%"}
-include_graphics("assets/tlGower.png")
-```
 
 
 # Ergebnisse PAM mit extrahierten Variablen
@@ -644,7 +621,7 @@ include_graphics("assets/jahreszeit_mean.geopot.png")
 
 Die Graphik in Abb. \ref{fig:mosaic_seasons} visualisiert die relativen Häufigkeiten der Winter- und Sommertage in jedem Cluster. Cluster 1 bis 3 enthalten überwiegend Wintertage; in Cluster 1 sind 88% aller Tage Wintertage, in Cluster 2 99% und in Cluster 3 98% aller Tage Wintertage. In Cluster 4 bis 6 sind hingegen überwiegend Sommertage vertreten; in Cluster 4 sind 79% aller Tage Sommertage und in Cluster 5 83% aller Tage Sommertage. Ein Sonderfall ist Cluster 6, da dieses ausschließlich aus Sommertagen besteht.
 
-```{r mosaic_seasons, echo = FALSE, fig.cap="\\label{fig:mosaic_seasons}Gestapeltes Balkendiagramm, der den relativen Anteil an Winter- und Sommertagen je Cluster abbildet", fig.align="center", out.width="90%"}
+```{r mosaic_seasons, echo = FALSE, fig.cap="\\label{fig:mosaic_seasons}Gestapeltes Balkendiagramm, der den relativen Anteil an Winter- und Sommertagen je Cluster abbildet", fig.align="center", out.width="80%"}
 include_graphics("assets/mosaic_seasons.png")
 ```
 
@@ -726,17 +703,17 @@ Gleiches Problem existiert für $HB_{diff}$. Hier wird zudem die Häufigkeit der
 
 ## Saison
 
-Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Jahreszeiten, Winter, Frühling, Sommer und Herbst durchzuführen. In Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} sind die Werte des Luftdrucks bzw. Geopotentials aufgeteilt nach den Jahrezeiten dargestellt. Vor allem der Luftdruck zeigt kaum Unterschiede in Bezug auf die Saison. Der Median liegt für alle bei etwas unter $1020 hPa$. Nur die Streuung fällt im Sommer etwas geringer aus als in den anderen Jahrezeiten. \textcolor{red}{fertig}
+Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Jahreszeiten, Winter, Frühling, Sommer und Herbst durchzuführen. In Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} sind die Werte des Luftdrucks bzw. Geopotentials aufgeteilt nach den Jahrezeiten dargestellt. Vor allem der Luftdruck zeigt keine deutlichen Unterschiede in Bezug auf die Saison. Der Median liegt für alle bei etwas unter $1020 hPa$. Nur die Streuung fällt im Sommer etwas geringer aus als in den anderen Jahrezeiten. Wie im Artikel von @article_james vorgeschlagen, erscheint demnach eine Auteilung in 2 Jahreszeiten sinnvoller. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier plausibel.
 
-```{r werteMslp, echo = FALSE, fig.cap="\\label{fig:werteMslp}Werte des Luftdrucks der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
+```{r werteMslp, echo = FALSE, fig.cap="\\label{fig:werteMslp}Werte des Luftdrucks der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="80%"}
 include_graphics("assets/seasonsMslp.png")
 ```
 
-```{r werteGeopot, echo = FALSE, fig.cap="\\label{fig:werteGeopot}Werte des Geopotentials der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
+```{r werteGeopot, echo = FALSE, fig.cap="\\label{fig:werteGeopot}Werte des Geopotentials der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="80%"}
 include_graphics("assets/seasonsGeopot.png")
 ```
 
-Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
+
 
 ### Clusterergebnis nach Saison
 
@@ -886,6 +863,14 @@ Grundsätzlich lassen sich die Daten aber auch als Format eines Videos betrachte
 
 # Schluss
 
+Insgesammt lässt sich festhalten, dass hier vorgestellte Clusterverfahren in Bezug auf den Silhouettenwert Strukturen bis zu ca. $s = 0.15$ aufweisen. Der zeitliche Verlauf der Tageseinteilung der Clusterergebnisse erreicht dabei teilweise annähernd sinnvolle Stukturen mit *CWL* zusammenhängender Tage einer als sinnvoll angenommenen Länge, trotzdem, dass die zeitliche Komponente der Daten in der Clusterbildung nicht berücksichtig wird. Letzteres wurde als einer der eventuell größeren Mängel der vorgestellten Methoden erkannt.
+
+Die *GWL* nach Hess und Brezowski finden sich jeweils meistens in allen Ergebnisclustern wieder. Zum Teil heben sich dennoch *GWL* hervor, die mit einem größeren Anteil einem bestimmten Cluster zugeteilt werden können. Eine besonders saubere Teilung der 29 *GWL* in allgemeinere Gruppen lässt allerdings nicht feststellen.
+
+Im Kapitel \ref{diskussion-und-ausblick} werden zwar einige vielversprechende Ansätze beschrieben, die Methoden zu verbessern bzw. auszubauen, diese benötigen aber eventuell eine tiefgründige Analyse zur fachlichen Sinnhaftigkeit vor der Implementation. 
+
+  \textcolor{red}{oder: }
+
 Es wurden in diesem Bericht verschiedene Ansätze, Wetterdaten des Reanalyse-Datensatzes zu clustern, angesprochen. Die Idee des Extrahieren der Variablen sowie das Filtern der Tage wurde hier näher ausgeführt, es wurden Ergebisse gezeigt und der Output und die Methoden diskutiert. 
 
 In den Analysen zeigte sich in Bezug auf die Aufteilung der *GWL*, dass zwar viele in allen Clustern vorhanden waren, aber dass sich auch zum Teil Großwetterlagen heraushoben, die mit über 40% einem Cluster zuzuteilen waren. Allerdings lassen sich die 29 Großwetterlagen nach Hess und Brezowksy auf der Grundlage dieser Ergebnisse nicht zu allgemeineren Typen von Wetterlagen zusammenfassen. 
@@ -899,11 +884,11 @@ Reproduzierbarer Code und relevante Datein sind in einem Github Repository der O
 
  
 
-```{r Funktionen und Pakete, echo=FALSE, fig.cap="\\label{tab:libraries}Benutzte Pakete in R der im Bericht beschriebenen Verfahren", }
+```{r Funktionen und Pakete, echo=FALSE, fig.cap="\\label{tab:libraries}Benutzte Pakete in R der im Bericht beschriebenen Clusterverfahren", }
 
 dt4 <- data.table(
-  Verfahren = c("CLARA", "PAM", "k-Means", "DBSCAN", "kNN-Distanz"),
-  Funktion = c("clara()", "pam()", "kmeans()", "dbscan()", "kNNdist()")
+  Verfahren = c("CLARA", "PAM", "k-Means", "DBSCAN", "kNN-Distanz", "FUZZY"),
+  Funktion = c("clara()", "pam()", "kmeans()", "dbscan()", "kNNdist()", "cmeans()")
 )
 
 kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "R Libraries", caption = "R Libraries", linesep  = "") %>%
@@ -911,6 +896,7 @@ kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "R Librarie
   pack_rows("cluster", 1, 2) %>%
   pack_rows("dbscan", 4, 5) %>%
   pack_rows("stats", 3, 3) %>%
+  pack_rows("e1071", 6, 6) %>%
   kable_styling(latex_options = "hold_position") %>%
   column_spec(1, "4cm") %>%
   column_spec(2, "4cm")
@@ -919,6 +905,6 @@ kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "R Librarie
 
  
 
-Wir, Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto, möchten uns herzlich bei M.Sc. Maximilian Weigert und M.Sc. Magdalena Mittermeier für die angenehme Zusammenarbeit und bei Prof. Dr. Helmut Küchenhoff für die Beratung bedanken. Außerdem bedanken wir uns bei B.Sc. Henri Funk für das Layout dieses Berichts.
+Wir, Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto, möchten uns herzlich bei M.Sc. Maximilian Weigert und M.Sc. Magdalena Mittermeier für die angenehme Zusammenarbeit und bei Prof. Dr. Helmut Küchenhoff für die Beratung bedanken.
 
 \section{Referenzen}
