@@ -847,7 +847,6 @@ $$ $$
  mit: s = \text{Silhouettenkoeffizient}
 $$
 
-Mit den in Abschnitt \ref{clustern-mit-extrahierten-daten} beschriebenen Variablen und dem beschriebenen Clusterverfahren erhält man durch oben genannter*Cluster-Boosting* Methode nach \textcolor{red}{XX} Iterationen folgenden Gewichtsvektor \textcolor{red}{insert table of vector} sowie einen *Silhouettenkoeffizienten* von \textcolor{red}{XX} und einen *TLS* von \textcolor{red}{XX}. Außerdem lässt sich ein $HB_{diff}$ von \textcolor{red}{XX} beobachten.
 
 ## Zeitliche Struktur
 
