@@ -2,12 +2,12 @@
 ## LMU StatPrakt WS 20/21
 ### large-scale weather conditions in europe
 
-Date of presentation: 01.03.2021
-Institut: Statistik, LMU Muenchen
-Lecture: Statistisches Praktikum
-Project partner: M.Sc. Maximilian Weigert, M.Sc. Magdalena Mittermeier
-Project advisor: Prof. Dr. Helmut Küchenhoff
-Authors: Anne Gritto, Katja Gutmair, Stella Akouete, Noah Hurmer
+Date of presentation: 01.03.2021  
+Institut: Statistik, LMU Muenchen  
+Lecture: Statistisches Praktikum  
+Project partner: M.Sc. Maximilian Weigert, M.Sc. Magdalena Mittermeier  
+Project advisor: Prof. Dr. Helmut Küchenhoff  
+Authors: Anne Gritto, Katja Gutmair, Stella Akouete, Noah Hurmer  
 
 
 ### Abstract
