@@ -1,7 +1,7 @@
 
-#### Clustering with 30 Years ########################################
-# 1. Cluster tryouts wit PAM and different dissimilarities
-# 2. Cluster with kmeans and euclidean
+#### first Clustering trials with 30 Years, checking how weighting differs + different dissimilarities
+
+
 
 # dataset without difference over the days, but with range of mslp and geopot
 
@@ -132,19 +132,23 @@ dist.allpca <- readRDS("Data/diss.pam.manhat.30.rds")
 pam.manhat.30.allpca <- pam(diss.pam.manhat.30.allpca, diss = TRUE, k = 6)
 saveRDS(pam.manhat.30.allpca, "Data/pam.manhat.30.allpca.rds" )
 pam.manhat.30.allpca <- readRDS("Data/pam.manhat.30.allpca.rds")
+
 cluster.manhat.30.allpca <- pam.manhat.30.allpca$clustering
 # sil_width: 0.15297
 
 ## Measurement 
-# 1.
+# 1. Silhouette
 sil(pam.manhat.30.allpca, cluster.manhat.30.allpca, dist.allpca, "pam")
 
+
+# 2. Timeline
 dat.manhat.30.allpca <- copy(data.pca)[, cluster := cluster.manhat.30.allpca]
-# 2.
 Cl.timeline(copy(dat.manhat.30.allpca))
-# 3.
+
+# 3. Manova
 manova.fun(copy(data.pca), cluster.manhat.30.allpca)
-# 4.
+
+# 4. Mosaic
 mosaic(copy(data.pca), cluster.gower.30.allpca, title = "PAM WITH MANHAT - 30 YEARS - allpca")
 
 
@@ -164,53 +168,53 @@ weighted <- scaleNweight(copy(data.pca), weight = TRUE,
                                      rep(1/6, 12), rep(1/21, 21)))
 
 diss.pam.manhat.30.allpca.weighted <- daisy(weighted[, 2:ncol(weighted)], metric = "manhattan")
-pam.manhat.30.allpca.weighted <- pam(diss.pam.manhat.30.allpca.weighted, diss = TRUE, k = 8)
 
+pam.manhat.30.allpca.weighted <- pam(diss.pam.manhat.30.allpca.weighted, diss = TRUE, k = 8)
 saveRDS(pam.manhat.30.allpca.weighted, "Data/pam.manhat.30.allpca.weighted.rds" )
 
 cluster.manhat.30.allpca.weighted <- pam.manhat.30.allpca.weighted$clustering
 # sil_width: 0.106
 
 ## Measurement 
-# 1.
+# 1. Silhouette
 sil(pam.manhat.30.allpca.weighted, cluster.manhat.30.allpca.weighted, diss.pam.manhat.30.allpca.weighted, "pam")
 
+# 2. Timeline
 dat.manhat.30.allpca.weighted <- copy(data.pca)[, cluster := cluster.manhat.30.allpca.weighted]
-# 2.
 Cl.timeline(copy(dat.manhat.30.allpca.weighted))
-# 3.
+
+# 3. Mosaik
 mosaic(copy(data.pca), cluster.manhat.30.allpca.weighted, title = "PAM WITH MANHAT - weighted - allpca")
 
 
+
 ####### PAM with GOWER ##################
+diss.pam.gower.30.all <- dissimilarityPAM(scaleNweight(copy(data)),
+                                          dist = FALSE, metric = "gower")
+
 diss.pam.gower.30.all <- daisy(scaled[, 2:ncol(scaled)], metric = "gower", 
                                 weights = c(rep(c(1/9, 1/9, 1/6, 1/6, 1/18, 1/18, 1/9, 1/9, 1/9), 2), 
                                             rep(1/6, 12), rep(1/18, 18)))
 saveRDS(diss.pam.gower.30.all, "Data/diss.pam.gower.30.all.rds")
 diss.pam.gower.30.all <- readRDS("Data/diss.pam.gower.30.all.rds")
+
 pam.gower.30 <- pam(diss.pam.gower.30.all, diss = TRUE, k = 7)
 saveRDS(pam.gower.30, "Data/pam.gower.30.rds" )
 
-
 cluster.gower.30 <- pam.gower.30$clustering
-mosaic(copy(data), cluster.gower.30, title = "PAM WITH GOWER")
+
 # sil_width: 0.147
 
 ## Measurement 
-# 1.
+# 1. Silhouette
 sil(pam.gower.30, cluster.gower.30, diss.pam.gower.30.all, "pam")
 
+# 2. Timeline 
 dat.gower.30 <- copy(data)[, cluster := cluster.gower.30]
-# 2.
 Cl.timeline(copy(dat.gower.30))
-# 3.
+
+# 3. Mosaik
 mosaic(copy(data), cluster.gower.30, title = "PAM WITH GOWER - 30 YEARS")
-
-diss.pam.gower.30.all <- dissimilarityPAM(scaleNweight(copy(data)),
-                                           dist = FALSE, metric = "gower")
-
-
-
 
 
 dist.all <- readRDS("Data/diss.pam.manhat.30.all.rds")
@@ -219,22 +223,24 @@ dist.allpca <- readRDS("Data/diss.pam.manhat.30.rds")
 
 ####### PAM with GOWER - ohne gewichte ##################
 diss.pam.gower.30.all.noweights <- daisy(scaled[, 2:ncol(scaled)], metric = "gower") 
-                              
 saveRDS(diss.pam.gower.30.all, "Data/diss.pam.gower.30.all.rds")
 diss.pam.gower.30.all <- readRDS("Data/diss.pam.gower.30.all.rds")
+
 pam.gower.30.noweights <- pam(diss.pam.gower.30.all.noweights, diss = TRUE, k = 7)
+
 cluster.gower.30.noweights <- pam.gower.30.noweights$clustering
-mosaic(copy(data), cluster.gower.30, title = "PAM WITH GOWER")
+
 # sil_width: 0.147
 
 ## Measurement 
-# 1.
+# 1. Silhouette
 sil(pam.gower.30.noweights, cluster.gower.30.noweights, diss.pam.gower.30.all.noweights, "pam")
 
+# 2. Timeline
 dat.gower.30.noweights <- copy(data)[, cluster := cluster.gower.30]
-# 2.
 Cl.timeline(copy(dat.gower.30))
-# 3.
+
+# 3. Mosaik
 mosaic(copy(data), cluster.gower.30, title = "PAM WITH GOWER - 30 YEARS")
 
 diss.pam.gower.30.all <- dissimilarityPAM(scaleNweight(copy(data)),
@@ -254,19 +260,23 @@ diss.pam.gower.30.allpca <- daisy(scaled.pca[, 2:ncol(scaled.pca)], metric = "go
                                            rep(1/6, 12), rep(1/21, 21)))
 
 saveRDS(diss.pam.gower.30.allpca, "Data/diss.pam.gower.30.allpca.rds")
+
 pam.gower.30.allpca <- pam(diss.pam.gower.30.allpca, diss = TRUE, k = 6)
+
 cluster.gower.30.allpca <- pam.gower.30.allpca$clustering
 
 # sil_width: 0.158
 
 ## Measurement 
-# 1.
+# 1. Silhouette
 sil(pam.gower.30.allpca, cluster.gower.30.allpca, diss.pam.gower.30.allpca, "pam")
 
+
+# 2. Timeline
 dat.gower.30.allpca <- copy(data.pca)[, cluster := cluster.gower.30.allpca]
-# 2.
 Cl.timeline(copy(dat.gower.30.allpca))
-# 4.
+
+# 3. Mosaik
 mosaic(copy(data.pca), cluster.gower.30.allpca, title = "GOWER - 30 YEARS - allpca")
 
 

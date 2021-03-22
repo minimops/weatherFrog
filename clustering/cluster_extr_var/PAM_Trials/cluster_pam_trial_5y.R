@@ -28,7 +28,6 @@ cluster.gower <- pam.gower$clustering
 # 1.
 sil(pam.gower, cluster.gower, diss.pam.gower, "pam")
 
-
 dat.gower <- copy(data)[, cluster := cluster.gower]
 # 2.
 Cl.timeline(copy(dat.gower))
@@ -41,17 +40,18 @@ diss.pam.euc <- dissimilarityPAM(copy(datscale), metric = "euclidean", dist = FA
 
 pam.euc <- pam(diss.pam.euc, diss = TRUE, k = 6)
 cluster.euc <- pam.euc$clustering
-mosaic(copy(data), cluster.euc, title = "PAM WITH EUCLIDEAN")
+
 # sil_width: 0.114
 
 ## Measurement 
-# 1.
+# 1. Silhouette 
 sil(pam.euc, cluster.euc, diss.pam.euc, "pam")
 
+# 2. Timeline
 dat.euc <- copy(data)[, cluster := cluster.euc]
-# 2.
 Cl.timeline(copy(dat.euc))
-# 3.
+
+# 3. Mosaic
 mosaic(copy(data), cluster.euc, title = "PAM WITH EUC")
 
 
