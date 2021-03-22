@@ -81,7 +81,7 @@ longrun = FALSE # set to TRUE to rerun all code
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
            "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl", "Interquartilsabstand", "geopotentieller Meter"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$", "IQR", "$gpm$")) %>%
+  Kurzform = c("$GWL$", "$CLARA$", "$Mslp$", "$Geopotential$", "$\\sum$", "$PAM$", "$DBSCAN$", "$SCAPOI$", "$CWL$", "$TLS$", "${HB}_{diff}$", "$PC$ / $PCA$", "$k$", "$IQR$", "$gpm$")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE, linesep  = "") %>%
   kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE)
@@ -112,19 +112,18 @@ Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeress
 
 ## ALTERNATIV
 
-Auf den Klimawandel und seine Auswirkungen wird seit den letzten Jahren immer mehr Fokus gelegt. Durch diesen können sich die Häufigkeit und Länge der auftretenden Großwetterlagen (*GWL*) ändern. Lang anhaltende *GWL* können problematisch sein, da sie zu Wetteranomalien führen und Variablen wie zum Beispiel Temperatur, Regen und Wind beeinflussen, welche sich wiederum auf das Klima auswirken (@article_james).
+Auf den Klimawandel und seine Auswirkungen wird seit den letzten Jahren immer mehr Fokus gelegt. Durch diesen können sich die Häufigkeit und Länge der auftretenden Großwetterlagen (*GWL*) ändern. Lang anhaltende *GWL* können problematisch sein, da sie zu Wetteranomalien führen und Variablen wie zum Beispiel Temperatur, Regen und Wind beeinflussen können (@article_james).
 
 Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen unter dem Einfluss des Klimawandels verändern kann. Dafür soll ein Modell zur automatisierten Klassifikation der *GWL* nach Hess und Brezowsky anhand von bestimmten Klimaparametern entwickelt werden. Zudem sollen Großwetterlagen charakterisiert und eine Analyse von Trends in deren Entwicklung über die Zeit durchgeführt werden. 
 
-In diesem Bericht wird untersucht, inwieweit die 29 *GWL* nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dabei werden Tage anhand von beobachteten Wetterdaten in Cluster aufgeteilt. Die Klimaparameter für das Clustering sind der Luftdruck auf Meeresspiegelhöhe sowie das Geopotential auf $500 hPa$. Da *GWL* über ganz Europa und Teilen des Atlantik definiert sind, wird deshalb die räumliche Struktur berücksichtigt. Es soll untersucht werden, ob sich die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Information der herrschenden *GWL* zu benutzen.
+In diesem Bericht wird untersucht, inwieweit die 29 *GWL* nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dabei werden Tage anhand von beobachteten Wetterdaten in Cluster aufgeteilt. Die Klimaparameter für das Clustering sind der Luftdruck auf Meeresspiegelhöhe sowie das Geopotential auf $500 hPa$. Es soll untersucht werden, ob sich die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Information der herrschenden *GWL* zu benutzen.
 
 ### GWL
 
 Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, sind 29 Großwetterlagen definiert (@pik119). Diese werden nach @sklima als "ein bestimmter atmosphärischer Zustand, der in seiner charakteristischen Strömungsanordnung mehrere Tage im Wesentlichen gleich bleibt (Definition nach BAUR)" beschrieben. Im Allgemeinen gilt, dass eine *GWL* mindestens drei Tage oder länger andauert. Falls es vorkommt, dass der Übergang von einer in die andere Großwetterlage nicht sehr eindeutig ist, werden diese Tage zum Teil der nachfolgenden oder vorherigen *GWL* zugeteilt, wenn diese schon längere Zeit andauerte. Sonst werden diese als "unbestimmt" (U) definiert (@pik119). 
 
 Hess und Brezowsky definieren *GWL* auf räumlicher Ebene über Europa und Teilen des Atlantik. Grundlagen dieser Klassifikation sind Zirkulationsformen, die sich aus der gemischten, meridionalen und zonalen zusammensetzen (@gwl_classif). Diese werden durch die "Lage der steuernden Zentren (Höhenhoch- und Höhentiefdruckgebiete und Tröge) und durch die Erstreckung der Frontalzonen bestimmt" (@pik119). Außerdem sind Strömungsanordnungen in der Höhe, sowie der Luftdruck auf Meeresspiegelhöhe wichtig für die Zuordnung zu einer Zirkulationsform. Zudem wurde für die Klassifikation von Großwetterlagen die Zugrichtung wandernder Druckgebilde betrachtet (@pik119).
-
-Während dem Andauern einer *GWL* kann sich das Wetter ändern. Jedoch bleibt "der Charakter der jeweiligen regionalen Witterung erhalten" und ist für die Vorhersage, wie sich das Wetter und die Witterung über einen längeren Zeitraum entwickeln, von großer Bedeutung (@sklima). In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammengefasst (@sklima).
+In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammengefasst (@sklima).
 
 
 
@@ -238,32 +237,6 @@ $$ $$
   mit: K = \text{Menge der Cluster; } n_i = \text{Anzahl Tage in der GWL } i
 $$
 
-## Cluster Prinzip
-
-Die Grundidee einer Clusteranalyse ist, Beobachtungen so in Gruppen aufzuteilen, dass diese innerhalb der Gruppen möglichst homogen und die Gruppen untereinander möglichst heterogen sind. Um ein Clustering durchzuführen wird zum einen ein Distanzmaß benötigt, das die Distanzen zwischen Beobachtungen in einem Datensatz angibt. Zum anderen muss ein Clusteralgorithmus verwendet werden, der resultierende Cluster aus dem Datensatz ausgibt.
-
- 
-
-**Distanzmaß**
-
-Ein Distanzmaß gibt die Distanz von allen Beobachtungen eines Datensatzes untereinander an. Es ist somit metrisch und ein Distanzmaß für die Menge an Beobachtungen $\Omega = \{o_1, ... , o_n\}$ bildet auf die reellen Zahlen ab $d : \Omega \text{ } \mathsf{x} \text{ } \Omega \to \mathbb{R}, \text{ mit } d := \text{ Distanzmaß }$. Die Distanz zwischen zwei Beobachtungen $o_i$ und $o_l$ wird also geschrieben als $d(o_i, o_l)$. Für metrische Distanzmaße postuliert man nach Folien Annika Hoyer \textcolor{red}{wie zitiert man Folien?}
-
-$$
-\begin{aligned}
-& d(o_i, o_l) = d(o_l, o_i)\\
-& d(o_i, o_i) = 0\\
-& d(o_i, o_l) \ge 0 \text{  } \forall i,l\\
-& d(o_i, o_l) \le d(o_i, o_r) + d(o_r, o_l).
-\end{aligned}
-$$
-
- 
-
-**Clusteralgorithmus**
-
-Es gibt verschiedene Ansätze zu clustern. Hier werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optimal Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimensionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der k-Means oder k-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren.
-
-Dichtebasiertes Clustern...
 
 ## Filter Ansatz
 
@@ -502,7 +475,7 @@ ggplot(data_manhat, aes(x, y)) +
 
 ```
 
-Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. \textcolor{red}{schauen ob wirklich mit reinbringen!!!} In Abschnitt \ref{weitere-versuche} werden diese weiteren Versuche grob dargestellt.
+Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. In Abschnitt \ref{weitere-versuche} werden diese weiteren Versuche grob dargestellt.
 
 #### Skalierung
 
@@ -626,24 +599,6 @@ Die Timeline für das Clustern mit *PAM* und der Manhattan-Distanz wird in Abbil
 
 ```{r tlGower, echo = FALSE, fig.cap="\\label{fig:tlGower}Timeline für Clusterergebnis der extrahierten Variablen mit PAM und Gowerdistanz für k = 5.", fig.align="center", out.width="80%"}
 include_graphics("assets/tlGower.png")
-```
-
-
-
-```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
-dt3 <- data.table(
-  Algorithmus = c("CLARA", "CLARA", "PAM", "k-Means", "PAM", "PAM", "PAM", "PAM", "k-Means"),
-  Metrik = c("Euklidisch", "Manhattan", "Mahalanobis", "PCA", "Gower", "Euklidisch", "Manhattan", "Mahalanobis", "Euklidisch")
-)
-
-kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Clusterverfahren", linesep  = "") %>%
-  kable_styling(latex_options = c("hold_position","striped"), full_width = FALSE)%>%
-  pack_rows("Reanalyse-Datensatz", 1, 4) %>%
-  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9) %>%
-  column_spec(2, "5cm") %>%
-  column_spec(1, "8cm")
-  
-  
 ```
 
 
@@ -771,7 +726,7 @@ Gleiches Problem existiert für $HB_{diff}$. Hier wird zudem die Häufigkeit der
 
 ## Saison
 
-Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Jahreszeiten, Winter, Frühling, Sommer und Herbst durchzuführen. Nachdem aber Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} betrachtet wurden, ist die Entscheidung gegen eine Saisonbereinigung getroffen worden. \textcolor{red}{das überhaupt rein?}
+Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Jahreszeiten, Winter, Frühling, Sommer und Herbst durchzuführen. In Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} sind die Werte des Luftdrucks bzw. Geopotentials aufgeteilt nach den Jahrezeiten dargestellt. Vor allem der Luftdruck zeigt kaum Unterschiede in Bezug auf die Saison. Der Median liegt für alle bei etwas unter $1020 hPa$. Nur die Streuung fällt im Sommer etwas geringer aus als in den anderen Jahrezeiten. \textcolor{red}{fertig}
 
 ```{r werteMslp, echo = FALSE, fig.cap="\\label{fig:werteMslp}Werte des Luftdrucks der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
 include_graphics("assets/seasonsMslp.png")
@@ -781,7 +736,7 @@ include_graphics("assets/seasonsMslp.png")
 include_graphics("assets/seasonsGeopot.png")
 ```
 
-Wie in Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern} beschrieben, kann auch eine Aufteilung nur in Sommer- und Wintertage durchgeführt werden. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
+Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
 
 ### Clusterergebnis nach Saison
 
