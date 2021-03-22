@@ -48,7 +48,7 @@ clusterBoosting <- function(stepW, mstop, data, sampling = c(2, 3),
                                          = V1]$V4
     
     #calculate averages
-    scores <- as.data.table(scores)[, .(V2 = mean(V2), V3 = mean(V3), V4 = mean(V4)), by = V1]
+    scores <- as.data.table(scores)[, .(V2 = 2 * mean(V2), V3 = mean(V3), V4 = mean(V4)), by = V1]
     
     
     #sum up scoreParams
