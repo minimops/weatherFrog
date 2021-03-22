@@ -24,19 +24,17 @@ GWLAnzahl <- as.data.frame(table(lengthGWL$gwl))
 GWLAnzahl <-GWLAnzahl[order(GWLAnzahl$Freq),]
 
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/anzahlGWLs.jpeg")
 
 barplot(table(lengthGWL$gwl), main = "Anzahl der GWLs 1971 - 2010", ylab = "Anzahl der GWLs"
         ,cex.names = 1.5, las = 2, ylim = c(0,350),cex.axis = 1.5,cex.main = 1.5, cex.lab = 1.5)
-dev.off()
+
 
 # count of GWLs per length
 
 table(as.numeric(lengthGWL$length))
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/anzahlLängeGWLs.jpeg")
 barplot(table(as.numeric(lengthGWL$length)), main = "Anzahl der Länge der GWLs",
         xlab = "Länge der GWLs", ylab = "Häufigkeit", ylim = c(0,700),cex.axis = 1.5,cex.names = 1.5,cex.main = 1.5, cex.lab = 1.5)
-dev.off()
+
 
 
 ###########################
@@ -118,29 +116,24 @@ mosaicplot(t(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col 
 
 
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GWLs4Jahreszeiten.jpeg")
 mosaicplot(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der  4Jahreszeiten",
            cex.axis = 1.0)
-dev.off()
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWLgesamtanzahlGWLs4.jpeg")
+
 barplot(colSums(table(gwlNachJahreszeit$values,gwlNachJahreszeit$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der 4 Jahreszeiten",
         ylab = "Anzahl", ylim = c(0,800),cex.main = 1.5,cex.axis = 1.5, cex.lab = 1.5)
-dev.off()
+
 
 
 # Visualization the lengths og GWL per seasons in a plot
 
 
-jpeg(width = 1500,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GWLs_2_Jahreszeiten.jpeg")
 mosaicplot(table(gwlNachJahreszeit2$values,gwlNachJahreszeit2$Jahreszeit), col = terrain.colors(4), las = 2, main = "Anzahl der   GWLs in Abhängigkeit der  2Jahreszeiten",
            cex.axis = 1.0)
-dev.off()
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWLgesamtanzahlGWLs_2_Jahreszeiten.jpeg")
 barplot(colSums(table(gwlNachJahreszeit2$values,gwlNachJahreszeit2$Jahreszeit)), col = rainbow(4), main = "Gesamtanzahl der GWLs in Abhängigkeit der 2 Jahreszeiten",
         ylab = "Anzahl", ylim = c(0,1700),cex.main = 1.5,cex.axis = 1.5, cex.lab = 1.5)
-dev.off()
+
 
 
 # distribution of measure value of mslp and geopot per 4 season
@@ -150,14 +143,12 @@ cli_gwl_long_mslp <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_g
 cli_gwl_long_geo <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,169 : 328])))
 
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/MslpRange4Jahreszeiten.jpeg")
-boxplot(cli_gwl_long_mslp$value ~ cli_gwl_long_mslp$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der  4 Jahreszeiten",
-        xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
-dev.off()
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GeopotentailRange4Jahreszeiten.jpeg")
-boxplot(cli_gwl_long_geo$value ~ cli_gwl_long_geo$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der  4 Jahreszeiten",
-        xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
-dev.off()
+boxplot(cli_gwl_long_mslp$value ~ cli_gwl_long_mslp$Jahreszeit, main = "Luftdruck in Abhängigkeit der  4 Jahreszeiten",
+        xlab = "Jahreszeit", ylab = "Luftdruck in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
+
+boxplot(cli_gwl_long_geo$value ~ cli_gwl_long_geo$Jahreszeit, main = "Geopotential in Abhängigkeit der  4 Jahreszeiten",
+        xlab = "Jahreszeit", ylab = "Geopotential in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
+
 
 # # distribution of measure value of mslp and geopot per 2 season
 
@@ -166,20 +157,18 @@ cli_gwl_long_mslp2 <- reshape2::melt(cli_gwl_1971_Month_Day, id.vars = c("Jahres
 cli_gwl_long_geo2 <- reshape2::melt(cli_gwl_1971_Month_Day, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971_Month_Day[,169 : 328])))
 
 
-#jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/MslpRange2Jahreszeiten.jpeg")
-boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der 2 Jahreszeiten",
-        xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
-dev.off()
+boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "Luftdruck in Abhängigkeit der 2 Jahreszeiten",
+        xlab = "Jahreszeit", ylab = "Luftdruck in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 
 
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/GeopotentailRange2Jahreszeiten.jpeg")
-boxplot(cli_gwl_long_geo2$value ~ cli_gwl_long_geo2$Jahreszeit, main = "range des Geopotentials in Abhängigkeit der 2 Jahreszeiten",
+
+boxplot(cli_gwl_long_geo2$value ~ cli_gwl_long_geo2$Jahreszeit, main = "Geopotential in Abhängigkeit der 2 Jahreszeiten",
         xlab = "Jahreszeit", ylab = "range des Geopotentials in m²/s²",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
-dev.off()
 
 
-boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "range des Luftdrucks in Abhängigkeit der 2 Jahreszeiten",
+
+boxplot(cli_gwl_long_mslp2$value ~ cli_gwl_long_mslp2$Jahreszeit, main = "Luftdruck in Abhängigkeit der 2 Jahreszeiten",
        xlab = "Jahreszeit", ylab = "range des Luftdrucks in Pa",cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5)
 
 
@@ -195,8 +184,6 @@ cli_gwl_long_mslp2$value <- cli_gwl_long_mslp2$value/100
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file="final_cluster/jahreszeit_mslp.png", width = 5, height = 3)
-
 
 cli_gwl_long_geo2$value <- cli_gwl_long_geo2$value/9.80665
 
@@ -210,7 +197,6 @@ plot <- ggplot(aes(x=Jahreszeit, y=value, fill = Jahreszeit), data = cli_gwl_lon
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 
-ggsave(plot, file="final_cluster/jahreszeit_geo.png", width = 5, height = 3)
 
 
 
@@ -219,7 +205,6 @@ ggsave(plot, file="final_cluster/jahreszeit_geo.png", width = 5, height = 3)
 
 
 gwlUeberJahreszeit <- function(GWL){
-  # cli_gwl_long <- melt(cli_gwl_1971, id.vars = c("Jahreszeit","index_length_gwl","date","gwl"), measure.vars = c(colnames(cli_gwl_1971[,9 : 328])))
   dataTable <- cli_gwl_long_mslp2[cli_gwl_long_mslp2$gwl == GWL,]
   boxplot(dataTable$value ~ dataTable$Jahreszeit,ylab = GWL, main = "Mslp")
 }
@@ -281,29 +266,25 @@ sdMedianJahreszeitenGeo <- medianJahreszeitenGeo[, lapply(.SD, function(x) sd(x)
 mslpValue <- sdMeanJahreszeitenMslp$value
 names(mslpValue) <- sdMeanJahreszeitenMslp$gwl
 
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/streungMslpMeanProJahreszeit.jpeg")
 barplot(mslpValue, main = "Mslp Mean")
-dev.off()
+
 
 # barplot: median of mslp in every GWL
 GeoValue <- sdMeanJahreszeitenGeo$value
 names(GeoValue) <- sdMeanJahreszeitenGeo$gwl
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/streungGeoMeanProJahreszeit.jpeg")
 barplot(GeoValue, main = "Geo Mean")
-dev.off()
+
 
 # median for mslp in every GWL
 mslpValueMedian <- sdMedianJahreszeitenMslp$value
 names(mslpValueMedian) <- sdMedianJahreszeitenMslp$gwl
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/streungMslpMedianProJahreszeit.jpeg")
 barplot(mslpValueMedian, main = "Mslp Median")
-dev.off()
+
 
 GeoValueMedian <- sdMedianJahreszeitenGeo$value
 names(GeoValueMedian) <- sdMeanJahreszeitenGeo$gwl
-jpeg(width = 2000,height =1000, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/streungGeoMedianProJahreszeit.jpeg")
 barplot(GeoValueMedian, main = "Geo Mean")
-dev.off()
+
 
 
 
@@ -397,19 +378,17 @@ colnames(rangesDiffInner) <- c("index_length_gwl","MslpInner","GeoInner")
 rangesGWL <- merge(rangesDiff, rangesDiffInner, by = "index_length_gwl")
 
 # boxplot: range of mslp per GWL over all days and over inner days (without first and last day of a GWL)
-jpeg(width = 1000,height = 1700, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/rangeGWLMslp.jpeg")
 boxplot(rangesGWL[,c(2,4)], main = "Vergleich ranges pro GWL ohne 
         und mit ersten und letzen Tag einer GWL",
         ylab = "Luftdruck in Pa",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
-dev.off()
+
 
 # boxplot: range of geopt per GWL over all days and over inner days (without first and last day of a GWL)
 
-jpeg(width = 1000,height =1700, pointsize = 29,quality = 100,"documentation/plots/AnalyseGWL/rangeGWLGeo.jpeg")
 boxplot(rangesGWL[,c(3,5)], main = "Vergleich ranges pro GWL ohne 
         und mit ersten und letzen Tag einer GWL",
         ylab = "Geopotential in m²/s²",cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
-dev.off()
+
 
 
 ###########Durchführen eines Signifikanztest, ob Unterschiede signifikannt sind
