@@ -5,7 +5,7 @@
 dist.all <- readRDS("Data/diss.pam.manhat.30.all.rds")
 dist.allpca <- readRDS("Data/diss.pam.manhat.30.rds")
 
-
+source("clustering/cluster_extr_var/f_extr_funs.R")
 # made distances with
 # data <- extrapolate(seq(1971, 2000))
 # and data <- extrapolate(seq(1971, 2000), "all.pca")

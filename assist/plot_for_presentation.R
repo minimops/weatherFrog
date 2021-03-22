@@ -11,6 +11,8 @@ source("assist/functions_for_cluster_description.R")
 
 # Histogram for every extracted variable in every cluster
 ############
+# PAMres: Cluster object of our final cluster solution
+# f_data: extracted variables data frame with data which we clutered with
 
 cluster <- PAMres$clustering
 f_data$mean.mslp <- f_data$mean.mslp/100
@@ -191,50 +193,6 @@ data$year <- as.numeric(data$year)
 ggsave("documentation/plots/fplots/clust_years.png", plot, device = "png",
        width = 5, height = 3)
 ggsave(plot,file ="final_cluster/distribution of years over cluster.png")
-
-# Distribution of clusters split in seasons
-############noah, lauffähigkeit?
-
-data1 <- data.table(cluster = data$cluster, season = getWinSum(data$date))
-
-
-data1[, fillVar := paste0(cluster, season)][season == "W", season := "Winter"][season == "S", season := "Sommer"]
-
-library(cowplot)
-newlegend <- get_legend(ggplot(data1, aes(cluster, fill = season)) +
-                          geom_bar() +
-                          scale_fill_grey(name = "Saison") +
-                          theme_bw())
-
-plotSeason <- ggplot(data1, aes(cluster)) +
-  geom_bar(aes(fill = as.factor(fillVar)), position = "fill") +
-  scale_fill_manual(values = c("#E41A1C", "#FBB4AE", "#377EB8", "#B3CDE3",
-                               "#4DAF4A", "#CCEBC5", "#984EA3", "#DECBE4",
-                               "#FF7F00", "#FED9A6", "#FFFF33", "#FFFFCC")) +
-  labs(x = "Cluster", y = "Anteil", title = "Veteilung der Cluster über Saison") +
-  theme_bw() +
-  theme(legend.position = "none")
-  
-grid.arrange(plotSeason, right = newlegend)
-  
-
-legendSomm <- get_legend()
-
-ggplot(data1, aes(cluster)) +
-  geom_bar(aes(fill = as.factor(cluster))) +
-  scale_fill_brewer(name = "Cluster", palette = "Set1") +
-  theme(legend.direction = "horizontal",
-        legend.box.just = "top",
-        legend.box.margin = margin(1, 6))
-
-
-
-custPal <- data.frame(rbind(
-  cbind(seq(1, 11, by = 2), brewer.pal(6, "Set1")),
-  cbind(seq(2, 12, by =2), brewer.pal(6, "Pastel1"))
-))
-
-custPal[order(as.numeric(custPal$X1)), ]$X2 
   
 
 

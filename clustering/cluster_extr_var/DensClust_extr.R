@@ -3,7 +3,7 @@
 library(dbscan)
 library(KneeArrower)
 
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 source("clustering/ClusterAssesmentHelper.R")
 
 resdata <- scaleNweight(extrapolate(c(2006, 2010)))

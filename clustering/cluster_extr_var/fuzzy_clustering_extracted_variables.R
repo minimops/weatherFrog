@@ -1,8 +1,8 @@
 # Attention: don´t run this file unless you do not need your computer one day
 
 
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
-source("clustering/fuzzyClustering/function_for_fuzzy_clustering.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
+source("clustering/cluster_extr_var/function_for_fuzzy_clustering.R")
 source("clustering/ClusterAssesmentHelper.R")
 
 

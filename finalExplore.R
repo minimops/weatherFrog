@@ -4,7 +4,7 @@ library(parallelDist)
 library(parallel)
 library(factoextra)
 library(data.table)
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 
 #check if diff overall weights equal diff results
 dat1 <- extrapolate(seq(1971, 1981))

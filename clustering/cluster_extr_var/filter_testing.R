@@ -1,6 +1,6 @@
 #filter testing
 
-source("clustering/Var_Extraction_Method/f_spatClust_funs.R")
+source("clustering/cluster_extr_var/f_spatClust_funs.R")
 source("clustering/dateExtractionHelper.R")
 
 datestoCheck <- getDates(count = 10, timeframe = seq(2000, 2010), 

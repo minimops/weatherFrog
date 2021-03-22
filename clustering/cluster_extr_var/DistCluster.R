@@ -7,7 +7,7 @@ library(ClusterR)
 
 
 #get extracted dataset
-source("clustering/Var_Extraction_Method/f_extr_funs.R")
+source("clustering/cluster_extr_var/f_extr_funs.R")
 source("clustering/ClusterAssesmentHelper.R")
 
 extr.Data.05 <- scaleNweight(extrapolate(seq(2006, 2010)), weight = T)
