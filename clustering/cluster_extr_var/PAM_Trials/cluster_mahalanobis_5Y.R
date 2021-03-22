@@ -2,9 +2,10 @@
 
 source("clustering/cluster_extr_var/f_extr_funs.R")
 
-data <- extrapolate(yearspan = seq(2006, 2010))
+data <- extrapolate(yearspan = seq(2006, 2010), vars = "all")
 
 data.selected <- copy(data)[, date := NULL]
+# auswählen, da manche variable kollinear sind
 data.selected <- data.selected[, c(1:6, 8:15, 17:38, 40:47)]
 
 datascaled <- scale(copy(data.selected))
@@ -12,12 +13,7 @@ colnames(datascaled)
 
 
 variance <- var(datascaled)
-solve(variance)
-
-# Anzahl der Iterationen
 n <- nrow(datascaled)
-
-?mahalanobis
 
 dist.mahal <- matrix(NA, nrow = n, ncol = n)
 

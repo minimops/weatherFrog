@@ -461,3 +461,40 @@ HB.diff.index <- function(data) {
   sum(maxTab$num) / nrow(maxTab)
 }
 
+# this is a function to compute the dissimilarity matrix for pam clustering and the silhouette which
+# speciefies k (clusters)
+
+# INPUT: - data: a data.table which is already scaled
+#        - weights: the weights for the variables (only if the dt hasnt already been weighted)
+#        - metric: either euclidean, manhatten or gower
+#        - dist: logical, indicating whether just the dissimilarity matrix has to be computed
+
+dissimilarityPAM <- function(data, weights = c(rep(c(1/3, 1/6, rep(1/3, 2), rep(1/6, 5)), 2),
+                                               rep(1/6, 12), rep(1/18,18)), 
+                             metric = "euclidean", dist = TRUE) {
+  assertDataTable(data)
+  assertNumeric(weights, null.ok = TRUE)
+  assertSubset("date", colnames(data)[1])
+  assertSubset(metric, choices = c("euclidean", "gower", "manhattan"))
+  assertLogical(dist)
+  dissimilarity <- daisy(data[, 2:ncol(data)], metric = metric, weights = weights)
+  
+  if (dist) {
+    return(dissimilarity)
+  }
+  
+  sil_width <- c(NA)
+  for(i in 5:9){
+    pam_fit <- pam(dissimilarity,
+                   diss = TRUE,
+                   k = i)
+    
+    sil_width[i-4] <- pam_fit$silinfo$avg.width
+  }
+  plot(5:9, sil_width,
+       xlab = "Number of clusters",
+       ylab = "Silhouette Width",)
+  lines(5:9, sil_width)
+  print(sil_width)
+  return(dissimilarity)
+}

@@ -8,6 +8,7 @@ library(data.table)
 library(factoextra)
 library(ggfortify)
 
+source("clustering/ClusterAssesmentHelper.R")
 
 # 1. read the data which is the original dataset for and in this case it only considers 5 years
 data.wide <- readRDS("Data/cli_data_05_avgDay_wide.rds")
@@ -106,7 +107,7 @@ mosaic(copy(data.wide), clusterkmeans.vector, title = "CLARA WITH EUC")
 
 
 
-# 6. PAM with Mahalanobis distance
+# 6. PAM with Mahalanobis distance ################################
 # 6.1 scale data
 data.scaled <- scale(data.wide[, 2:321], scale=TRUE, center=TRUE)
 
