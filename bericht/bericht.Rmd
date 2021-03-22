@@ -242,32 +242,6 @@ $$ $$
   mit: K = \text{Menge der Cluster; } n_i = \text{Anzahl Tage in der GWL } i
 $$
 
-## Cluster Prinzip
-
-Die Grundidee einer Clusteranalyse ist, Beobachtungen so in Gruppen aufzuteilen, dass diese innerhalb der Gruppen möglichst homogen und die Gruppen untereinander möglichst heterogen sind. Um ein Clustering durchzuführen wird zum einen ein Distanzmaß benötigt, das die Distanzen zwischen Beobachtungen in einem Datensatz angibt. Zum anderen muss ein Clusteralgorithmus verwendet werden, der resultierende Cluster aus dem Datensatz ausgibt.
-
- 
-
-**Distanzmaß**
-
-Ein Distanzmaß gibt die Distanz von allen Beobachtungen eines Datensatzes untereinander an. Es ist somit metrisch und ein Distanzmaß für die Menge an Beobachtungen $\Omega = \{o_1, ... , o_n\}$ bildet auf die reellen Zahlen ab $d : \Omega \text{ } \mathsf{x} \text{ } \Omega \to \mathbb{R}, \text{ mit } d := \text{ Distanzmaß }$. Die Distanz zwischen zwei Beobachtungen $o_i$ und $o_l$ wird also geschrieben als $d(o_i, o_l)$. Für metrische Distanzmaße postuliert man nach Folien Annika Hoyer \textcolor{red}{wie zitiert man Folien?}
-
-$$
-\begin{aligned}
-& d(o_i, o_l) = d(o_l, o_i)\\
-& d(o_i, o_i) = 0\\
-& d(o_i, o_l) \ge 0 \text{  } \forall i,l\\
-& d(o_i, o_l) \le d(o_i, o_r) + d(o_r, o_l).
-\end{aligned}
-$$
-
- 
-
-**Clusteralgorithmus**
-
-Es gibt verschiedene Ansätze zu clustern. Hier werden Partitionierende Verfahren und Dichtebasiertes Clustering betrachtet. Partitionierende Verfahren, oder auch Optimal Partitionen, messen die Qualität von Partitionen $C$ anhand eines Gütekriteriums. Gesucht sind dabei die Partitionen, die hinsichtlich des Gütekriteriums optimal sind, nämlich $H(C_{opt}) =\displaystyle \min_C H(C)$. Allerdings können dabei nicht alle zulässigen Partitionen betrachtet werden, da die Dimensionen dabei zu groß werden. Daher arbeitet ein Algorithmus mit numerischen Lösungsansätzen durch Austauschverfahren. Das bedeutet aber auch, dass die ausgegebene Lösung nicht die bestmögliche sein muss, sondern eventuell nur ein lokales Optimum. s. Hoyer Folien. Der k-Means oder k-Medoid Algorithmus sind bekannte Beispiele für die Partitionierenden Verfahren.
-
-Dichtebasiertes Clustern...
 
 ## Filter Ansatz
 
@@ -506,7 +480,7 @@ ggplot(data_manhat, aes(x, y)) +
 
 ```
 
-Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. \textcolor{red}{schauen ob wirklich mit reinbringen!!!} In Abschnitt \ref{weitere-versuche} werden diese weiteren Versuche grob dargestellt.
+Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. In Abschnitt \ref{weitere-versuche} werden diese weiteren Versuche grob dargestellt.
 
 #### Skalierung
 
@@ -630,24 +604,6 @@ Die Timeline für das Clustern mit *PAM* und der Manhattan-Distanz wird in Abbil
 
 ```{r tlGower, echo = FALSE, fig.cap="\\label{fig:tlGower}Timeline für Clusterergebnis der extrahierten Variablen mit PAM und Gowerdistanz für k = 5.", fig.align="center", out.width="80%"}
 include_graphics("assets/tlGower.png")
-```
-
-
-
-```{r Clusterversuche, echo=FALSE, fig.cap="\\label{tab:Versuche}Clusterversuche. Each row represents a list element"}
-dt3 <- data.table(
-  Algorithmus = c("CLARA", "CLARA", "PAM", "k-Means", "PAM", "PAM", "PAM", "PAM", "k-Means"),
-  Metrik = c("Euklidisch", "Manhattan", "Mahalanobis", "PCA", "Gower", "Euklidisch", "Manhattan", "Mahalanobis", "Euklidisch")
-)
-
-kbl(dt3, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung", caption = "Versuche von verschiedenen Clusterverfahren", linesep  = "") %>%
-  kable_styling(latex_options = c("hold_position","striped"), full_width = FALSE)%>%
-  pack_rows("Reanalyse-Datensatz", 1, 4) %>%
-  pack_rows("Datensatz mit Extrahierten Variablen", 5, 9) %>%
-  column_spec(2, "5cm") %>%
-  column_spec(1, "8cm")
-  
-  
 ```
 
 
@@ -775,7 +731,7 @@ Gleiches Problem existiert für $HB_{diff}$. Hier wird zudem die Häufigkeit der
 
 ## Saison
 
-Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Jahreszeiten, Winter, Frühling, Sommer und Herbst durchzuführen. Nachdem aber Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} betrachtet wurden, ist die Entscheidung gegen eine Saisonbereinigung getroffen worden. \textcolor{red}{das überhaupt rein?}
+Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzuführen. Dabei wurde ursprünglich angedacht, die Saisonbereinigung anhand der vier Jahreszeiten, Winter, Frühling, Sommer und Herbst durchzuführen. In Abbildungen \ref{fig:werteMslp} und \ref{fig:werteGeopot} sind die Werte des Luftdrucks bzw. Geopotentials aufgeteilt nach den Jahrezeiten dargestellt. Vor allem der Luftdruck zeigt kaum Unterschiede in Bezug auf die Saison. Der Median liegt für alle bei etwas unter $1020 hPa$. Nur die Streuung fällt im Sommer etwas geringer aus als in den anderen Jahrezeiten. \textcolor{red}{fertig}
 
 ```{r werteMslp, echo = FALSE, fig.cap="\\label{fig:werteMslp}Werte des Luftdrucks der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="100%"}
 include_graphics("assets/seasonsMslp.png")
@@ -785,7 +741,7 @@ include_graphics("assets/seasonsMslp.png")
 include_graphics("assets/seasonsGeopot.png")
 ```
 
-Wie in Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern} beschrieben, kann auch eine Aufteilung nur in Sommer- und Wintertage durchgeführt werden. Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
+Da in den Clustern 1, 2 und 3 vorwiegend Wintertage und in den Clustern 4, 5 und 6 hauptsächlich Sommertage sind, siehe Abschnitt \ref{verhaeltnis-von-sommer--und-wintertagen-in-den-clustern}, erscheint eine Analyse mit zwei getrennten Jahreszeiten hier sinnvoll.
 
 ### Clusterergebnis nach Saison
 
