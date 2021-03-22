@@ -111,6 +111,24 @@ Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, wur
 Es stellt sich nun die Frage, ob sich anhand der Variablen Luftdruck auf Meeresspiegel und Geopotential die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Informationen der *GWL* zu benutzen. + Vorgaben
 
 
+## ALTERNATIV
+
+Auf den Klimawandel und seine Auswirkungen wird seit den letzten Jahren immer mehr Fokus gelegt. Durch diesen können sich die Häufigkeit und Länge der auftretenden Großwetterlagen (*GWL*) ändern. Lang anhaltende *GWL* können problematisch sein, da sie zu Wetteranomalien führen und Variablen wie zum Beispiel Temperatur, Regen und Wind beeinflussen, welche sich wiederum auf das Klima auswirken (@article_james).
+
+Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom Statistischen Institut der LMU untersuchen, wie sich das Auftreten verschiedener Großwetterlagen unter dem Einfluss des Klimawandels verändern kann. Dafür soll ein Modell zur automatisierten Klassifikation der *GWL* nach Hess und Brezowsky anhand von bestimmten Klimaparametern entwickelt werden. Zudem sollen Großwetterlagen charakterisiert und eine Analyse von Trends in deren Entwicklung über die Zeit durchgeführt werden. 
+
+In diesem Bericht wird untersucht, inwieweit die 29 *GWL* nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dabei werden Tage anhand von beobachteten Wetterdaten in Cluster aufgeteilt. Die Klimaparameter für das Clustering sind der Luftdruck auf Meeresspiegelhöhe sowie das Geopotential auf $500 hPa$. Da *GWL* über ganz Europa und Teilen des Atlantik definiert sind, wird deshalb die räumliche Struktur berücksichtigt. Es soll untersucht werden, ob sich die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Information der herrschenden *GWL* zu benutzen.
+
+### GWL
+
+Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, sind 29 Großwetterlagen definiert (@pik119). Diese werden nach @sklima als "ein bestimmter atmosphärischer Zustand, der in seiner charakteristischen Strömungsanordnung mehrere Tage im Wesentlichen gleich bleibt (Definition nach BAUR)" beschrieben. Im Allgemeinen gilt, dass eine *GWL* mindestens drei Tage oder länger andauert. Falls es vorkommt, dass der Übergang von einer in die andere Großwetterlage nicht sehr eindeutig ist, werden diese Tage zum Teil der nachfolgenden oder vorherigen *GWL* zugeteilt, wenn diese schon längere Zeit andauerte. Sonst werden diese als "unbestimmt" (U) definiert (@pik119). 
+
+Hess und Brezowsky definieren *GWL* auf räumlicher Ebene über Europa und Teilen des Atlantik. Grundlagen dieser Klassifikation sind Zirkulationsformen, die sich aus der gemischten, meridionalen und zonalen zusammensetzen (@gwl_classif). Diese werden durch die "Lage der steuernden Zentren (Höhenhoch- und Höhentiefdruckgebiete und Tröge) und durch die Erstreckung der Frontalzonen bestimmt" (@pik119). Außerdem sind Strömungsanordnungen in der Höhe, sowie der Luftdruck auf Meeresspiegelhöhe wichtig für die Zuordnung zu einer Zirkulationsform. Zudem wurde für die Klassifikation von Großwetterlagen die Zugrichtung wandernder Druckgebilde betrachtet (@pik119).
+
+Während dem Andauern einer *GWL* kann sich das Wetter ändern. Jedoch bleibt "der Charakter der jeweiligen regionalen Witterung erhalten" und ist für die Vorhersage, wie sich das Wetter und die Witterung über einen längeren Zeitraum entwickeln, von großer Bedeutung (@sklima). In Tabelle \ref{tab:gwl} sind alle Großwetterlagen nach Hess und Brezowsky zusammengefasst (@sklima).
+
+
+
 ```{r gwl, echo=FALSE, fig.cap="\\label{tab:gwl}Großwetterlagen nach Hess und Brezowsky. Each row represents a list element"}
 gwl <- data.table(
   Großwetterlage = c("Westlage, antizyklonal", "Westlage, zyklonal", "Südliche Westlage", "Winkelförmige Westlage", "Südwestlage, antizyklonal", "Südwestlage, zyklonal", "Nordwestlage, antizyklonal", "Nordwestlage, zyklonal", "Hoch Mitteleuropa", "Hochdruckbrücke (Rücken) Mitteleuropa", "Tief Mitteleuropa", "Nordlage, antizyklonal","Nordlage, zyklonal", "Hoch Nordmeer-Island, antizyklonal", "Hoch Nordmeer-Island, zyklonal", "Hoch Britische Inseln", "Trog Mitteleuropa", "Nordostlage, antizyklonal", "Nordostlage, zyklonal", "Hoch Fennoskandien, antizyklonal", "Hoch Fennoskandien, zyklonal", "Hoch Nordmeer-Fennoskandien, antizyklonal", "Hoch Nordmeer-Fennoskandien, zyklonal", "Südostlage, antizyklonal", "Südostlage, zyklonal", "Südlage, antizyklonal", "Südlage, zyklonal", "Tief Britische Inseln", "Trog Westeuropa", "Übergang/unbestimmt"),
