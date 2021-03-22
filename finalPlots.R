@@ -1,7 +1,7 @@
 
-pamfinal <- readRDS("wetransfer-ed1938/PAMres.rds")
-distfinal <- readRDS("wetransfer-ed1938/f_dist.rds")
-datafinal <- readRDS("wetransfer-ed1938/f_data.rds")
+pamfinal <- readRDS("Data/PAMres.rds")
+distfinal <- readRDS("Data/f_dist.rds")
+datafinal <- readRDS("Data/f_data.rds")
 
 datafinalID <- copy(datafinal)[, cluster := pamfinal$clustering]
 

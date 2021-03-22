@@ -314,11 +314,12 @@ noiseAllocation <- function(cluster.id, cluster.prob) {
 
 manova.fun <- function(data,cluster_vector,date_variable = date){
   
+  # data preparation
   cluster <- cluster_vector
   data_for_manova <- cbind(cluster,data)
   data_for_manova <- subset(data_for_manova, select = -date)
   
-  # maova
+  # calculating manova
   man <- manova(as.matrix(data_for_manova[,-1]) ~ data_for_manova$cluster)
   print(man)
   #print(summary(man, tol = 0,fit = "Wilks"))
