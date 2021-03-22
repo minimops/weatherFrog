@@ -90,6 +90,7 @@ ggsave("bericht/assets/oneDay_geo_2.png", geopot2, device = "png",
 
 #dataset
 rawDat <- readRDS("Data/cli_data_30_avgDay_wide.rds")
+pamfinal <- readRDS("finalDATA/PAMres.rds")
 #attach clusterID
 rawDat[, cluster := pamfinal$clustering]
 rawDatMslp <- copy(rawDat)[, c(1:161, 322)]
@@ -139,6 +140,7 @@ legend <- get_legend(drawFinalDay(test2[cluster %in% 2, ], "value",
                        paste("Cluster", 2, "Mslp"), unit = "hPa") + 
                        scale_fill_gradient(low = "blue", high = "red", 
                                            breaks=c(1005, 1010, 1015, 1020, 1025),
+                                           limits = c(1005, 1025),
                                            name = "in hPa"))
 
 plots <- list()
@@ -147,7 +149,8 @@ for (i in 1:6) {
   plots[[i]] <- drawFinalDay(test2[cluster %in% i, ], "value", 
                paste("Cluster", i), unit = "hPa") +
                 scale_fill_gradient(low = "blue", high = "red", 
-                        breaks=c(1005, 1010, 1015, 1020, 1025), guide = F) +
+                        breaks=c(1005, 1010, 1015, 1020, 1025), 
+                        limits = c(1005, 1025), guide = FALSE) +
                 theme(axis.title.x=element_blank(),
                       axis.title.y=element_blank(),
                       legend.title = element_blank()) 
@@ -183,6 +186,7 @@ legend <- get_legend(drawFinalDay(geopot_avg_perClus2[cluster %in% 2, ], "value"
                                   paste("Cluster", i, "Geopot"), unit = "gpm") +
                        scale_fill_gradient(low = "blue", high = "red", 
                                            breaks= seq(5200, 5700, by = 100),
+                                           limits = c(5200, 5700),
                                            name = "in gpm"))
 
 plots <- list()
@@ -191,7 +195,8 @@ for (i in 1:6) {
   plots[[i]] <- drawFinalDay(geopot_avg_perClus2[cluster %in% i, ], "value", 
                              paste("Cluster", i), unit = "hPa") +
     scale_fill_gradient(low = "blue", high = "red", 
-                        breaks=seq(5200, 5700, by = 100), guide = F) +
+                        breaks=seq(5200, 5700, by = 100),
+                        limits = c(5200, 5700), guide = F) +
     theme(axis.title.x=element_blank(),
           axis.title.y=element_blank(),
           legend.title = element_blank()) 

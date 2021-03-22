@@ -28,6 +28,13 @@ header-includes:
 - \usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
 - \usepackage{graphics}
 - \usepackage[german]{babel}
+- \renewcommand{\topfraction}{.85}
+- \renewcommand{\bottomfraction}{.7}
+- \renewcommand{\textfraction}{.15}
+- \renewcommand{\floatpagefraction}{.66}
+- \setcounter{topnumber}{3}
+- \setcounter{bottomnumber}{3}
+- \setcounter{totalnumber}{4}
 bibliography: references.bib
 
 ---
@@ -35,7 +42,7 @@ bibliography: references.bib
 
 # Zusammenfassung {.unlisted .unnumbered}
 
-  Um Tage anhand ihrer Wetterdaten in Gruppen oder soganannte Wetterlagen einzuteilen, wird hier explorativ nach unsupervised Verfahren gesucht, welche dies erreichen. Dafür liegen pro Tag Messdaten zum Luftdruck auf Meeresspiegelhöhe sowie Geopotential auf 500 hPa an mehreren Standorten vor. Mit diesen Informationen werden verschiedene Clusteranalysen durchgeführt und dessen Ergebnisse verglichen sowie Bezug auf eine vorhandene Einteilung in Großwetterlagen nach Hess und Brezowsky genommen. Um Clusterergebnisse vergleichen zu können, werden Kriterien vorgestellt und diskutiert, die den Erfolg und die fachliche Sinnhaftigkeit repräsentieren. Zwei Verfahren werden hier genauer beschrieben. Dabei befasst sich ein folgend Filter-Ansatz genanntes Verfahren mit der räumlichen Struktur bestimmter Gebiete, indem durch ein zweistufiges Clustern pro Tag Gebiete von Interesse gefunden werden, um Tage folglich anhand dessen zu vergleichen. Der zweite Ansatz extrahiert aus dem Datensatz repräsentative Variablen, um die räumliche Struktur der Daten zu entfernen, somit eine Clusteranalyse zu erleichtern, sowie bestimmten Ausprägungen mehr Einfluss zuordnen zu können. Für letzteren Ansatz werden Ausprägungen der Cluster deskriptiv analysiert und die Aufteilung der Großwetterlagen in den Clustern genauer betrachtet. Abschließend werden auf beobachtete Probleme in den Verfahren sowie mögliche Verbesserungsvorschläge eingegangen.
+  Um Tage anhand ihrer Wetterdaten in Gruppen oder soganannte Wetterlagen einzuteilen, wird hier explorativ nach unsupervised Verfahren gesucht, welche dies erreichen. Dafür liegen pro Tag Messdaten zum Luftdruck auf Meeresspiegelhöhe sowie Geopotential auf 500 hPa an mehreren Standorten vor. Mit diesen Informationen werden verschiedene Clusteranalysen durchgeführt und dessen Ergebnisse verglichen sowie Bezug auf eine vorhandene Einteilung in Großwetterlagen nach Hess und Brezowsky genommen. Um Clusterergebnisse vergleichen zu können, werden die Kriterien Silhouettenkoeffizient und Timeline-Score vorgestellt und diskutiert, die den Erfolg und die fachliche Sinnhaftigkeit repräsentieren. Zwei Verfahren werden hier genauer beschrieben. Dabei befasst sich ein folgend Filter-Ansatz genanntes Verfahren mit der räumlichen Struktur bestimmter Gebiete, indem ein Algorithmus implementiert wird (*SCAPOI*), bei dem durch ein zweistufiges Clustern pro Tag Gebiete von Interesse gefunden werden, um Tage folglich anhand dessen zu vergleichen. Der zweite Ansatz extrahiert aus dem Datensatz repräsentative Variablen, um die räumliche Struktur der Daten zu entfernen, somit eine Clusteranalyse zu erleichtern sowie bestimmten Ausprägungen mehr Einfluss zuordnen zu können. Folgend wird darauf der Clusteralgorithmus *PAM* mit der Manhattan-Metrik angewandt. Für letzteren Ansatz werden Ausprägungen der Cluster deskriptiv analysiert und die Aufteilung der Großwetterlagen in den Clustern genauer betrachtet. Dabei lassen sich durchaus Unterschiede zwischen den Clustern feststellen eine saubere Aufteilung der Großwetterlagen auf Cluster allerdings nicht. 
 
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
@@ -46,7 +53,6 @@ library(checkmate)
 library(knitr)
 library(cluster)
 library(kableExtra)
-longrun = FALSE # set to TRUE to rerun all code
 ```
 
 \newpage
@@ -101,7 +107,7 @@ Magdalena Mittermeier vom Department für Geographie und Maximilian Weigert vom 
 
 In diesem Bericht wird untersucht, inwieweit die 29 *GWL* nach Hess und Brezowsky zu allgemeineren Typen von Wetterlagen zusammengefasst werden können. Dabei werden Tage anhand von beobachteten Wetterdaten in Cluster aufgeteilt. Die Klimaparameter für das Clustering sind der Luftdruck auf Meeresspiegelhöhe sowie das Geopotential auf $500 hPa$. Es soll untersucht werden, ob sich die einzelnen Tage sinnvoll in Cluster einteilen lassen, ohne die Information der herrschenden *GWL* zu benutzen.
 
-### Großwetterlagen
+## Großwetterlagen
 
 Nach dem Katalog von Hess und Brezowsky, welcher 1952 veröffentlicht wurde, sind 29 Großwetterlagen definiert (@pik119). Diese werden nach @sklima als "ein bestimmter atmosphärischer Zustand, der in seiner charakteristischen Strömungsanordnung mehrere Tage im Wesentlichen gleich bleibt (Definition nach BAUR)" beschrieben. Im Allgemeinen gilt, dass eine *GWL* mindestens drei Tage oder länger andauert. Falls es vorkommt, dass der Übergang von einer in die andere Großwetterlage nicht sehr eindeutig ist, werden diese Tage zum Teil der nachfolgenden oder vorherigen *GWL* zugeteilt, wenn diese schon längere Zeit andauerte. Sonst werden diese als "unbestimmt" (U) definiert (@pik119). 
 
@@ -255,7 +261,9 @@ Allerdings ist dieses Verfahren hier auch nicht optimal. Neben dem, dass *Fuzzy*
 
 Im Folgenden wird der benutzte Algorithmus beschrieben, der eine abgeänderte Version des *DBSCAN* darstellt. Dieser beinhaltet fixe Startpunkte und ein iterierend strenger werdendes Nachbarschaftskriterium. Er wird im folgenden immer als *SCAPOI* (Spatial Clustering around Points of Interest) benannt.
 
- 
+Die Startpunkte werden hier jeweils als die Extrema der Messpunkte gewählt. Der Nachbarschaftsparameter *eps* muss groß genug gewählt (bzw. berechnet) werden, um zu berücksichtigen, dass die Extrema im Vergleich zu anderen Messwerten stark abweichen und somit zu verhindern, dass die Cluster gar nicht oder zu gering wachsen. Allerdings führt aber ein zu groß gewählter *eps* dann zu einem zu starken Wachsen der Cluster, da der Abstand eines Messpunktes zu seinem Nachbar selten größer ist, als der Abstand der Extrema zu seinen Nachbarn. Deshalb wird dieser Nachbarschaftsparameter *eps* pro Iteration verkleinert.
+
+Der Nachbarschaftsparameter wird hier für jede Tag-Parameter Kombination berechnet, indem der Punkt der größten Wölbung eines kNN-Distanzplot berechnet wird. Dieser visualisiert die Distanzen von Beobachtungen zu seinen $k$ Nachbarn. $k$ wird hier als 10 festgesetzt, mit dem Ziel, am Ende Gebiete der Mindestgröße 10 zu erhalten.
 
 ```{=tex}
 \begin{algorithm}[H]
@@ -281,13 +289,11 @@ Im Folgenden wird der benutzte Algorithmus beschrieben, der eine abgeänderte Ve
  \caption{SCAPOI - Algorithmus}
 \end{algorithm}
 ```
+
+ 
  
 
-Die Startpunkte werden hier jeweils als die Extrema der Messpunkte gewählt. Der Nachbarschaftsparameter *eps* muss groß genug gewählt (bzw. berechnet) werden, um zu berücksichtigen, dass die Extrema im Vergleich zu anderen Messwerten stark abweichen und somit zu verhindern, dass die Cluster gar nicht oder zu gering wachsen. Allerdings führt aber ein zu groß gewählter *eps* dann zu einem zu starken Wachsen der Cluster, da der Abstand eines Messpunktes zu seinem Nachbar selten größer ist, als der Abstand der Extrema zu seinen Nachbarn. Deshalb wird dieser Nachbarschaftsparameter *eps* pro Iteration verkleinert.
-
-Der Nachbarschaftsparameter wird hier für jede Tag-Parameter Kombination berechnet, indem der Punkt der größten Wölbung eines kNN-Distanzplot berechnet wird. Dieser visualisiert die Distanzen von Beobachtungen zu seinen $k$ Nachbarn. $k$ wird hier als 10 festgesetzt, mit dem Ziel, am Ende Gebiete der Mindestgröße 10 zu erhalten.
-
-```{r kNN_dist, echo = FALSE, fig.cap="\\label{fig:kNN_dist}10-NN Distanz mit Punkt der maximalen Wölbung", fig.align="center", out.width="80%"}
+```{r kNN_dist, echo = FALSE, fig.cap="\\label{fig:kNN_dist}10-NN Distanz mit Punkt der maximalen Wölbung", fig.align="center", out.width="85%"}
 include_graphics("assets/kNN_dist.png")
 ```
 
@@ -393,6 +399,8 @@ kbl(dt, caption = "Extrahierte Variablen", booktabs = TRUE, format =  "latex", e
   column_spec(2, width = "25em")
 ```
 
+ 
+
 ### Clusterverfahren
 
 Hier ist die Wahl auf den Clusteralgorithmus *PAM* (Partitioning Around Medoids) gefallen, der 1990 von Kaufman und Rousseeuw eingeführt wurde. Dabei werden die Beobachtungen in $k$ disjunkte Partitionen aufgeteilt. Dieser wird auch "k-Medoid" Algorithmus genannt, weil die Beobachtung, die am zentralsten innerhalb eines Clusters liegt, das Zentrum dieses Clusters ist und somit repräsentativ für andere Beobachtungen desselben Clusters ist. Da hier eine reale Beobachtung repräsentativ für ein Cluster ist, ist nach @kmedoid dieses Verfahren robuster als beispielsweise ein k-Means Algorithmus, bei dem der Mittelwert von allen Punkten eines Cluster repräsentativ für dieses ist (@multivariate). Ein weiterer Grund für PAM ist, dass der implementierte Algorithmus pam() in R aus dem Package "cluster" sehr vielfältig ist. Er akzeptiert als Input sowohl direkt eine Distanzmatrix als auch einen Dataframe mit Daten.
@@ -425,40 +433,6 @@ Der Algorithmus wird hier nach @kmedoid2 als Pseudocode dargestellt.
 \end{algorithm}
 ```
  
-
-#### Distanzmetrik
-
-Die Wahl für diese Clusteranalyse fiel auf die Manhattan-Distanz, die für zwei Beobachtungen *a* und *b* definiert ist als
-
-$$
-d(a, b) = \sum_{i = 1}^{p} |a_{i} - b_{i}|
-$$
-
-$$
-wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
-$$
-
-Die Manhattan Distanz wird in Abbildung \ref{fig:manhattan} für einen zweidimensionalen Fall, also $p = 2$, beispielhaft veranschaulicht.
-
-```{r manhattan, echo = FALSE, warning = FALSE, fig.align="center", out.width="80%", fig.cap="\\label{fig:manhattan}Beispiel für die Manhattan-Distanz im zweidimensionalen Raum"}
-data_manhat <- data.frame(x = c(1, 3), y = c(1, 2))
-ggplot(data_manhat, aes(x, y)) + 
-  geom_point(size = 3, stroke = 2, shape = 4) + 
-  geom_segment(aes(x = 1, y = 1, xend = 3, yend = 1), color = "darkgreen", size = 1.2) +
-  geom_segment(aes(x = 3, y = 1, xend = 3, yend = 2), color = "darkblue", size = 1.2) +
-  scale_x_continuous(breaks = c(0, 1, 2, 3, 4), limits = c(0, 4)) +
-  scale_y_continuous(breaks = 0:3, limits = c(0,3)) +
-  theme_classic() +
-  geom_text(label = expression(italic("d(a, b) = |1 - 3| + |1 - 2| = 3")), x = 1, y = 2.5, size = 5)+
-  geom_text(label = "a = (1, 1)", x = 1, y = 0.75) +
-  geom_text(label = "b = (3, 2)", x = 3, y = 2.25) +
-  geom_text(label = "|1 - 3|", x = 2, y = 0.85) +
-  geom_text(label = "|1 - 2|", x = 3.1, y = 1.5, angle = 90) +
-  labs(title = "Manhattan-Distanz im zweidimensionalen Raum")
-
-```
-
-Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. In Abschnitt \ref{weitere-versuche} werden diese weiteren Versuche grob dargestellt.
 
 #### Skalierung
 
@@ -495,17 +469,53 @@ kbl(dt2, booktabs = TRUE, format =  "latex", escape = FALSE, label = "Gewichtung
   
 ```
 
+#### Distanzmetrik
+
+Die Wahl für diese Clusteranalyse fiel auf die Manhattan-Distanz, die für zwei Beobachtungen *a* und *b* definiert ist als
+
+$$
+d(a, b) = \sum_{i = 1}^{p} |a_{i} - b_{i}|
+$$
+
+$$
+wobei\ a = (a_{1}, ... , a_{p})\ und\ b = (b_{1}, ... , b_{p})\ mit\ p = 48\ (Anzahl\ der\ Variablen)
+$$
+
+Die Manhattan Distanz wird in Abbildung \ref{fig:manhattan} für einen zweidimensionalen Fall, also $p = 2$, beispielhaft veranschaulicht.
+
+```{r manhattan, echo = FALSE, warning = FALSE, fig.align="center", out.width="80%", fig.cap="\\label{fig:manhattan}Beispiel für die Manhattan-Distanz im zweidimensionalen Raum"}
+data_manhat <- data.frame(x = c(1, 3), y = c(1, 2))
+ggplot(data_manhat, aes(x, y)) + 
+  geom_point(size = 3, stroke = 2, shape = 4) + 
+  geom_segment(aes(x = 1, y = 1, xend = 3, yend = 1), color = "darkgreen", size = 1.2) +
+  geom_segment(aes(x = 3, y = 1, xend = 3, yend = 2), color = "darkblue", size = 1.2) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4), limits = c(0, 4)) +
+  scale_y_continuous(breaks = 0:3, limits = c(0,3)) +
+  theme_classic() +
+  geom_text(label = expression(italic("d(a, b) = |1 - 3| + |1 - 2| = 3")), x = 1, y = 2.5, size = 5)+
+  geom_text(label = "a = (1, 1)", x = 1, y = 0.75) +
+  geom_text(label = "b = (3, 2)", x = 3, y = 2.25) +
+  geom_text(label = "|1 - 3|", x = 2, y = 0.85) +
+  geom_text(label = "|1 - 2|", x = 3.1, y = 1.5, angle = 90) +
+  labs(title = "Manhattan-Distanz im zweidimensionalen Raum")
+
+```
+
+Weitere Distanzmetriken, die ausprobiert wurden, sind unter anderem die Euklidische Distanz und die Gower Distanz, die aber beide zu schlechteren Ergebnissen, gemessen anhand der definierten Bewertungskriterien, geführt haben. In Abschnitt \ref{weitere-versuche} werden diese weiteren Versuche grob dargestellt.
+
+
+
 #### Wahl der Clusteranzahl
 
 Die Wahl der Clusteranzahl $k$ muss vor dem Ausführen des Algorithmus statt finden. Aber um die optimale Anzahl an Clustern zu finden, wird der Silhouettenkoeffizient für verschiedene $k$ betrachtet. Der Silhouettenkoeffizient ist wie in Abschnitt \ref{silhouettenkoeffizient} beschrieben, unabhängig von der Clusteranzahl. Daher kann er für die Wahl der Clusteranzahl heran gezogen werden. In Abbildung \ref{fig:numclust} sieht man die Silhouettenkoeffizienten für $k = \{5, 6, 7, 8, 9\}$. Den größten Wert bekommt man mit einer Clusteranzahl $k = 6$. Somit wird das resultierende Clusterergebnis mit dem Algorithmus *PAM*, der Distanzmetrik Manhattan und 6 Clustern gebildet.
 
+ 
+
+Dieses Clusterergebnis liefert einen Silhouettenkoeffizienten $s = 0.1411$ und einen Timeline-Score von $0.3357$. Die Güte der Verteilung der *GWL* zu den Clustern $HB_{diff}$ beträgt $0.3309$.
+
 ```{r numclust, echo = FALSE, fig.cap="\\label{fig:numclust}Optimale Anzahl an Cluster. Die Clusteranzahl mit dem maximalen Silhouettenkoeffizient ist die optimale Clusteranzahl, hier $k = 6$.", fig.align="center", out.width="80%"}
 include_graphics("assets/numclust.png")
 ```
-
-### Kriterien
-
-Dieses Clusterergebnis liefert einen Silhouettenkoeffizienten $s = 0.1411$ und einen Timeline-Score von $0.3357$. Die Güte der Verteilung der *GWL* zu den Clustern $HB_{diff}$ beträgt $0.3309$.
 
 ## Weitere Versuche
 
@@ -551,13 +561,14 @@ Mit der resultierenden Distanzmatrix wurde dann eine Clusteranalyse mit *PAM* du
 
 Mit Hilfe einer Principle Component Analysis (*PCA*) lassen sich die Dimensionen eines Datensatzes effektiv reduzieren. Hierbei wird versucht die Variablen durch Linearkombinationen zu ersetzen, die jeweils bestmöglichst die Varianz der Beobachtungen beschreiben. Dadurch wird erreicht, dass ein Großteil der Varianz durch eine bestimmte Anzahl der ersten Principle Components (*PC*) erklärt werden kann, folglich eine Dimensionsreduktion mit minimalen Informationsverlust stattfindet (@pca, @pca_image).
 
-```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Visualisierung der Clusterlösung mittels Principal Component Analysis.", fig.align="center", out.width="80%"}
-include_graphics("assets/pcaPlot.png")
-```
 
 In Abbildung \ref{fig:pca} sind die ersten beiden *PC* dieses Datensatzes abgebildet und es ist zu beobachten, dass diese ca. 44% der Varianz erklären können. Eine auffällige Aufteilung der Beobachtungen in Gruppen ist hier allerdings nicht zu beobachten.
 
 Ein Ansatz ist hier, mit der Anzahl an *PC* weiter zu clustern, die mindestens 85% der Varianz der Daten erklären (@pca_kmeans). Hier ergibt sich dies zu 12 *PC*. Eine Analyse mit $k$*-means* ($k$ = 6) ergab einen Silouettenkoeffizient von $0.1566$ und ein *TLS* von $0.1373$. Außerdem lässt sich ein $HB_{diff}$ von $0.4042$ beobachten.
+
+```{r pca, echo = FALSE, fig.cap="\\label{fig:pca}Visualisierung der Clusterlösung mittels Principal Component Analysis.", fig.align="center", out.width="80%"}
+include_graphics("assets/pcaPlot.png")
+```
 
 ### K-Means und PAM mit Extrahierten Daten
 
@@ -611,15 +622,22 @@ include_graphics("assets/distribution_of_years_over_cluster.png")
 
 Die Werte des Mittelwerts des Luftdrucks (Abb. \ref{fig:distribution_season_mslp}) und des Mittelwert des Geopotentials (Abb. \ref{fig:distribution_season_geopot}) sind in der Sommerzeit tendenziell höher als in der Winterzeit. Hierbei sind die saisionalen Unterschiede bei dem Mittelwert des Geopotentials deutlich stärker ausgeprägt als bei dem Mittelwert des Luftdrucks. Diese Aufteilung des Jahres in Sommer- und Winterzeit erfolgt nach Vorlage der Publikation von James P.M. 2006 (@article_james). Um diese saisonalen Unterschiede zu berücksichtigen und die Verteilung der Winter- und Sommertagen in den Clustern zu betrachten, wird das Kalenderjahr in eine Winter- und in eine Sommerzeit aufgeteilt. Alle Tage im Zeitraum 16. Oktober bis 15. April werden als Wintertage definiert, die restlichen Tage folglich als Sommertage (@article_james).
 
+ 
+
+
+Die Graphik in Abb. \ref{fig:mosaic_seasons} visualisiert die relativen Häufigkeiten der Winter- und Sommertage in jedem Cluster. Cluster 1 bis 3 enthalten überwiegend Wintertage; in Cluster 1 sind 88% aller Tage Wintertage, in Cluster 2 99% und in Cluster 3 98% aller Tage Wintertage. In Cluster 4 bis 6 sind hingegen überwiegend Sommertage vertreten; in Cluster 4 sind 79% aller Tage Sommertage und in Cluster 5 83% aller Tage Sommertage. Ein Sonderfall ist Cluster 6, da dieses ausschließlich aus Sommertagen besteht.
+
 ```{r distribution_seasom_mslp, echo = FALSE, fig.cap="\\label{fig:distribution_season_mslp}Darstellung der Verteilung der Variable Mittelwert des Luftdrucks getrennt nach Sommer- und Winterzeit im Zeitraum 1971-2000", fig.align="center", out.width="80%"}
 include_graphics("assets/jahreszeit_mean.mslp.png")
 ```
+
+  
 
 ```{r distribution_seasom_geopot, echo = FALSE, fig.cap="\\label{fig:distribution_season_geopot}Darstellung der Verteilung der Variable Mittelwert des Luftdrucks getrennt nach Sommer- und Winterzeit im Zeitraum 1971-2000", fig.align="center", out.width="80%"}
 include_graphics("assets/jahreszeit_mean.geopot.png")
 ```
 
-Die Graphik in Abb. \ref{fig:mosaic_seasons} visualisiert die relativen Häufigkeiten der Winter- und Sommertage in jedem Cluster. Cluster 1 bis 3 enthalten überwiegend Wintertage; in Cluster 1 sind 88% aller Tage Wintertage, in Cluster 2 99% und in Cluster 3 98% aller Tage Wintertage. In Cluster 4 bis 6 sind hingegen überwiegend Sommertage vertreten; in Cluster 4 sind 79% aller Tage Sommertage und in Cluster 5 83% aller Tage Sommertage. Ein Sonderfall ist Cluster 6, da dieses ausschließlich aus Sommertagen besteht.
+
 
 ```{r mosaic_seasons, echo = FALSE, fig.cap="\\label{fig:mosaic_seasons}Gestapeltes Balkendiagramm, der den relativen Anteil an Winter- und Sommertagen je Cluster abbildet", fig.align="center", out.width="80%"}
 include_graphics("assets/mosaic_seasons.png")
@@ -631,13 +649,16 @@ Dieser Abschnitt befasst sich mit der Fragestellung, wie sich die Werte der 48 e
 
 Abb. \ref{fig:observation_in_cluster} zeigt die Aufteilung der Tage im Zeitraum 1971 bis 2000 auf die Cluster 1 bis 6. Hierbei bildet Cluster 3 mit einer Anzahl an 1422 Tagen das kleinste Cluster. Cluster 6 beinhaltet die meisten Tage (2565 Tage). Während in Cluster 2 1952 Tage vertreten sind, beinhalten Cluster 1,4 und 5 eine ähnliche Anzahl an Tagen.
 
+ 
+
+Tabelle \ref{tab:descriptive_cluster} bildet Mittelwert und Standardabweichung der Variablen Mittelwert, Maximum und Minimum des Luftdrucks und Mittelwert, Maximum und Minimum des Geopotentials in jedem Cluster ab. Hierbei unterschieden sich die Werte einer Variablen über alle Cluster nur gering voneinander. Zum Beispiel beträgt die maximale Abweichung der Variable Mittelwert des Luftdrucks in allen Clustern nur $8.2 hPa$ und die maximale Abweichung der Variable Mittelwert des Geopotentials $287.7 gpm$.
+
 ```{r observation_in_cluster, echo = FALSE, fig.cap="\\label{fig:observation_in_cluster}Verteilung der Tage im Zeitraum 1971 - 2000 auf die Cluster 1 bis 6", fig.align="center", out.width="80%"}
 include_graphics("assets/observation_in_cluster.png")
 ```
 
-Tabelle \ref{tab:descriptive_cluster} bildet Mittelwert und Standardabweichung der Variablen Mittelwert, Maximum und Minimum des Luftdrucks und Mittelwert, Maximum und Minimum des Geopotentials in jedem Cluster ab. Hierbei unterschieden sich die Werte einer Variablen über alle Cluster nur gering voneinander. Zum Beispiel beträgt die maximale Abweichung der Variable Mittelwert des Luftdrucks in allen Clustern nur $8.2 hPa$ und die maximale Abweichung der Variable Mittelwert des Geopotentials $287.7 gpm$.
- 
- 
+
+
  
 ```{r descriptive_cluster, echo=FALSE, fig.cap="\\label{tab:descriptive_cluster}Mittelwert und Standardabweichung ausgewählter Variablen pro Cluster. Alle Werte, die den Luftdruck betreffen, sind in der Einheit hPa, alle Werte, die das Geopotential betreffen, sind in der Einheit gpm"}
 dtX <- readRDS("assets/dataset_cluster_avg_2.rds")
@@ -652,14 +673,16 @@ kbl(dtX, booktabs = TRUE, format =  "latex", escape = FALSE, label = "descriptiv
 
 ```
 
+ 
+
 
 Abb. \ref{fig:mean_mslp_boxplot} und Abb. \ref{fig:mean_geopot_boxplot} bilden die Verteilung der Variablen Mittelwert des Luftdrucks und Mittelwert des Geopotentials je Cluster ab. Verglichen mit der Variable Mittelwert des Geopotentials unterschiedet sich der Median und die Verteilung der Variable Mittelwert des Luftdrucks in jedem Cluster wenig. Hierbei beinhaltet Cluster 2 mit einem Median von $1009.5 hPa$ und einem Interquartilsabstand (*IQR*) von $3.8 hPa$ (1. Quartil $= 1007.4 hPa$, 3. Quartil $= 1011.2 hPa$) tendenziell die kleinsten Werte auf, während Cluster 5 mit einem Median von $1017 hPa$ und einem Interquartilsabstand von $3 hPa$ (1. Quartil = $1016 hPa$, 3. Quartil = $1019 hPa$) tendenziell die höchsten Werte aufweist. Bei der Variable Mittelwert des Geopotentials weisen die Werte der Cluster 4 bis 6 deutlich höhere Werte auf als die Werte in den Clustern 1 bis 3. Wie bei der Variable Mittelwert des Luftdrucks beinhaltet auch das Cluster 2 bei der Variable Mittelwert des Luftdrucks tendenziell die niedrigsten Werte mit einem Median von $5360 gpm$ und einem *IQR* von $58 gpm$ (1. Quartil $= 5334 gpm$, 3. Quartil $= 5392 gpm$). Cluster 6 weist tendenziell die höchsten Werte mit einem Median von 5654 gpm und einem *IQR* von $42 gpm$ (1. Quartil $= 5632 gpm$, 3. Quartil $= 5674 gpm$). Die Variable Mittelwert des Geopotentials weist weniger Ausreißer auf als die Variable Mittelwert des Luftdrucks.
 
-```{r mean_mslp_boxplot, echo = FALSE, fig.cap="\\label{fig:mean_mslp_boxplot}Verteilung der Variable Mittelwert des Luftdrucks in jedem Cluster", fig.align="center", out.width="80%"}
+```{r mean_mslp_boxplot, echo = FALSE, fig.cap="\\label{fig:mean_mslp_boxplot}Verteilung der Variable Mittelwert des Luftdrucks in jedem Cluster", fig.align="center", out.width="70%"}
 include_graphics("assets/mean_mslp_boxplot.png")
 ```
 
-```{r mean_geopot_boxplot, echo = FALSE, fig.cap="\\label{fig:mean_geopot_boxplot}Verteilung der Variable Mittelwert des Geopotentials in jedem Cluster", fig.align="center", out.width="80%"}
+```{r mean_geopot_boxplot, echo = FALSE, fig.cap="\\label{fig:mean_geopot_boxplot}Verteilung der Variable Mittelwert des Geopotentials in jedem Cluster", fig.align="center", out.width="70%"}
 include_graphics("assets/mean_geopot_boxplot.png")
 ```
 
@@ -669,15 +692,17 @@ Alle anderen extrahierten Variablen, die in die Clusteranalyse miteingegangen si
 
 Nun wird betrachtet, wie sich der Mittelwert des Luftdrucks und der Mittelwert des Geopotentials räumlich unterscheidet. Abb. \ref{fig:mslp_measurepoints} bzw. Abb. \ref{fig:geopot_measurepoints} stellt pro Cluster und für jeden der insgesamt 160 Standorte das arithmetrische Mittel des Luftdrucks bzw. des Geopotentials im Zeitraums 1971 -- 2000 dar. Dies kann man sich vorstellen, wie ein repräsentierendes Beispielbild pro Cluster. Blaue Flächen visualisieren Gebiete mit niedrigeren, rote Flächen visualisieren Gebiete mit höheren Werten.
 
-```{r mslp_measurepoints, echo = FALSE, fig.cap="\\label{fig:mslp_measurepoints}Räumliche Verteilung des Luftdrucks je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width="100%"}
+```{r mslp_measurepoints, echo = FALSE, fig.cap="\\label{fig:mslp_measurepoints}Räumliche Verteilung des Luftdrucks je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width="90%"}
 include_graphics("assets/avgClustIMG_mslp.png")
 ```
 
-```{r geopot_measurepoints, echo = FALSE, fig.cap="\\label{fig:geopot_measurepoints}Räumliche Verteilung des Geopotentials je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width= "100%"}
+Die räumliche Verteilung der gemittelten Werte des Luftdrucks ist pro Cluster unterschiedlich. In Cluster 1 befinden sich nordwestlich höhere Werte während in Cluster 2 ähnlich hohe Werte des Luftdrucks im Süden zu finden sind. Zudem sind dort Gebiete mit höheren Werten größer in Cluster 1. In Cluster 3 ist hingegen das Gebiet mit höheren Luftdruckwerten östlich gelegen, in Cluster 4 und 6 südwestlich. Cluster 5 und 6 sind gekennzeichnet von tendenziell höheren Luftdruckwerten, ein ausgeprägtes Gebiet mit tieferen Luftdruckwerten ist in beiden Clustern nicht enthalten. Im Gegensatz dazu befindet sich in Cluster 2 die größte Fläche mit niedrigeren Luftdruckwerten, das nördlich gelegen ist. Insgesamt hat jedes Cluster eine eigene, charakteristische Verteilung der Luftdruckwerte.
+
+```{r geopot_measurepoints, echo = FALSE, fig.cap="\\label{fig:geopot_measurepoints}Räumliche Verteilung des Geopotentials je Cluster. Für jeden der 160 Standorte wurde das arithmetrische Mittel der Variable Geopotential über alle Tage im Zeitraum von 1971-2000 berechnet.", fig.align="center", out.width= "90%"}
 include_graphics("assets/avgClustIMG_geopot.png")
 ```
 
-Die räumliche Verteilung der gemittelten Werte des Luftdrucks ist pro Cluster unterschiedlich. In Cluster 1 befinden sich nordwestlich höhere Werte während in Cluster 2 ähnlich hohe Werte des Luftdrucks im Süden zu finden sind. Zudem sind dort Gebiete mit höheren Werten größer in Cluster 1. In Cluster 3 ist hingegen das Gebiet mit höheren Luftdruckwerten östlich gelegen, in Cluster 4 und 6 südwestlich. Cluster 5 und 6 sind gekennzeichnet von tendenziell höheren Luftdruckwerten, ein ausgeprägtes Gebiet mit tieferen Luftdruckwerten ist in beiden Clustern nicht enthalten. Im Gegensatz dazu befindet sich in Cluster 2 die größte Fläche mit niedrigeren Luftdruckwerten, das nördlich gelegen ist. Insgesamt hat jedes Cluster eine eigene, charakteristische Verteilung der Luftdruckwerte.
+
 
 Bei der räumlichen Verteilung der Werte des Geopotentials aufgeteilt nach Cluster ergibt sich hingegen ein anderes Bild im Vergleich zum Luftdruck. Tendenziell befinden sich in jedem Cluster nördlich, bzw. nordwestlich niedrigere Werte, südlich, bzw. südwestlich sind höhere Werte. In den Clustern 1 bis 3 ist der Unterschied zwischen den niedrigsten und höchsten Werten des Geopotentials stärker ausgeprägt als in den Clustern 4 bis 6.
 
@@ -709,11 +734,13 @@ Es wurde auch in Betracht gezogen, eine allgemeine Saisonbereinigung durchzufüh
 include_graphics("assets/seasonsMslp.png")
 ```
 
+ 
+
 ```{r werteGeopot, echo = FALSE, fig.cap="\\label{fig:werteGeopot}Werte des Geopotentials der Jahre 1971 - 2000 aufgeteilt nach 4 Jahreszeiten", fig.align="center", out.width="80%"}
 include_graphics("assets/seasonsGeopot.png")
 ```
 
-
+ 
 
 ### Clusterergebnis nach Saison
 
@@ -746,14 +773,16 @@ Deshalb wurde für dieses Verfahren keine Saison-getrennte Analyse bevorzugt.
 
 Es lässt sich im Clusterergebnis beobachten, dass häufig der Wechsel zwischen *CWL* nicht sauber bzw. schlagartig stattfindet sondern, dass ein Wechsel häufig mit einem Hin- und Herschwanken zwischen den beiden *CWL* begleitet wird. Dieses Phänomen wirkt sich folglich negativ auf die Aufteilung der *GWL* in die Cluster aus, somit könnten, ähnlich wie dies bei der *GWL* Einteilung erfolgt, *CWL* mit einer Länge unter drei Tagen als *Übergang* bezeichnet werden und nicht mit in die Analse eingehen.
 
-Im Gegensatz zu dem Mosaikplot aus Abb. \ref{fig:mosaic_GWL} sind in Abb. \ref{fig:mosaic_GWL_greater_2days} nur Tage vertreten, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind. Während im Fall der ungefilterten Tage (weniger als drei aufeinanderfolgende Tage, die dem selben Cluster angehören und nicht entfernt wurden) die vier *GWL* HNFA,NA,NEZ und SEZ jeweils nur in fünf Clustern waren, waren bei den gefilterten Tagen (weniger als drei aufeinanderfolgende Tage, die demselben Cluster angehoren und enfernt wurden) fünf *GWL*, HNA,HNFA,HNFZ,NEZ und SEZ in nur fünf Cluster und die *GWL* NA in nur vier Cluster vertreten. Wie schon erwähnt, sind bei den ungefilterten Tagen WZ und HNFA zu je 40% in Cluster 2, bzw Cluster 5, SEZ zu 52% in Cluster 3 und WS zu 43% in Cluster 1. Bei den gefilterten Tagen ist nun WZ statt 40% zu 43% in Cluster 2 und HNFA statt 40% zu 41% in Cluster 5 vertreten. SEZ befindet sich nun zu 58% in Cluster 3 statt zu 52%. Und Cluster WS ist zu 45% statt zu 43% in Cluster 1. Bei den gefilterten Tagen ist NA zu 40% in Cluster 5, bei den gefilterten Tagen befanden sich hingegen nur 34% in diesem Cluster. Letztendlich scheint das Herausfiltern von Tagen, bei denen weniger als drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, zu einer leichten heterogeneren Aufteilung der *GWL* auf die Cluster zu führen. Eine Erklärung für diese nur leicht hererogenere Aufteilung ist, dass der relative Anteil der Tage, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, nur ca. 12% aller Tage im Zeitraum von 1971 bis 2000 ausmacht.
-
-  $HB_{diff}$ beträgt hier $0.3477$ im Vergleich zu $0.3309$ ohne Elimination der *CWL* der Längen 1 und 2.
+Im Gegensatz zu dem Mosaikplot aus Abb. \ref{fig:mosaic_GWL} sind in Abb. \ref{fig:mosaic_GWL_greater_2days} nur Tage vertreten, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind. Während im Fall der ungefilterten Tage (weniger als drei aufeinanderfolgende Tage, die dem selben Cluster angehören und nicht entfernt wurden) die vier *GWL* HNFA,NA,NEZ und SEZ jeweils nur in fünf Clustern waren, waren bei den gefilterten Tagen (weniger als drei aufeinanderfolgende Tage, die demselben Cluster angehoren und enfernt wurden) fünf *GWL*, HNA,HNFA,HNFZ,NEZ und SEZ in nur fünf Cluster und die *GWL* NA in nur vier Cluster vertreten. Wie schon erwähnt, sind bei den ungefilterten Tagen WZ und HNFA zu je 40% in Cluster 2, bzw Cluster 5, SEZ zu 52% in Cluster 3 und WS zu 43% in Cluster 1. Bei den gefilterten Tagen ist nun WZ statt 40% zu 43% in Cluster 2 und HNFA statt 40% zu 41% in Cluster 5 vertreten. SEZ befindet sich nun zu 58% in Cluster 3 statt zu 52%. Und Cluster WS ist zu 45% statt zu 43% in Cluster 1. Bei den gefilterten Tagen ist NA zu 40% in Cluster 5, bei den gefilterten Tagen befanden sich hingegen nur 34% in diesem Cluster.  
 
 
 ```{r mosaic_GWL_greater_2days, echo = FALSE, fig.cap="\\label{fig:mosaic_GWL_greater_2days}Mosaikplot, der darstellt, mit welchem Anteil die GWL auf die Cluster 1 bis 6 aufgeteilt sind. Hierbei sind nur Tage abgebildet, wo mindestens drei aufeinanderfolgende Tage dem selben Cluster zugeordnet sind", fig.align="center", out.width="100%"}
 include_graphics("assets/mosaic_gwl_greater2days.png")
 ```
+
+Letztendlich scheint das Herausfiltern von Tagen, bei denen weniger als drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, zu einer leichten heterogeneren Aufteilung der *GWL* auf die Cluster zu führen. Eine Erklärung für diese nur leicht hererogenere Aufteilung ist, dass der relative Anteil der Tage, bei denen drei aufeinanderfolgende Tage demselben Cluster zugeordnet sind, nur ca. 12% aller Tage im Zeitraum von 1971 bis 2000 ausmacht.
+
+  $HB_{diff}$ beträgt hier $0.3477$ im Vergleich zu $0.3309$ ohne Elimination der *CWL* der Längen 1 und 2.
 
 ## GWL-Mindestlänge 4 Tage
 
@@ -775,21 +804,15 @@ Folglich wird hier untersucht, wie sich die Tage die sich in *GWL* befinden, die
 
 Die Methode, wie in Absatz \ref{filter-ansatz} beschrieben, weist in dessen Status Quo womöglich einen zu hohen Informationsverlust auf, um alleinig angewendet zu werden. Intuitiv lässt sich vermuten, dass ein Zusammenführen mit dem im Absatz \ref{clustern-mit-extrahierten-daten} beschriebenen Verfahren zu einer insgesamten Verbesserung führen könnte. Folgendes kann durch Addieren der Distanzmetriken vor dem Clustern auf Tagesebene erreicht werden. Die darauf folgende Clusteranalyse wurde hier auch mit *PAM* durchgeführt.
 
- 
-
 Ein einfaches Addieren mit Filtern von beiden Parametern, Mslp und Geopotential, führt zu einer Verschlechterung des Silhouettenkoeffizient von $s = 0.141$ zu $s = 0.099$ aber zu einer Verbesserung des *TLS* von $TLS = 0.3357$ zu $TLS = 0.5663$. Dabei beträgt die Summe über alle Elemente der Distanzmatrix des Filterns ca. $\frac{1}{7}$ der Distanzmatrix der extrahierten Methode. Also grob kann gesagt werden, dass dem Filtern hier ein Gesamtgewicht von etwas größer als $\frac{1}{7}$ zugeteilt wird.
 
 Es ist ein $HB_{diff}$ von $0.3878$ zu beobachten, welcher etwas höher als der $HB_{diff}$ der Clusterlösung der extrahierten Daten mit $HB_{diff} = 0.3309$ ist.
 
 Allerdings fällt hierbei die Clusteranzahl von $k = 6$ auf $k = 5$, was den Vergleich des $TLS$ sowie des $HB_{diff}$ wie in Absatz \ref{bewertungkriterien} beschrieben, problematisiert.
 
- 
-
 Die auf den Clusterbewertungskriterien basierte beste Kombination der beiden Ansätze verspricht die Addition der Distanzmatrix der extrahierten Daten mit der Distanzmatrix des Filterns nur mit Mslp. Dabei wird die Filter Distanzmatrix mit 3 multipliziert, wodurch ein Summenverhältnis von ca. $3.8$ und somit einem ungefähren Gesamtgewicht des Filterns von $\frac{1}{4}$ erreicht wird.
 
-Hier ergibt sich mit $k = 5$ Clustern ein Silhouettenkoeffizient von $s = 0.137$ sowie einem Timeline-Score von $TLS = 0.4118$. (siehe Abb. \ref{fig:TL_filter+exa})
-
-Zudem lässt sich ein $HB_{diff}$ von $0.4122$ beobachten. (siehe Abb. \ref{fig:mosaic_filter+exa})
+Hier ergibt sich mit $k = 5$ Clustern ein Silhouettenkoeffizient von $s = 0.137$ sowie einem Timeline-Score von $TLS = 0.4118$ (siehe Abb. \ref{fig:TL_filter+exa}). Zudem lässt sich ein $HB_{diff}$ von $0.4122$ beobachten (siehe Abb. \ref{fig:mosaic_filter+exa}).
 
 ```{r TL_filter+exa, echo = FALSE, fig.cap="\\label{fig:TL_filter+exa}Timeline des Clusterergebnis von der Kombination der extrahierten Daten mit dem Filtern der Mslp Daten. Die rote Line bezeichnet die erwünschte Timeline Verteilung.", fig.align="center", out.width="80%"}
 include_graphics("assets/TL_filterMslp_exa.png")
@@ -807,7 +830,11 @@ Allerdings bleibt zu untersuchen, ob ein Image-Clustering Convolutional Neural N
 
 ## Räumliche Struktur {#raeumliche-struktur}
 
-Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotential (siehe Absatz \ref{kriterien-filtern}) sowie den über die Cluster gemittelten Tagesbilder des Clusterns der extrahierten Daten mit PAM, bei dem sich die Bilder des Geopotentials räumlich sehr wenig unterscheiden (Abb. \ref{fig:geopot_measurepoints}), lässt sich die Vermutung aufstellen, dass die Ausprägungen des Geopotentials, zumindest so wie sie vorliegen, räumlich kaum Unterschiede aufweisen und somit sich zwischen Tagen keine verschiedenen Strukturen finden lassen (siehe Abb. \ref{fig:geopot_verID}). Auf der Basis ist es eventuell sinnvoller, nur die räumliche Komponente des Mslp beim Clusterverfahren zu betrachten oder zumindest diese höher zu gewichten. Etwas unterstützt wird dieser Gedanke davon, dass in den Beschreibungen der *GWL* nach Hess und Brezowsky häufig Bezug auf Ort und Form eines Druckgebietes am Boden genommen wird (@sklima). Möglicherweise ließen sich auch deutlicher räumliche Strukturen in den Ausprägungen des Geopotentials finden, wenn diese im vorhinein räumlich bereinigt werden. Zum Beispiel unter der Annahme, dass im Norden immer geringere Messwerte erscheinen als im Süden.
+Anhand der geringen Clusterbewertungskriterien des Filter-Ansatz' mit Geopotential (siehe Absatz \ref{kriterien-filtern}) sowie den über die Cluster gemittelten Tagesbilder des Clusterns der extrahierten Daten mit PAM, bei dem sich die Bilder des Geopotentials räumlich sehr wenig unterscheiden (Abb. \ref{fig:geopot_measurepoints}), lässt sich die Vermutung aufstellen, dass die Ausprägungen des Geopotentials, zumindest so wie sie vorliegen, räumlich kaum Unterschiede aufweisen und somit sich zwischen Tagen keine verschiedenen Strukturen finden lassen (siehe Abb. \ref{fig:geopot_verID}). 
+
+ 
+
+Auf der Basis ist es eventuell sinnvoller, nur die räumliche Komponente des Mslp beim Clusterverfahren zu betrachten oder zumindest diese höher zu gewichten. Etwas unterstützt wird dieser Gedanke davon, dass in den Beschreibungen der *GWL* nach Hess und Brezowsky häufig Bezug auf Ort und Form eines Druckgebietes am Boden genommen wird (@sklima). Möglicherweise ließen sich auch deutlicher räumliche Strukturen in den Ausprägungen des Geopotentials finden, wenn diese im vorhinein räumlich bereinigt werden. Zum Beispiel unter der Annahme, dass im Norden immer geringere Messwerte erscheinen als im Süden.
 
 ```{r geopot_verID, echo = FALSE, fig.cap="\\label{fig:geopot_verID}Verteilung der vertikalen Position der Geopotential Extrema von 1971-2000", fig.align="center", out.width="80%"}
 include_graphics("assets/geoVerID.png")
@@ -816,6 +843,8 @@ include_graphics("assets/geoVerID.png")
 ## Gewichtungsvektor
 
 Grundsätzlich lässt sich feststellen, dass die Wahl des Gewichtungsvektors in der Clustermethode der extrahierten Daten (siehe Abschnitt \ref{clustern-mit-extrahierten-daten}) einflussreich gegenüber dem Clusterergebnis ist, bzw. das gezeigte Verfahren sensitiv gegenüber den Variablen-Gewichtungen ist. Dieser Vektor wurde, wie im Abschnitt \ref{gewichtung} beschrieben, in Absprache mit den Projektpartnern rein auf fachlich sinnvoller Ebene festgelegt.
+
+ 
 
 Es lässt sich allerdings anzweifeln, ob so eine starre und ausgeglichene Gewichtungswahl zu dem besten Clusterergebnis führt. Wie schon im Abschnitt \ref{raeumliche-struktur} angeschnitten, könnte die räumliche Komponente des Geopotentials heruntergewichtet werden. Eventuell sind bestimmte Gebiete auch relevanter als andere (z.B. der Raum über dem Festland Europa relevanter, als der über dem Atlantik), was unter anderem durch ungleiche Gewichte der Quadrantenmittelwerte dargestellt werden könnte.
 
@@ -852,29 +881,25 @@ $$
 
 Allgemein muss erkannt werden, dass jeglicher hier beschriebener Versuch Wetterlagen anhand einer Clusteranalyse der Tage einzuteilen, vernachlässigt, dass die Tage eine zeitliche Reihenfolge mit sich bringen. Anhand der Vorgabe, dass eine *GWL* nach dem Katalog von Hess und Brezowky mindestens 3 Tage lang sein muss, lässt sich vermuten, dass einzelnde Tage keine Wetterlage definieren können, sondern nur einen Teil davon bilden.
 
+ 
+
 Eine Möglichkeit dem entgegenzuwirken, liefert eventuell das Einbringen einer "3-Tage Regel" in das Clusterverfahren, die Tage nur einem bestimmten Cluster zuteilt, wenn in eine Richtung die folgenden zwei Tage ebenfalls diesem Cluster zugeteilt werden würden. Womöglich vorstellbar ist dies mit einem Verfahren wie (z.B.) *PAM*, dass seinen Medoid versetzt, wenn dadurch ein bestimmtes Gütekriterium verbessert wird, zumindest annähernd möglich. Das Gütekriterium könnte dann zum Beispiel zum Teil aus dem hier vorgestellten *TLS* bestehen.
 
  
 
 Vorstellbar ist auch, dass eine Wetterlage nicht durch ein festes Muster, dem alle Tage innerhalb der Wetterlage ähneln, definiert werden kann, sondern dass eine Wetterlage ein fluides Konzept ist, dessen Anfangstage, Endtage und Tage dazwischen, sich anders ausprägen. Somit wäre hier eine Methode benötigt, in der solches zeitlich abhängiges Ausprägungsmuster über mehrere Tage definiert werden kann.
 
+ 
+
 Grundsätzlich lassen sich die Daten aber auch als Format eines Videos betrachten, da eine Abfolge von Bildern mit zeitlich vorgegebener Reihenfolge vorliegt. Vielleicht ist es im Allgemeinen sinnvoller, Abschnitte in diesem Video zu suchen, die anderen ähneln. Dafür müsste jedoch auf ein Modell ausgewichen werden, das ein solches Datenformat benutzen kann.
 
 # Schluss
 
-Insgesammt lässt sich festhalten, dass hier vorgestellte Clusterverfahren in Bezug auf den Silhouettenwert Strukturen bis zu ca. $s = 0.15$ aufweisen. Der zeitliche Verlauf der Tageseinteilung der Clusterergebnisse erreicht dabei teilweise annähernd sinnvolle Stukturen mit *CWL* zusammenhängender Tage einer als sinnvoll angenommenen Länge, trotzdem, dass die zeitliche Komponente der Daten in der Clusterbildung nicht berücksichtig wird. Letzteres wurde als einer der eventuell größeren Mängel der vorgestellten Methoden erkannt.
+Insgesamt lässt sich festhalten, dass hier vorgestellte Clusterverfahren in Bezug auf den Silhouettenwert Strukturen bis zu ca. $s = 0.15$ aufweisen. Der zeitliche Verlauf der Tageseinteilung der Clusterergebnisse erreicht dabei teilweise annähernd sinnvolle Stukturen mit *CWL* zusammenhängender Tage einer als sinnvoll angenommenen Länge. Und das, obwohl die zeitliche Komponente der Daten in der Clusterbildung nicht berücksichtigt wird. Letzteres wurde als einer der eventuell größeren Mängel der vorgestellten Methoden erkannt.
 
-Die *GWL* nach Hess und Brezowski finden sich jeweils meistens in allen Ergebnisclustern wieder. Zum Teil heben sich dennoch *GWL* hervor, die mit einem größeren Anteil einem bestimmten Cluster zugeteilt werden können. Eine besonders saubere Teilung der 29 *GWL* in allgemeinere Gruppen lässt allerdings nicht feststellen.
+Die *GWL* nach Hess und Brezowsky finden sich jeweils meistens in allen Ergebnisclustern wieder. Zum Teil heben sich dennoch *GWL* hervor, die mit einem größeren Anteil einem bestimmten Cluster zugeteilt werden können. Eine besonders saubere Teilung der 29 *GWL* in allgemeinere Wettertypen lässt sich allerdings nicht feststellen.
 
-Im Kapitel \ref{diskussion-und-ausblick} werden zwar einige vielversprechende Ansätze beschrieben, die Methoden zu verbessern bzw. auszubauen, diese benötigen aber eventuell eine tiefgründige Analyse zur fachlichen Sinnhaftigkeit vor der Implementation. 
-
-  \textcolor{red}{oder: }
-
-Es wurden in diesem Bericht verschiedene Ansätze, Wetterdaten des Reanalyse-Datensatzes zu clustern, angesprochen. Die Idee des Extrahieren der Variablen sowie das Filtern der Tage wurde hier näher ausgeführt, es wurden Ergebisse gezeigt und der Output und die Methoden diskutiert. 
-
-In den Analysen zeigte sich in Bezug auf die Aufteilung der *GWL*, dass zwar viele in allen Clustern vorhanden waren, aber dass sich auch zum Teil Großwetterlagen heraushoben, die mit über 40% einem Cluster zuzuteilen waren. Allerdings lassen sich die 29 Großwetterlagen nach Hess und Brezowksy auf der Grundlage dieser Ergebnisse nicht zu allgemeineren Typen von Wetterlagen zusammenfassen. 
-
-In Kapitel \ref{diskussion-und-ausblick} wurde ein Ausblick gegeben, wie die Ansätze, Extrahieren der Variablen und das Filtern, verbessert werden könnten. Da sich das Clusterergebnis der Extrahierten Variablen stark nach Sommer-und Wintertagen aufteilt, wäre zum Beispiel ein weiterer Schritt eine Saisonbereinigung für diese zwei Zeiten zu beachten. Auch eine Aufnahme einer "3-Tage Regel" könnte sinnvoll sein, da dadurch eventuell die Bedingungen an Großwetterlagen, mindestens 3 Tage am Stück aufzutreten, berücksichtigt werden könnte.
+Im Kapitel \ref{diskussion-und-ausblick} werden zwar einige vielversprechende Ansätze beschrieben, die Methoden zu verbessern bzw. auszubauen. Diese benötigen aber eventuell eine tiefgründige Analyse zur fachlichen Sinnhaftigkeit vor einer Implementation. 
 
 
 # Anmerkungen {.unlisted .unnumbered}
@@ -882,6 +907,10 @@ In Kapitel \ref{diskussion-und-ausblick} wurde ein Ausblick gegeben, wie die Ans
 Reproduzierbarer Code und relevante Datein sind in einem Github Repository der Organisation *weather-frog* zu finden. Für Zugang, Kontakt zu den Autoren aufnehmen.
 
  
+
+Wir, Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto, möchten uns herzlich bei M.Sc. Maximilian Weigert und M.Sc. Magdalena Mittermeier für die angenehme Zusammenarbeit und bei Prof. Dr. Helmut Küchenhoff für die Beratung bedanken.
+
+\newpage
 
 ```{r Funktionen und Pakete, echo=FALSE, fig.cap="\\label{tab:libraries}Benutzte Pakete in R der im Bericht beschriebenen Clusterverfahren", }
 
@@ -891,19 +920,17 @@ dt4 <- data.table(
 )
 
 kbl(dt4, booktabs = TRUE, format =  "latex", escape = FALSE, label = "R Libraries", caption = "R Libraries", linesep  = "") %>%
-  kable_styling(latex_options = "striped", full_width = FALSE)%>%
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE)%>%
   pack_rows("cluster", 1, 2) %>%
   pack_rows("dbscan", 4, 5) %>%
   pack_rows("stats", 3, 3) %>%
   pack_rows("e1071", 6, 6) %>%
-  kable_styling(latex_options = "hold_position") %>%
   column_spec(1, "4cm") %>%
   column_spec(2, "4cm")
   
 ```
 
- 
 
-Wir, Katja Gutmair, Noah Hurmer, Stella Akouete und Anne Gritto, möchten uns herzlich bei M.Sc. Maximilian Weigert und M.Sc. Magdalena Mittermeier für die angenehme Zusammenarbeit und bei Prof. Dr. Helmut Küchenhoff für die Beratung bedanken.
+
 
 \section{Referenzen}
