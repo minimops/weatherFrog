@@ -81,7 +81,7 @@ longrun = FALSE # set to TRUE to rerun all code
 data.table(
   Ausdruck = c("Großwetterlage", "Clustering Large Applications", "Luftdruck in Pascal auf Meeresspiegelhöhe",
            "Geopotential auf 500 hPa in $m^2/s^2$", "Kovarianzmatrix", "Partitioning Around Medoids", "Density-Based Spatial Clustering of Applications with Noise",  "Spatial Clustering around Points of Interest", "Cluster-Wetterlage (aufeinanderfolgende Tage mit demselben Clusterindex)", "Timeline-Score", "GWL Aufteilungswert", "Principle Component (Analysis)", "Clusteranzahl", "Interquartilsabstand", "geopotentieller Meter"),
-  Kurzform = c("GWL", "CLARA", "Mslp", "Geopotential", "$\\sum$", "PAM", "DBSCAN", "SCAPOI", "CWL", "TLS", "${HB}_{diff}$", "PC / PCA", "$k$", "IQR", "$gpm$")) %>%
+  Kurzform = c("$GWL$", "$CLARA$", "$Mslp$", "$Geopotential$", "$\\sum$", "$PAM$", "$DBSCAN$", "$SCAPOI$", "$CWL$", "$TLS$", "${HB}_{diff}$", "$PC$ / $PCA$", "$k$", "$IQR$", "$gpm$")) %>%
   arrange(Ausdruck) %>%
   kable(booktabs = TRUE, format =  "latex", escape = FALSE, linesep  = "") %>%
   kable_styling(latex_options = c("repeat_header", "striped"), full_width = FALSE) %>%
