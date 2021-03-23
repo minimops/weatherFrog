@@ -7,12 +7,12 @@ library(dplyr)
 
 source("assist/functions_for_cluster_description.R")
 
+PAMres <- readRDS("final_cluster/PAMres.rds")
+f_data <- readRDS("final_cluster/f_data.rds")
+
 
 
 # Histogram for every extracted variable in every cluster
-############
-# PAMres: Cluster object of our final cluster solution
-# f_data: extracted variables data frame with data which we clutered with
 
 cluster <- PAMres$clustering
 f_data$mean.mslp <- f_data$mean.mslp/100
