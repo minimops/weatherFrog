@@ -1,21 +1,10 @@
-
+# Attention: don´t run this file unless you do not need your computer one day
 
 #clustering extrapolated dataset with FUZZY
 
 source("clustering/cluster_extr_var/f_extr_funs.R")
-source("clustering/cluster_extr_var/Method_Trials/function_for_fuzzy_clustering.R")
+source("clustering/cluster_extr_var/function_for_fuzzy_clustering.R")
 source("clustering/ClusterAssesmentHelper.R")
-
-# load all fuzzy objects 
-load("clustering/fuzzyClustering/fcm_man_scaled_list.RData")
-load("clustering/fuzzyClustering/scaled_cor_list.RData")
-load("clustering/fuzzyClustering/squared_scaled_fcm_list.RData")
-load("clustering/fuzzyClustering/squared_scaled_fcm_list.RData")
-load("clustering/fuzzyClustering/scaled_weighted_fcm_6_26_30.RData")
-load("clustering/fuzzyClustering/scaled_weighted_cor_list.RData")
-load("clustering/fuzzyClustering/scaled_gk_6_26_30.RData")
-load("clustering/fuzzyClustering/scaled_fcm_list.RData")
-load("clustering/fuzzyClustering/fcm_man_scaled_weighted_list.RData")
 
 
 

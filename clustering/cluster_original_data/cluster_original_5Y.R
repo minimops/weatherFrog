@@ -19,7 +19,7 @@ fviz_nbclust(as.data.frame(scale(data.wide[, 2:321])), FUNcluster = clara,
               method = "silhouette")
 
 # 3. Clustering with CLARA ###########################
-set.seed(1289)
+set.seed(1234)
 
 # 3.1 Cluster with CLARA and euclidean distance
 clusterclara <- clara(scale(data.wide[, 2:321]), k = 6, metric = "euclidean", 
@@ -31,7 +31,6 @@ cluster.vector.clara <- clusterclara$clustering
 ## 1. Silhouette
 sil(clusterclara, cluster.vector.clara, dist(scale(copy(data.wide)[, 2:321])), "kmeans")
 ### s = 0.1239335
-
 dat.clara <- copy(data.wide)[, cluster := cluster.vector.clara]
 ## 2. Timeline
 Cl.timeline(copy(dat.clara))
@@ -85,10 +84,10 @@ for (k in 1:10){
 }
 
 par(mfrow = c(1,1))
-plot(1:10, wss, type = "b", xlab = "Number of Clusters", ylab = "Within groups sum of squares")
+plot(1:10, wss5, type = "b", xlab = "Number of Clusters", ylab = "Within groups sum of squares")
 
 # -> Cluster
-clusterkmeans <- kmeans(scale(data.wide[, 2:321]), centers = 7, iter.max = 10000)
+clusterkmeans <- kmeans(scale(data.wide[, 2:321]), centers = 6, iter.max = 10000)
 clusterkmeans.vector <- clusterkmeans$cluster
 
 ## Measurements

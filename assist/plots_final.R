@@ -1,7 +1,7 @@
 
-pamfinal <- readRDS("final_cluster/PAMres.rds")
-distfinal <- readRDS("final_cluster/f_dist.rds")
-datafinal <- readRDS("final_cluster/f_data.rds")
+pamfinal <- readRDS("Data/PAMres.rds")
+distfinal <- readRDS("Data/f_dist.rds")
+datafinal <- readRDS("Data/f_data.rds")
 
 datafinalID <- copy(datafinal)[, cluster := pamfinal$clustering]
 

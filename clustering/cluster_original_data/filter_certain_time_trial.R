@@ -15,7 +15,7 @@ toGeoIndex <- function(data) {
   out[, geoIndex := 1:.N, by = date][, ":=" (longitude = NULL, latitude = NULL)]
 }       
 
-dataS <- toGeoIndex(copy(dataL))
+dataS <- toGeoIndex(copy(dataS))
 dataS
 
 longToWide <- function(data, id = "date", col = "geoIndex", vars = c("avg_mslp", "avg_geopot")) {
@@ -42,14 +42,14 @@ fviz_nbclust(as.data.frame(scale(dataS[, 2:321])), FUNcluster = clara,
 clusterclara.12 <- clara(scale(dataS[, 2:321]), k = 5, metric = "euclidean", 
                       stand = TRUE, samples = 1000, sampsize = 300)
 summary(clusterclara.12)
-?clara
+
 cluster.vector.clara.12 <- clusterclara.12$clustering
 
 ## Measurements EUC ########### 
 # 1.
 sil(clusterclara.12, cluster.vector.clara.12, dist(scale(copy(dataS)[, 2:321])), "kmeans")
 
-?manova
+
 dat.clara.12 <- copy(dataS)[, cluster := cluster.vector.clara.12]
 # 2.
 Cl.timeline(copy(dat.clara.12))
@@ -62,16 +62,17 @@ mosaic(copy(dataS), cluster.vector.clara.12, title = "CLARA WITH EUC - 18h")
 
 
 ######### JACCARD ##################################
+#typically jaccard distance isnt used for numerical features
 clusterclara.jac.12 <- clara(scale(dataS[, 2:321]), k = 5, metric = "jaccard", 
                              stand = TRUE, samples = 1000, sampsize = 300)
 summary(clusterclara.jac.12)
 cluster.vector.clara.jac.12 <- clusterclara.jac.12$clustering
-?clara
+
 ## Measurements EUC ########### 
 # 1.
 sil(clusterclara.jac.12, cluster.vector.clara.jac.12, dist(scale(copy(dataS)[, 2:321])), "kmeans")
 
-?manova
+
 dat.clara.jac.12 <- copy(dataS)[, cluster := cluster.vector.clara.jac.12]
 # 2.
 Cl.timeline(copy(dat.clara.jac.12))
@@ -108,7 +109,7 @@ pam.12.euc <- pam(datscaled[, 2:321], diss = FALSE, k = 5, metric = "euclidean")
 sil(pam.12.euc, pam.12.euc$cluster, dist(copy(datscaled)[, 2:321]), "kmeans")
 pam.12.euc$silinfo
 fviz_silhouette(pam.12.euc)
-?manova
+
 dat.pam.12 <- copy(datscaled)[, cluster := pam.12.euc$clustering]
 # 2.
 Cl.timeline(copy(dat.pam.12))

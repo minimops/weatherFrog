@@ -251,7 +251,7 @@ setcolorder(gwl_data_long, c("date", "day","month","year","gwl"))
 #subset timeframe
 
 gwl1971 <- gwl_data_long[year %in% seq(1971, 2010), ]
-saveRDS(gwl1971, file ="Data\\gwl1971.rds")
+saveRDS(gwl1971, file ="Data/gwl1971.rds")
 
 
 ##############reanalysis data 
@@ -321,7 +321,7 @@ cli_gwl_1971 <- cli_gwl_1971 %>%
 setcolorder(cli_gwl_1971,c("index_length_gwl","id","Jahreszeit")) 
 cli_gwl_1971 <- as.data.table(cli_gwl_1971)
 
-saveRDS(cli_gwl_1971,"Data\\cli_gwl_1971_wide.rds")
+saveRDS(cli_gwl_1971,"Data/cli_gwl_1971_wide.rds")
 
 
 ```
@@ -347,7 +347,7 @@ names(cli_gwl_long_geo) <- c("Jahreszeit","index_length_gwl","date","year","mont
 #unite both data tables 
 cli_gwl_long <- cbind(cli_gwl_long_mslp,cli_gwl_long_geo[,8:9])
 
-saveRDS(cli_gwl_long,"Data\\cli_gwl_1971_long.rds")
+saveRDS(cli_gwl_long,"Data/cli_gwl_1971_long.rds")
 
 ```
 

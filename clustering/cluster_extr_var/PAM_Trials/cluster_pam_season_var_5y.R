@@ -65,21 +65,9 @@ subsetYears <- function(data, years) {
   })
 }
 
-## this is to save the datasets for the years 1971-1975, 1984-1988 and 1996-2000
-# as they are needed in extrapolate()
-dataLong <- readRDS("Data/cli_data_full_avgDay.rds")
-dataWide <- readRDS("Data/cli_data_full_avgDay_wide.rds")
 
 yearsList <- list(seq(1971, 1975), seq(1984, 1988), seq(1996, 2000), seq(2006, 2010))
 names <- c("71", "84", "96", "05")
-
-for (i in seq_len(3)) {
-  dataYearsLong <- subsetYears(copy(dataLong), yearsList[[i]])
-  saveRDS(dataYearsLong, paste0("Data/cli_data_", names[i], "_avgDay.rds"))
-  
-  dataYearsWide <- subsetYears(copy(dataWide), yearsList[[i]])
-  saveRDS(dataYearsWide, paste0("Data/cli_data_", names[i], "_avgDay_wide.rds"))
-}
 
 # get 4 different 5 year datasets
 # extraplotae mit all (also ganz normal)

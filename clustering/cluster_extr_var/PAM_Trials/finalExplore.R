@@ -204,10 +204,6 @@ finalClust <- pam(dissimilarity, 6, diss = TRUE)
 clusterAssesment(dataNoRange, clusterRes = finalClust, metric = "manhattan", 
                  distance = dissimilarity, fname = "scaleNweight.noRange.diff1.6clust")
 
-saveRDS(finalClust, "finalDATA/PAMres.rds")
-saveRDS(dataNoRange, "finalDATA/f_data.rds")
-saveRDS(dissimilarity, "finalDATA/f_dist.rds")
-
 
 #full set split up into seasons:
 library(parallelDist)

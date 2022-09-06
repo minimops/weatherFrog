@@ -33,6 +33,12 @@ bestClustNumber(dissimilarity, "manhattan", "finalResult", range = 5:9)
 #cluster with PAM
 finalClust <- pam(dissimilarity, 6, diss = TRUE)
 
+#save results
+saveRDS(finalClust, "Data/PAMres.rds")
+saveRDS(data, "Data/f_data.rds")
+saveRDS(dissimilarity, "Data/f_dist.rds")
+
+
 sil(finalClust, finalClust$clustering, dissimilarity, "pam")
 #sil = 0.1411
 data_pam_final <- data.table(date = data$date, cluster = finalClust$clustering)
@@ -40,3 +46,7 @@ tl <- Cl.timeline(data_pam_final, multiplied = T, showOpt = T)
 #TLS = 0.3357
 mos <- mosaic(data_pam_final, data_pam_final$cluster)
 #HBdiff = 0.3309
+
+
+
+
